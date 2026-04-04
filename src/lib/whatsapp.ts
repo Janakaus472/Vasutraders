@@ -2,11 +2,7 @@ import { CartItem } from '@/types/cart'
 import { Product } from '@/types/product'
 import { WHATSAPP_NUMBER, BUSINESS_NAME } from './constants'
 
-export function buildWhatsAppUrl(
-  cart: CartItem[],
-  products: Product[],
-  customerPhone: string
-): string {
+export function buildWhatsAppUrl(cart: CartItem[], products: Product[]): string {
   const lines = cart
     .map((item) => {
       const product = products.find((p) => p.id === item.productId)
@@ -20,7 +16,7 @@ export function buildWhatsAppUrl(
     '',
     ...lines,
     '',
-    `My WhatsApp number: ${customerPhone}`,
+    'Please confirm availability and pricing. Thank you!',
   ].join('\n')
 
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
