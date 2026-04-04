@@ -3,44 +3,24 @@
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
-import PhoneInput from '@/components/auth/PhoneInput'
-import OtpInput from '@/components/auth/OtpInput'
-import RecaptchaWidget, { RECAPTCHA_CONTAINER_ID } from '@/components/auth/RecaptchaWidget'
-
-type Step = 'idle' | 'sending' | 'awaiting-otp' | 'verifying' | 'done'
+import { BUSINESS_NAME } from '@/lib/constants'
 
 function AuthPageInner() {
-  const { sendOtp, verifyOtp, confirmationResult } = useAuth()
-  const [step, setStep] = useState<Step>('idle')
+  const { login } = useAuth()
   const [phone, setPhone] = useState('')
-  const [error, setError] = useState('')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'not_found'>('idle')
   const router = useRouter()
   const searchParams = useSearchParams()
   const returnTo = searchParams.get('returnTo') || '/catalog'
 
-  const handleSendOtp = async () => {
-    setError('')
-    setStep('sending')
-    try {
-      const e164 = `+61${phone}`
-      await sendOtp(e164, RECAPTCHA_CONTAINER_ID)
-      setStep('awaiting-otp')
-    } catch (err: any) {
-      setError(err.message || 'Failed to send OTP. Try again.')
-      setStep('idle')
-    }
-  }
-
-  const handleVerifyOtp = async (otp: string) => {
-    setError('')
-    setStep('verifying')
-    try {
-      await verifyOtp(otp)
-      setStep('done')
+  const handleSubmit = async () => {
+    if (phone.length < 9) return
+    setStatus('loading')
+    const result = await login(phone)
+    if (result === 'ok') {
       router.replace(returnTo)
-    } catch {
-      setError('Incorrect OTP. Please try again.')
-      setStep('awaiting-otp')
+    } else {
+      setStatus('not_found')
     }
   }
 
@@ -49,33 +29,46 @@ function AuthPageInner() {
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg p-8 space-y-6">
         <div className="text-center space-y-2">
           <div className="text-4xl">🛒</div>
-          <h1 className="text-2xl font-bold text-gray-900">Vasu Traders</h1>
-          <p className="text-gray-500 text-sm">
-            {step === 'awaiting-otp' || step === 'verifying'
-              ? 'Enter the OTP sent to your phone'
-              : 'Enter your mobile to see wholesale prices'}
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900">{BUSINESS_NAME}</h1>
+          <p className="text-gray-500 text-sm">Enter your mobile number to see wholesale prices</p>
         </div>
 
-        {step === 'idle' || step === 'sending' ? (
-          <PhoneInput
-            value={phone}
-            onChange={setPhone}
-            onSubmit={handleSendOtp}
-            isLoading={step === 'sending'}
-            error={error}
-          />
-        ) : (
-          <OtpInput
-            onComplete={handleVerifyOtp}
-            isLoading={step === 'verifying'}
-            error={error}
-            phone={phone}
-            onResend={handleSendOtp}
-          />
-        )}
+        <div className="space-y-4">
+          <div className="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden focus-within:border-orange-500 bg-white">
+            <span className="px-4 py-4 text-gray-500 font-medium bg-gray-50 border-r-2 border-gray-200 text-lg">
+              +61
+            </span>
+            <input
+              type="tel"
+              inputMode="numeric"
+              placeholder="4XX XXX XXX"
+              value={phone}
+              onChange={(e) => {
+                setPhone(e.target.value.replace(/\D/g, ''))
+                setStatus('idle')
+              }}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+              className="flex-1 px-4 py-4 text-lg outline-none bg-white"
+              maxLength={10}
+              autoFocus
+            />
+          </div>
 
-        <RecaptchaWidget />
+          {status === 'not_found' && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+              <p className="text-red-700 font-medium text-sm">Number not recognised</p>
+              <p className="text-red-500 text-xs mt-1">Contact {BUSINESS_NAME} to get access</p>
+            </div>
+          )}
+
+          <button
+            onClick={handleSubmit}
+            disabled={status === 'loading' || phone.length < 9}
+            className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 text-white font-semibold py-4 rounded-xl text-lg transition-colors"
+          >
+            {status === 'loading' ? 'Checking…' : 'Enter Mobile to See Price'}
+          </button>
+        </div>
       </div>
     </div>
   )

@@ -5,7 +5,7 @@ import { useProducts } from '@/hooks/useProducts'
 import ProductTable from '@/components/admin/ProductTable'
 
 export default function AdminDashboard() {
-  const { products, isLoading } = useProducts(true)
+  const { products, isLoading, refetch } = useProducts(true)
 
   return (
     <div className="space-y-6">
@@ -22,7 +22,7 @@ export default function AdminDashboard() {
       {isLoading ? (
         <div className="text-center py-8 text-gray-400">Loading products…</div>
       ) : (
-        <ProductTable products={products} />
+        <ProductTable products={products} onRefresh={refetch} />
       )}
     </div>
   )

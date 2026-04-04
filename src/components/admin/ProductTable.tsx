@@ -3,18 +3,20 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { Product } from '@/types/product'
-import { updateProduct, deleteProduct } from '@/lib/firebase/firestore'
+import { updateProduct, deleteProduct } from '@/lib/supabase/products'
 
 interface ProductTableProps {
   products: Product[]
+  onRefresh: () => void
 }
 
-export default function ProductTable({ products }: ProductTableProps) {
+export default function ProductTable({ products, onRefresh }: ProductTableProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [confirmId, setConfirmId] = useState<string | null>(null)
 
   const handleToggleStock = async (product: Product) => {
     await updateProduct(product.id, { inStock: !product.inStock })
+    onRefresh()
   }
 
   const handleDelete = async (id: string) => {
@@ -22,6 +24,7 @@ export default function ProductTable({ products }: ProductTableProps) {
     await deleteProduct(id)
     setDeletingId(null)
     setConfirmId(null)
+    onRefresh()
   }
 
   if (products.length === 0) {
@@ -38,7 +41,7 @@ export default function ProductTable({ products }: ProductTableProps) {
       {products.map((product) => (
         <div key={product.id} className="bg-white rounded-2xl p-4 flex items-center gap-3 shadow-sm">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <p className="font-semibold text-gray-900 text-sm truncate">{product.name}</p>
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${product.inStock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
                 {product.inStock ? 'In Stock' : 'Out of Stock'}

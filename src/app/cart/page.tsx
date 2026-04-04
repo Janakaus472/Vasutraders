@@ -9,7 +9,7 @@ import WhatsAppOrderButton from '@/components/cart/WhatsAppOrderButton'
 
 export default function CartPage() {
   const { items, addItem, removeItem, clearCart } = useCart()
-  const { firebaseUser } = useAuth()
+  const { customer } = useAuth()
   const { products } = useProducts()
 
   const cartProducts = items
@@ -62,7 +62,7 @@ export default function CartPage() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-gray-900 text-sm truncate">{product.name}</p>
-              {firebaseUser && (
+              {customer && (
                 <p className="text-orange-600 text-sm font-medium">
                   ${(product.pricePerUnit * quantity).toFixed(2)}
                 </p>
@@ -87,7 +87,7 @@ export default function CartPage() {
         ))}
       </div>
 
-      {firebaseUser && (
+      {customer && (
         <div className="bg-orange-50 rounded-xl p-4 mb-6">
           <div className="flex justify-between font-bold text-gray-900">
             <span>Estimated Total</span>
@@ -96,11 +96,11 @@ export default function CartPage() {
         </div>
       )}
 
-      {firebaseUser ? (
+      {customer ? (
         <WhatsAppOrderButton
           cart={items}
           products={products}
-          customerPhone={firebaseUser.phoneNumber || ''}
+          customerPhone={customer.phone}
         />
       ) : (
         <Link

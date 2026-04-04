@@ -7,7 +7,7 @@ import { useProducts } from '@/hooks/useProducts'
 import ProductGrid from '@/components/catalog/ProductGrid'
 
 export default function CatalogPage() {
-  const { firebaseUser, isLoading: authLoading } = useAuth()
+  const { customer, isLoading: authLoading } = useAuth()
   const { items, addItem, removeItem } = useCart()
   const { products, isLoading: productsLoading } = useProducts()
   const [activeCategory, setActiveCategory] = useState('All')
@@ -35,7 +35,7 @@ export default function CatalogPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-4 pb-24">
-      {!firebaseUser && (
+      {!customer && (
         <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-4 text-center">
           <p className="text-orange-700 font-medium text-sm">
             🔒 Enter your mobile number to see wholesale prices
@@ -63,7 +63,7 @@ export default function CatalogPage() {
 
       <ProductGrid
         products={filtered}
-        isAuthenticated={!!firebaseUser}
+        isAuthenticated={!!customer}
         cartItems={items}
         onAdd={addItem}
         onRemove={removeItem}

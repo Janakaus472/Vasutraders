@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { getProduct } from '@/lib/firebase/firestore'
+import { getProduct } from '@/lib/supabase/products'
 import { Product } from '@/types/product'
 import ProductForm from '@/components/admin/ProductForm'
 

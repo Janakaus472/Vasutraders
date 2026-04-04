@@ -2,7 +2,7 @@
 
 import { useState, ChangeEvent } from 'react'
 import Image from 'next/image'
-import { uploadProductImage } from '@/lib/firebase/storage'
+import { uploadProductImage } from '@/lib/supabase/storage'
 
 interface ImageUploaderProps {
   currentUrl: string
@@ -34,7 +34,7 @@ export default function ImageUploader({ currentUrl, onUpload }: ImageUploaderPro
       <div className="flex items-center gap-4">
         <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
           {preview ? (
-            <Image src={preview} alt="product" fill className="object-cover" />
+            <Image src={preview} alt="product" fill className="object-cover" unoptimized />
           ) : (
             <div className="flex items-center justify-center h-full text-gray-300 text-3xl">📦</div>
           )}

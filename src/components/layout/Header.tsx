@@ -7,7 +7,7 @@ import { BUSINESS_NAME } from '@/lib/constants'
 
 export default function Header() {
   const { itemCount } = useCart()
-  const { firebaseUser, signOut } = useAuth()
+  const { customer, logout } = useAuth()
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
@@ -16,11 +16,8 @@ export default function Header() {
           🛒 {BUSINESS_NAME}
         </Link>
         <div className="flex items-center gap-3">
-          {firebaseUser ? (
-            <button
-              onClick={signOut}
-              className="text-gray-400 text-xs hover:text-gray-600"
-            >
+          {customer ? (
+            <button onClick={logout} className="text-gray-400 text-xs hover:text-gray-600">
               Sign out
             </button>
           ) : (

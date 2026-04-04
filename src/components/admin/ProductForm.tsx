@@ -3,7 +3,7 @@
 import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { Product, ProductUnit } from '@/types/product'
-import { addProduct, updateProduct } from '@/lib/firebase/firestore'
+import { addProduct, updateProduct } from '@/lib/supabase/products'
 import ImageUploader from './ImageUploader'
 
 const UNITS: ProductUnit[] = ['kg', 'litre', 'piece', 'dozen', 'box']
@@ -79,7 +79,6 @@ export default function ProductForm({ product }: ProductFormProps) {
           onChange={(e) => setDescription(e.target.value)}
           className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-orange-400 resize-none"
           rows={2}
-          placeholder="Optional short description"
         />
       </div>
 
@@ -104,9 +103,7 @@ export default function ProductForm({ product }: ProductFormProps) {
             onChange={(e) => setUnit(e.target.value as ProductUnit)}
             className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-orange-400 bg-white"
           >
-            {UNITS.map((u) => (
-              <option key={u} value={u}>{u}</option>
-            ))}
+            {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
           </select>
         </div>
       </div>

@@ -1,90 +1,54 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { User as FirebaseUser, ConfirmationResult, onAuthStateChanged } from 'firebase/auth'
-import { getFirebaseAuth } from '@/lib/firebase/config'
-import { sendOtp as fbSendOtp, verifyOtp as fbVerifyOtp, signOut as fbSignOut } from '@/lib/firebase/auth'
-import { getUserDocument } from '@/lib/firebase/firestore'
-import { AppUser } from '@/types/user'
-import { SESSION_DURATION_DAYS, LOGIN_TIMESTAMP_KEY } from '@/lib/constants'
+import { lookupPhone } from '@/lib/supabase/auth'
+import { Customer } from '@/types/user'
+
+const SESSION_KEY = 'vt_customer'
 
 interface AuthContextValue {
-  user: AppUser | null
-  firebaseUser: FirebaseUser | null
+  customer: Customer | null
   isAdmin: boolean
   isLoading: boolean
-  confirmationResult: ConfirmationResult | null
-  sendOtp: (phone: string, containerId: string) => Promise<void>
-  verifyOtp: (otp: string) => Promise<void>
-  signOut: () => Promise<void>
+  login: (phone: string) => Promise<'ok' | 'not_found'>
+  logout: () => void
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null)
-  const [user, setUser] = useState<AppUser | null>(null)
+  const [customer, setCustomer] = useState<Customer | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(getFirebaseAuth(), async (fbUser) => {
-      if (fbUser) {
-        // Check session expiry
-        const ts = localStorage.getItem(LOGIN_TIMESTAMP_KEY)
-        if (ts) {
-          const elapsed = Date.now() - parseInt(ts)
-          const maxMs = SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000
-          if (elapsed > maxMs) {
-            await fbSignOut()
-            setFirebaseUser(null)
-            setUser(null)
-            setIsLoading(false)
-            return
-          }
-        }
-        setFirebaseUser(fbUser)
-        const appUser = await getUserDocument(fbUser.uid)
-        setUser(appUser)
-      } else {
-        setFirebaseUser(null)
-        setUser(null)
-      }
-      setIsLoading(false)
-    })
-    return unsubscribe
+    try {
+      const stored = localStorage.getItem(SESSION_KEY)
+      if (stored) setCustomer(JSON.parse(stored))
+    } catch {}
+    setIsLoading(false)
   }, [])
 
-  const sendOtp = async (phone: string, containerId: string) => {
-    const result = await fbSendOtp(phone, containerId)
-    setConfirmationResult(result)
+  const login = async (phone: string): Promise<'ok' | 'not_found'> => {
+    const result = await lookupPhone(phone)
+    if (!result) return 'not_found'
+    setCustomer(result)
+    localStorage.setItem(SESSION_KEY, JSON.stringify(result))
+    return 'ok'
   }
 
-  const verifyOtp = async (otp: string) => {
-    if (!confirmationResult) throw new Error('No OTP in progress')
-    await fbVerifyOtp(confirmationResult, otp)
-    localStorage.setItem(LOGIN_TIMESTAMP_KEY, Date.now().toString())
-    setConfirmationResult(null)
-  }
-
-  const signOut = async () => {
-    await fbSignOut()
-    localStorage.removeItem(LOGIN_TIMESTAMP_KEY)
-    setUser(null)
-    setFirebaseUser(null)
+  const logout = () => {
+    setCustomer(null)
+    localStorage.removeItem(SESSION_KEY)
   }
 
   return (
     <AuthContext.Provider
       value={{
-        user,
-        firebaseUser,
-        isAdmin: user?.role === 'admin',
+        customer,
+        isAdmin: customer?.is_admin === true,
         isLoading,
-        confirmationResult,
-        sendOtp,
-        verifyOtp,
-        signOut,
+        login,
+        logout,
       }}
     >
       {children}
