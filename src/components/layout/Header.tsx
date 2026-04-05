@@ -2,58 +2,117 @@
 
 import Link from 'next/link'
 import { useCart } from '@/context/CartContext'
+import { useLanguage } from '@/context/LanguageContext'
 import { BUSINESS_NAME } from '@/lib/constants'
 import { usePathname } from 'next/navigation'
 
 export default function Header() {
   const { itemCount } = useCart()
+  const { lang, setLang } = useLanguage()
   const pathname = usePathname()
   const isAdmin = pathname.startsWith('/admin')
 
   return (
-    <header className="sticky top-0 z-50 bg-[#1a3c5e] shadow-md">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
+    <header className="sticky top-0 z-50 animate-fadeInDown" style={{ background: '#0f2744', boxShadow: '0 2px 20px rgba(0,0,0,0.25)' }}>
+      <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '0 20px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+
         {/* Logo */}
-        <Link href="/catalog" className="flex items-center gap-3 flex-shrink-0">
-          <div className="bg-orange-500 rounded-lg w-9 h-9 flex items-center justify-center font-black text-white text-lg shadow">
+        <Link href="/catalog" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, textDecoration: 'none' }}>
+          <div style={{ background: '#FF6B00', borderRadius: '10px', width: '38px', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.4rem', color: '#fff', boxShadow: '0 3px 10px rgba(255,107,0,0.4)' }}>
             V
           </div>
-          <div className="leading-tight">
-            <div className="text-white font-black text-base tracking-tight">{BUSINESS_NAME}</div>
-            <div className="text-blue-300 text-[11px] font-medium">Wholesale Supplier · Indore</div>
+          <div style={{ lineHeight: 1.2 }}>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.25rem', color: '#fff', letterSpacing: '1px' }}>{BUSINESS_NAME}</div>
+            <div style={{ color: '#7bafd4', fontSize: '10px', fontWeight: 600 }}>Wholesale Supplier · Indore</div>
           </div>
         </Link>
 
-        {/* Nav links */}
-        <nav className="hidden sm:flex items-center gap-1 flex-1 justify-center">
-          <Link href="/catalog" className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${pathname === '/catalog' ? 'bg-white/20 text-white' : 'text-blue-200 hover:text-white hover:bg-white/10'}`}>
-            Products
+        {/* Nav */}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: 1, justifyContent: 'center' }} className="hidden sm:flex">
+          <Link href="/catalog" style={{
+            padding: '6px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600,
+            textDecoration: 'none', transition: 'all 0.15s',
+            background: pathname === '/catalog' ? 'rgba(255,255,255,0.18)' : 'transparent',
+            color: pathname === '/catalog' ? '#fff' : '#93b4cf',
+          }}>
+            {lang === 'hi' ? 'उत्पाद' : 'Products'}
           </Link>
-          <Link href="/cart" className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${pathname === '/cart' ? 'bg-white/20 text-white' : 'text-blue-200 hover:text-white hover:bg-white/10'}`}>
-            My Order
+          <Link href="/cart" style={{
+            padding: '6px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600,
+            textDecoration: 'none', transition: 'all 0.15s',
+            background: pathname === '/cart' ? 'rgba(255,255,255,0.18)' : 'transparent',
+            color: pathname === '/cart' ? '#fff' : '#93b4cf',
+          }}>
+            {lang === 'hi' ? 'मेरा ऑर्डर' : 'My Order'}
           </Link>
           {!isAdmin && (
-            <Link href="/admin" className="text-blue-300/60 hover:text-blue-200 text-xs px-3 py-2 transition-colors">
+            <Link href="/admin" style={{ padding: '6px 12px', fontSize: '11px', color: 'rgba(147,180,207,0.5)', textDecoration: 'none' }}>
               Admin
             </Link>
           )}
         </nav>
 
-        {/* Cart button */}
-        <Link
-          href="/cart"
-          className="flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-bold px-5 py-2.5 rounded-lg transition-colors shadow flex-shrink-0"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          <span className="text-sm">Order</span>
-          {itemCount > 0 && (
-            <span className="bg-white text-orange-600 text-xs font-black rounded-full w-5 h-5 flex items-center justify-center leading-none">
-              {itemCount > 9 ? '9+' : itemCount}
-            </span>
-          )}
-        </Link>
+        {/* Right side: Lang toggle + Cart */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+
+          {/* Language toggle */}
+          <button
+            onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '0',
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '20px',
+              overflow: 'hidden',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+            title="Switch language"
+          >
+            <span style={{
+              padding: '5px 10px', fontSize: '11px', fontWeight: 700,
+              background: lang === 'en' ? '#FF6B00' : 'transparent',
+              color: lang === 'en' ? '#fff' : 'rgba(255,255,255,0.5)',
+              transition: 'all 0.2s',
+            }}>EN</span>
+            <span style={{
+              padding: '5px 10px', fontSize: '11px', fontWeight: 700,
+              background: lang === 'hi' ? '#FF6B00' : 'transparent',
+              color: lang === 'hi' ? '#fff' : 'rgba(255,255,255,0.5)',
+              transition: 'all 0.2s',
+            }}>हिं</span>
+          </button>
+
+          {/* Cart button */}
+          <Link
+            href="/cart"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              background: '#FF6B00', color: '#fff',
+              fontWeight: 700, padding: '8px 18px',
+              borderRadius: '10px', textDecoration: 'none',
+              boxShadow: '0 3px 12px rgba(255,107,0,0.4)',
+              fontSize: '13px', transition: 'all 0.15s',
+              position: 'relative',
+            }}
+          >
+            <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            {lang === 'hi' ? 'ऑर्डर' : 'Order'}
+            {itemCount > 0 && (
+              <span style={{
+                background: '#fff', color: '#FF6B00',
+                fontSize: '10px', fontWeight: 900,
+                borderRadius: '50%', width: '20px', height: '20px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                animation: 'popIn 0.3s ease',
+              }}>
+                {itemCount > 9 ? '9+' : itemCount}
+              </span>
+            )}
+          </Link>
+        </div>
       </div>
     </header>
   )

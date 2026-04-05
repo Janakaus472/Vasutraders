@@ -1,5 +1,8 @@
 'use client'
 
+import { useState } from 'react'
+import { useLanguage } from '@/context/LanguageContext'
+
 interface AddToCartButtonProps {
   quantity: number
   onAdd: () => void
@@ -8,79 +11,88 @@ interface AddToCartButtonProps {
 }
 
 export default function AddToCartButton({ quantity, onAdd, onRemove, disabled }: AddToCartButtonProps) {
+  const { t } = useLanguage()
+  const [wiggle, setWiggle] = useState(false)
+
+  const handleAdd = () => {
+    setWiggle(true)
+    setTimeout(() => setWiggle(false), 500)
+    onAdd()
+  }
+
   if (disabled) return (
-    <span style={{ fontSize: '10px', color: '#9ca3af', fontWeight: 600, letterSpacing: '0.5px' }}>
-      Out of stock
-    </span>
+    <span style={{ fontSize: '10px', color: '#9ca3af', fontWeight: 600 }}>{t.outOfStock}</span>
   )
 
   if (quantity === 0) {
     return (
       <button
-        onClick={onAdd}
+        onClick={handleAdd}
+        className={wiggle ? 'animate-wiggle' : ''}
         style={{
-          background: '#0f2744',
-          color: '#fff',
-          fontWeight: 700,
-          fontSize: '12px',
-          padding: '7px 16px',
-          borderRadius: '10px',
-          border: 'none',
-          cursor: 'pointer',
-          transition: 'background 0.15s',
+          background: '#0f2744', color: '#fff',
+          fontWeight: 700, fontSize: '12px',
+          padding: '8px 16px', borderRadius: '10px',
+          border: 'none', cursor: 'pointer',
           fontFamily: "'Plus Jakarta Sans', sans-serif",
-          letterSpacing: '0.3px',
+          letterSpacing: '0.3px', transition: 'background 0.15s, transform 0.1s',
+          boxShadow: '0 2px 8px rgba(15,39,68,0.25)',
         }}
-        onMouseOver={e => ((e.currentTarget as HTMLButtonElement).style.background = '#FF6B00')}
-        onMouseOut={e => ((e.currentTarget as HTMLButtonElement).style.background = '#0f2744')}
+        onMouseEnter={e => {
+          const el = e.currentTarget as HTMLButtonElement
+          el.style.background = '#FF6B00'
+          el.style.boxShadow = '0 4px 12px rgba(255,107,0,0.4)'
+        }}
+        onMouseLeave={e => {
+          const el = e.currentTarget as HTMLButtonElement
+          el.style.background = '#0f2744'
+          el.style.boxShadow = '0 2px 8px rgba(15,39,68,0.25)'
+        }}
       >
-        + Add
+        {t.add}
       </button>
     )
   }
 
   return (
     <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      background: '#FF6B00',
-      borderRadius: '10px',
-      overflow: 'hidden',
+      display: 'flex', alignItems: 'center',
+      background: '#FF6B00', borderRadius: '10px', overflow: 'hidden',
+      boxShadow: '0 3px 10px rgba(255,107,0,0.35)',
+      animation: 'popIn 0.3s cubic-bezier(.34,1.56,.64,1)',
     }}>
       <button
         onClick={onRemove}
         style={{
-          width: '30px', height: '32px',
-          color: '#fff', fontSize: '18px', fontWeight: 700,
-          border: 'none', cursor: 'pointer',
-          background: 'transparent',
+          width: '32px', height: '34px', color: '#fff',
+          fontSize: '18px', fontWeight: 700, border: 'none',
+          cursor: 'pointer', background: 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'background 0.1s',
         }}
-        onMouseOver={e => ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,0,0,0.15)')}
-        onMouseOut={e => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}
+        onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,0,0,0.18)')}
+        onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}
       >
         −
       </button>
       <span style={{
-        color: '#fff', fontWeight: 800, fontSize: '14px',
-        minWidth: '24px', textAlign: 'center',
-        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        color: '#fff', fontWeight: 900, fontSize: '15px',
+        minWidth: '26px', textAlign: 'center',
+        fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '1px',
       }}>
         {quantity}
       </span>
       <button
-        onClick={onAdd}
+        onClick={handleAdd}
         style={{
-          width: '30px', height: '32px',
-          color: '#fff', fontSize: '18px', fontWeight: 700,
-          border: 'none', cursor: 'pointer',
-          background: 'transparent',
+          width: '32px', height: '34px', color: '#fff',
+          fontSize: '18px', fontWeight: 700, border: 'none',
+          cursor: 'pointer', background: 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'background 0.1s',
         }}
-        onMouseOver={e => ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,0,0,0.15)')}
-        onMouseOut={e => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}
+        onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,0,0,0.18)')}
+        onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}
       >
         +
       </button>
