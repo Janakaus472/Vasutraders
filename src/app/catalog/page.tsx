@@ -58,65 +58,11 @@ export default function CatalogPage() {
   const selectedCartItem = selectedProduct ? items.find(i => i.productId === selectedProduct.id) : null
 
   return (
-    <div style={{ minHeight: '100vh', position: 'relative', isolation: 'isolate' }}>
-
-      {/* ── Aurora background ── */}
-      <div aria-hidden style={{ position: 'fixed', inset: 0, zIndex: -1, overflow: 'hidden', background: '#faf8f3' }}>
-        {/* Blob 1 — saffron orange, top-right */}
-        <div style={{
-          position: 'absolute', top: '-10%', right: '-5%',
-          width: '600px', height: '600px', borderRadius: '50%',
-          background: 'radial-gradient(circle, #FF6B00 0%, #FF9A3C 40%, transparent 70%)',
-          opacity: 0.12, filter: 'blur(80px)',
-          animation: 'blob1 18s ease-in-out infinite',
-        }} />
-        {/* Blob 2 — deep navy, bottom-left */}
-        <div style={{
-          position: 'absolute', bottom: '-15%', left: '-10%',
-          width: '700px', height: '700px', borderRadius: '50%',
-          background: 'radial-gradient(circle, #0f2744 0%, #1a3c5e 50%, transparent 70%)',
-          opacity: 0.1, filter: 'blur(90px)',
-          animation: 'blob2 22s ease-in-out infinite',
-        }} />
-        {/* Blob 3 — golden, center */}
-        <div style={{
-          position: 'absolute', top: '30%', left: '35%',
-          width: '500px', height: '500px', borderRadius: '50%',
-          background: 'radial-gradient(circle, #f59e0b 0%, #fcd34d 50%, transparent 70%)',
-          opacity: 0.07, filter: 'blur(100px)',
-          animation: 'blob3 26s ease-in-out infinite',
-        }} />
-        {/* Blob 4 — rose/pink, bottom-right */}
-        <div style={{
-          position: 'absolute', bottom: '10%', right: '10%',
-          width: '450px', height: '450px', borderRadius: '50%',
-          background: 'radial-gradient(circle, #ec4899 0%, #f9a8d4 50%, transparent 70%)',
-          opacity: 0.07, filter: 'blur(90px)',
-          animation: 'blob4 20s ease-in-out infinite',
-        }} />
-        {/* Blob 5 — emerald, top-left */}
-        <div style={{
-          position: 'absolute', top: '20%', left: '-5%',
-          width: '400px', height: '400px', borderRadius: '50%',
-          background: 'radial-gradient(circle, #10b981 0%, #6ee7b7 50%, transparent 70%)',
-          opacity: 0.07, filter: 'blur(80px)',
-          animation: 'blob2 24s ease-in-out infinite reverse',
-        }} />
-        {/* Subtle noise grain overlay */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat',
-          backgroundSize: '200px',
-          opacity: 0.4,
-          mixBlendMode: 'overlay',
-          pointerEvents: 'none',
-        }} />
-      </div>
+    <div style={{ minHeight: '100vh', position: 'relative' }}>
 
       {/* ── Banner ── */}
       <div style={{
-        background: 'linear-gradient(135deg, #0a1e38 0%, #0f2744 50%, #132f52 100%)',
+        background: 'linear-gradient(150deg, #1a0800 0%, #7c2d12 40%, #c2410c 75%, #fb923c 100%)',
         position: 'relative', overflow: 'hidden',
       }}>
         <div style={{
@@ -134,7 +80,7 @@ export default function CatalogPage() {
             <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.8rem, 5vw, 4.5rem)', color: '#fff', lineHeight: 1, letterSpacing: '2px' }}>
               {activeCategory === 'All' ? t.allProducts : catLabel(activeCategory)}
             </h1>
-            <p style={{ color: '#7bafd4', fontSize: '14px', marginTop: '8px' }}>{t.tagline}</p>
+            <p style={{ color: '#fcd9b0', fontSize: '14px', marginTop: '8px' }}>{t.tagline}</p>
           </div>
           <div className={`hidden sm:flex items-center gap-10 ${mounted ? 'animate-fadeInDown stagger-2' : ''}`}>
             {[
@@ -143,7 +89,7 @@ export default function CatalogPage() {
             ].map(({ val, label }) => (
               <div key={label} style={{ textAlign: 'center' }}>
                 <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '3.5rem', color: '#FF6B00', lineHeight: 1 }}>{val}</div>
-                <div style={{ color: '#7bafd4', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '3px' }}>{label}</div>
+                <div style={{ color: '#fcd9b0', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '3px' }}>{label}</div>
               </div>
             ))}
           </div>
@@ -156,7 +102,7 @@ export default function CatalogPage() {
         {/* ── Sidebar ── */}
         <aside className={`w-56 flex-shrink-0 hidden md:block ${mounted ? 'animate-slideInLeft' : ''}`}>
           <div style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 24px rgba(15,39,68,0.1)', position: 'sticky', top: '80px', border: '1px solid rgba(255,255,255,0.6)' }}>
-            <div style={{ background: 'linear-gradient(135deg, #0f2744, #1a3c5e)', padding: '18px 18px' }}>
+            <div style={{ background: 'linear-gradient(135deg, #7c2d12, #c2410c)', padding: '18px 18px' }}>
               <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '9px', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase' }}>{t.browseBy}</p>
               <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem', color: '#fff', letterSpacing: '1px', marginTop: '2px' }}>{t.category}</p>
             </div>
@@ -231,7 +177,7 @@ export default function CatalogPage() {
           {/* Toolbar */}
           <div className={`flex items-center gap-3 mb-6 flex-wrap ${mounted ? 'animate-fadeInDown' : ''}`}>
             <div style={{ flex: 1 }}>
-              <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.4rem', color: '#0f2744', letterSpacing: '1px', lineHeight: 1 }}>
+              <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.4rem', color: '#7c2d12', letterSpacing: '1px', lineHeight: 1 }}>
                 {activeCategory === 'All' ? t.allProducts : catLabel(activeCategory)}
                 {!isLoading && (
                   <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.4rem', color: '#FF6B00', marginLeft: '14px' }}>

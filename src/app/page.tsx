@@ -95,13 +95,13 @@ export default function HomePage() {
 
       {/* ── HERO ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden grain-overlay" style={{
-        background: 'linear-gradient(135deg, #0f2744 0%, #1a3c5e 50%, #1e4976 100%)',
+        background: 'linear-gradient(150deg, #1a0800 0%, #7c2d12 30%, #c2410c 65%, #fb923c 100%)',
         minHeight: '92vh',
       }}>
-        {/* Decorative circles */}
-        <div style={{ position:'absolute', top:'-80px', right:'-80px', width:'400px', height:'400px', borderRadius:'50%', background:'rgba(255,107,0,0.15)', filter:'blur(60px)' }} />
-        <div style={{ position:'absolute', bottom:'-100px', left:'-60px', width:'350px', height:'350px', borderRadius:'50%', background:'rgba(255,107,0,0.1)', filter:'blur(80px)' }} />
-        <div style={{ position:'absolute', top:'40%', left:'30%', width:'200px', height:'200px', borderRadius:'50%', background:'rgba(255,215,0,0.06)', filter:'blur(40px)' }} />
+        {/* Warm decorative glows */}
+        <div style={{ position:'absolute', top:'-60px', right:'-60px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,200,50,0.18)', filter:'blur(70px)' }} />
+        <div style={{ position:'absolute', bottom:'-80px', left:'-40px', width:'400px', height:'400px', borderRadius:'50%', background:'rgba(255,107,0,0.22)', filter:'blur(80px)' }} />
+        <div style={{ position:'absolute', top:'35%', left:'25%', width:'300px', height:'300px', borderRadius:'50%', background:'rgba(255,165,0,0.12)', filter:'blur(50px)' }} />
 
         {/* Grid pattern overlay */}
         <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize:'60px 60px', pointerEvents:'none' }} />
@@ -343,7 +343,7 @@ export default function HomePage() {
       </section>
 
       {/* ── WHY US ───────────────────────────────────────────────────── */}
-      <section style={{ background:'#0f2744', padding:'80px 0', position:'relative', overflow:'hidden' }}>
+      <section style={{ background:'linear-gradient(135deg, #1a0800, #7c2d12)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,107,0,0.08)', filter:'blur(80px)' }} />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid md:grid-cols-2 gap-16 items-center">
