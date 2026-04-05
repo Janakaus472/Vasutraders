@@ -140,7 +140,7 @@ export default function HomePage() {
 
       {/* ── HERO ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden" style={{
-        background: 'linear-gradient(150deg, #0D0D0D 0%, #1a1a1a 40%, #2D2D2D 70%, #0D0D0D 100%)',
+        background: 'transparent',
         minHeight: '92vh',
         borderBottom: '3px solid #FFD700',
       }}>
@@ -267,7 +267,7 @@ export default function HomePage() {
 
         {/* Bottom wave */}
         <svg style={{ position:'absolute', bottom:0, left:0, right:0, display:'block' }} viewBox="0 0 1440 60" preserveAspectRatio="none" height="60">
-          <path d="M0,60 L0,30 Q360,0 720,30 Q1080,60 1440,20 L1440,60 Z" fill="rgba(255,251,245,0.95)" />
+          <path d="M0,60 L0,30 Q360,0 720,30 Q1080,60 1440,20 L1440,60 Z" fill="rgba(255,252,248,0.92)" />
         </svg>
       </section>
 
@@ -415,8 +415,8 @@ export default function HomePage() {
       </section>
 
       {/* ── WHY US ───────────────────────────────────────────────────── */}
-      <section style={{ background:'linear-gradient(135deg, rgba(13,13,13,0.80), rgba(60,20,10,0.80))', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
-        <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,215,0,0.08)', filter:'blur(80px)' }} />
+      <section style={{ background:'transparent', padding:'80px 0', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,215,0,0.06)', filter:'blur(80px)' }} />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
@@ -438,9 +438,9 @@ export default function HomePage() {
                 { icon:'📞', title:'WhatsApp Ordering', desc:'Simple ordering directly on WhatsApp' },
               ].map((f) => (
                 <div key={f.title} style={{
-                  background: 'rgba(255,255,255,0.08)',
+                  background: 'rgba(255,255,255,0.12)',
                   backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255,215,0,0.15)',
+                  border: '1px solid rgba(255,215,0,0.20)',
                   borderRadius: '16px',
                   padding: '20px',
                 }}>
@@ -455,7 +455,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
-      <section style={{ background:'rgba(255,107,0,0.88)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
+      <section style={{ background:'transparent', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', top:0, left:0, right:0, bottom:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize:'40px 40px', pointerEvents:'none' }} />
         <div className="relative z-10">
           <h2 className="display-font" style={{ fontSize:'clamp(40px, 6vw, 72px)', color:'#fff', marginBottom:'16px', lineHeight:1 }}>
@@ -493,7 +493,7 @@ export default function HomePage() {
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────── */}
-      <footer style={{ background:'rgba(8,15,26,0.9)', backdropFilter:'blur(6px)', WebkitBackdropFilter:'blur(6px)', padding:'32px 24px', textAlign:'center' }}>
+      <footer style={{ background:'transparent', padding:'32px 24px', textAlign:'center' }}>
         <p style={{ color:'#4a6275', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'14px' }}>
           © 2025 {BUSINESS_NAME} · Indore, Madhya Pradesh · All rights reserved
         </p>
