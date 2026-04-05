@@ -6,6 +6,7 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import Header from "@/components/layout/Header";
 import BottomNav from "@/components/layout/BottomNav";
 import ChatWidget from "@/components/ChatWidget";
+import BackgroundEffect from "@/components/BackgroundEffect";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -24,8 +25,9 @@ export default function RootLayout({
       <body className={`${geist.className} bg-gray-50 min-h-screen`}>
         <LanguageProvider>
           <CartProvider>
+            <BackgroundEffect />
             <Header />
-            <main className="min-h-[calc(100vh-4rem)]">{children}</main>
+            <main className="min-h-[calc(100vh-4rem)]" style={{ position: 'relative', zIndex: 1 }}>{children}</main>
             <BottomNav />
             <ChatWidget />
           </CartProvider>

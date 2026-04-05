@@ -6,6 +6,7 @@ import { Product } from '@/types/product'
 import { useLanguage } from '@/context/LanguageContext'
 import AddToCartButton from './AddToCartButton'
 import { CATEGORY_BG, LOGOS, MARKETPLACE_LINKS } from './marketplaceConfig'
+import CategoryIcon from './CategoryIcon'
 
 interface ProductModalProps {
   product: Product
@@ -115,16 +116,19 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
 
           {/* Large image */}
           <div style={{ position: 'relative', width: '100%', height: '320px' }}>
-            <Image
-              src={product.imageUrl || '/placeholder-product.png'}
-              alt={product.name}
-              fill
-              style={{ objectFit: 'contain', padding: '8px', transition: 'transform 0.5s ease' }}
-              sizes="400px"
-              onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.png' }}
-              onMouseEnter={e => { (e.target as HTMLImageElement).style.transform = 'scale(1.06)' }}
-              onMouseLeave={e => { (e.target as HTMLImageElement).style.transform = 'scale(1)' }}
-            />
+            {product.imageUrl ? (
+              <Image
+                src={product.imageUrl}
+                alt={product.name}
+                fill
+                style={{ objectFit: 'contain', padding: '8px', transition: 'transform 0.5s ease' }}
+                sizes="400px"
+                onMouseEnter={e => { (e.target as HTMLImageElement).style.transform = 'scale(1.06)' }}
+                onMouseLeave={e => { (e.target as HTMLImageElement).style.transform = 'scale(1)' }}
+              />
+            ) : (
+              <CategoryIcon category={product.category} size="modal" />
+            )}
           </div>
 
           {/* Unit info pill */}

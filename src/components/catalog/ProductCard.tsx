@@ -5,6 +5,7 @@ import { Product } from '@/types/product'
 import { useLanguage } from '@/context/LanguageContext'
 import AddToCartButton from './AddToCartButton'
 import { CATEGORY_BG, LOGOS, MARKETPLACE_LINKS } from './marketplaceConfig'
+import CategoryIcon from './CategoryIcon'
 
 interface ProductCardProps {
   product: Product
@@ -59,16 +60,19 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
           onClick={onOpen}
           style={{ position: 'relative', background: imgBg, height: '230px', overflow: 'hidden', flexShrink: 0 }}
         >
-          <Image
-            src={product.imageUrl || '/placeholder-product.png'}
-            alt={product.name}
-            fill
-            style={{ objectFit: 'contain', padding: '18px', transition: 'transform 0.4s ease' }}
-            sizes="(max-width: 768px) 50vw, 25vw"
-            onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.png' }}
-            onMouseEnter={e => { (e.target as HTMLImageElement).style.transform = 'scale(1.1)' }}
-            onMouseLeave={e => { (e.target as HTMLImageElement).style.transform = 'scale(1)' }}
-          />
+          {product.imageUrl ? (
+            <Image
+              src={product.imageUrl}
+              alt={product.name}
+              fill
+              style={{ objectFit: 'contain', padding: '18px', transition: 'transform 0.4s ease' }}
+              sizes="(max-width: 768px) 50vw, 25vw"
+              onMouseEnter={e => { (e.target as HTMLImageElement).style.transform = 'scale(1.1)' }}
+              onMouseLeave={e => { (e.target as HTMLImageElement).style.transform = 'scale(1)' }}
+            />
+          ) : (
+            <CategoryIcon category={product.category} size="card" />
+          )}
           {!product.inStock && (
             <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.88)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ background: '#ef4444', color: '#fff', fontSize: '11px', fontWeight: 800, padding: '5px 14px', borderRadius: '20px', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
