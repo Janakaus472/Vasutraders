@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" style={{ colorScheme: 'light' }}>
-      <body className={`${geist.className} bg-gray-50 min-h-screen`}>
+      <body className={`${geist.className} min-h-screen`} style={{ background: 'transparent' }}>
         <LanguageProvider>
           <CartProvider>
             <BackgroundEffect />

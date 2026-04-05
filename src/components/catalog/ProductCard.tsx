@@ -97,7 +97,9 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
         style={{
-          background: '#fff',
+          background: 'rgba(255,252,248,0.78)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
           borderRadius: '22px',
           overflow: 'hidden',
           display: 'flex',
@@ -109,6 +111,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
           cursor: 'pointer',
           transformStyle: 'preserve-3d',
           willChange: 'transform',
+          border: '1px solid rgba(255,200,150,0.25)',
         }}
       >
         {/* ── Holographic overlay (sits above image, below content) ── */}

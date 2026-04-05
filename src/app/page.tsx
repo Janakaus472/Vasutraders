@@ -223,7 +223,7 @@ export default function HomePage() {
       </section>
 
       {/* ── MARQUEE ──────────────────────────────────────────────────── */}
-      <div style={{ background:'#FF6B00', padding:'14px 0', overflow:'hidden' }}>
+      <div style={{ background:'rgba(255,107,0,0.82)', padding:'14px 0', overflow:'hidden', backdropFilter:'blur(8px)' }}>
         <div className="marquee-track" style={{ display:'flex', gap:'0', whiteSpace:'nowrap', width:'max-content' }}>
           {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
             <span key={i} style={{
@@ -242,7 +242,7 @@ export default function HomePage() {
       </div>
 
       {/* ── STATS ────────────────────────────────────────────────────── */}
-      <section style={{ background:'rgba(255,255,255,0.92)', borderBottom:'1px solid #f0e8df', backdropFilter:'blur(8px)' }}>
+      <section style={{ background:'rgba(255,248,240,0.55)', borderBottom:'1px solid rgba(255,180,100,0.2)', backdropFilter:'blur(14px)' }}>
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {STATS.map((s) => (
@@ -366,8 +366,9 @@ export default function HomePage() {
                 { icon:'📞', title:'WhatsApp Ordering', desc:'Simple ordering directly on WhatsApp' },
               ].map((f) => (
                 <div key={f.title} style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'rgba(255,255,255,0.08)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255,200,100,0.2)',
                   borderRadius: '16px',
                   padding: '20px',
                 }}>

@@ -101,7 +101,7 @@ export default function CatalogPage() {
 
         {/* ── Sidebar ── */}
         <aside className={`w-56 flex-shrink-0 hidden md:block ${mounted ? 'animate-slideInLeft' : ''}`}>
-          <div style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 24px rgba(15,39,68,0.1)', position: 'sticky', top: '80px', border: '1px solid rgba(255,255,255,0.6)' }}>
+          <div style={{ background: 'rgba(255,248,240,0.62)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 24px rgba(200,100,0,0.1)', position: 'sticky', top: '80px', border: '1px solid rgba(255,200,150,0.3)' }}>
             <div style={{ background: 'linear-gradient(135deg, #7c2d12, #c2410c)', padding: '18px 18px' }}>
               <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '9px', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase' }}>{t.browseBy}</p>
               <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem', color: '#fff', letterSpacing: '1px', marginTop: '2px' }}>{t.category}</p>
