@@ -140,7 +140,9 @@ export default function HomePage() {
 
       {/* ── HERO ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden" style={{
-        background: 'transparent',
+        background: 'rgba(13,13,13,0.55)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         minHeight: '92vh',
         borderBottom: '3px solid #FFD700',
       }}>

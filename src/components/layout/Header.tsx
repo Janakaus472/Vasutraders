@@ -13,7 +13,7 @@ export default function Header() {
   const isAdmin = pathname.startsWith('/admin')
 
   return (
-    <header className="sticky top-0 z-50 animate-fadeInDown" style={{ background: 'rgba(15,39,68,0.90)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', boxShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
+    <header className="sticky top-0 z-50 animate-fadeInDown" style={{ background: 'transparent', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', boxShadow: '0 2px 20px rgba(0,0,0,0.15)' }}>
       <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '0 20px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
 
         {/* Logo */}
