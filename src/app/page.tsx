@@ -1,108 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { BUSINESS_NAME, WHATSAPP_NUMBER } from '@/lib/constants'
 import { useLanguage } from '@/context/LanguageContext'
-
-const FLOATING_HEARTS = ['❤️', '💕', '💖', '💗', '💝', '💘', '✨', '⭐', '🌟', '💫', '🦋', '🌸', '🧡', '🍊']
-
-function HeartAnimation() {
-  const [hearts, setHearts] = useState<{id: number, x: number, y: number, size: number, emoji: string, speed: number, wobble: number, opacity: number}[]>([])
-  
-  useEffect(() => {
-    let id = 0
-    const initial = Array.from({ length: 12 }, () => ({
-      id: id++,
-      x: Math.random() * 100,
-      y: 50 + Math.random() * 50,
-      size: 16 + Math.random() * 24,
-      emoji: FLOATING_HEARTS[Math.floor(Math.random() * FLOATING_HEARTS.length)],
-      speed: 0.1 + Math.random() * 0.15,
-      wobble: Math.random() * 100,
-      opacity: 0.3 + Math.random() * 0.4,
-    }))
-    setHearts(initial)
-
-    const interval = setInterval(() => {
-      setHearts(prev => {
-        const updated = prev
-          .map(h => ({ ...h, y: h.y - h.speed, wobble: h.wobble + 0.5, x: h.x + Math.sin(h.wobble * 0.02) * 0.3 }))
-          .filter(h => h.y > -10)
-        
-        if (updated.length < 15 && Math.random() > 0.6) {
-          updated.push({
-            id: id++,
-            x: Math.random() * 100,
-            y: 105,
-            size: 16 + Math.random() * 24,
-            emoji: FLOATING_HEARTS[Math.floor(Math.random() * FLOATING_HEARTS.length)],
-            speed: 0.1 + Math.random() * 0.15,
-            wobble: Math.random() * 100,
-            opacity: 0.3 + Math.random() * 0.4,
-          })
-        }
-        return updated
-      })
-    }, 80)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  return (
-    <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-      {hearts.map(h => (
-        <div key={h.id} style={{
-          position: 'absolute',
-          left: `${h.x}%`,
-          top: `${h.y}%`,
-          fontSize: `${h.size}px`,
-          opacity: h.opacity,
-          userSelect: 'none',
-          filter: 'drop-shadow(0 0 10px rgba(255,107,0,0.4))',
-          transform: `rotate(${Math.sin(h.wobble) * 15}deg)`,
-          transition: 'opacity 0.5s ease',
-        }}>
-          {h.emoji}
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function SparkleStars() {
-  const [stars, setStars] = useState<{id: number, x: number, y: number, size: number, delay: number}[]>([])
-  
-  useEffect(() => {
-    let id = 0
-    const initial = Array.from({ length: 20 }, () => ({
-      id: id++,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: 8 + Math.random() * 16,
-      delay: Math.random() * 3,
-    }))
-    setStars(initial)
-  }, [])
-
-  return (
-    <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-      {stars.map(s => (
-        <div key={s.id} style={{
-          position: 'absolute',
-          left: `${s.x}%`,
-          top: `${s.y}%`,
-          fontSize: `${s.size}px`,
-          animation: `sparkle 2s ease-in-out ${s.delay}s infinite`,
-          userSelect: 'none',
-          opacity: 0.6,
-        }}>
-          ✨
-        </div>
-      ))}
-    </div>
-  )
-}
 
 const CATEGORIES = [
   { name: 'Playing Cards', emoji: '🃏', count: 22, color: '#FF6B00', bg: '#FFF3E8' },
@@ -240,56 +140,50 @@ export default function HomePage() {
 
       {/* ── HERO ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden" style={{
-        background: 'linear-gradient(150deg, #1a0800 0%, #7c2d12 30%, #c2410c 65%, #fb923c 100%)',
+        background: 'linear-gradient(150deg, #0D0D0D 0%, #1a1a1a 40%, #2D2D2D 70%, #0D0D0D 100%)',
         minHeight: '92vh',
+        borderBottom: '3px solid #FFD700',
       }}>
-        {/* Warm decorative glows */}
-        <div style={{ position:'absolute', top:'-60px', right:'-60px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,200,50,0.18)', filter:'blur(70px)' }} />
-        <div style={{ position:'absolute', bottom:'-80px', left:'-40px', width:'400px', height:'400px', borderRadius:'50%', background:'rgba(255,107,0,0.22)', filter:'blur(80px)' }} />
-        <div style={{ position:'absolute', top:'35%', left:'25%', width:'300px', height:'300px', borderRadius:'50%', background:'rgba(255,165,0,0.12)', filter:'blur(50px)' }} />
-
-        {/* Floating Hearts Animation */}
-        <HeartAnimation />
-
-        {/* Sparkle Stars */}
-        <SparkleStars />
+        {/* Casino gold decorative glows */}
+        <div style={{ position:'absolute', top:'-60px', right:'-60px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,215,0,0.08)', filter:'blur(70px)' }} />
+        <div style={{ position:'absolute', bottom:'-80px', left:'-40px', width:'400px', height:'400px', borderRadius:'50%', background:'rgba(220,38,38,0.06)', filter:'blur(80px)' }} />
+        <div style={{ position:'absolute', top:'35%', left:'25%', width:'300px', height:'300px', borderRadius:'50%', background:'rgba(255,215,0,0.05)', filter:'blur(50px)' }} />
 
         <div className="max-w-7xl mx-auto px-6 pt-20 pb-12 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
 
             {/* Left — text */}
             <div>
-              <div className="fade-up-1 inline-flex items-center gap-2 bg-orange-500/20 border border-orange-500/30 rounded-full px-4 py-1.5 mb-6">
-                <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
-                <span style={{ color:'#FFA552', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'13px', fontWeight:600 }}>
-                  Wholesale Supplier · Indore, MP ❤️
+              <div className="fade-up-1 inline-flex items-center gap-2 border border-yellow-600/40 rounded-full px-4 py-1.5 mb-6" style={{ background: 'rgba(255,215,0,0.08)' }}>
+                <span className="w-2 h-2 rounded-full" style={{ background: '#FFD700' }} />
+                <span style={{ color:'#FFD700', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'13px', fontWeight:600 }}>
+                  Wholesale Supplier · Indore, MP
                 </span>
               </div>
 
               <h1 className="display-font fade-up-2" style={{
-                fontSize: 'clamp(56px, 7vw, 96px)',
+                fontSize: 'clamp(48px, 6vw, 88px)',
                 lineHeight: 1.0,
                 color: '#FFFFFF',
-                letterSpacing: '0.01em',
-                marginBottom: '8px',
-                textShadow: '0 0 30px rgba(255,107,0,0.3)',
+                letterSpacing: '0.05em',
+                marginBottom: '4px',
+                textShadow: '0 0 30px rgba(255,215,0,0.2)',
               }}>
-                VASU
+                vasu
               </h1>
               <h1 className="display-font fade-up-2" style={{
-                fontSize: 'clamp(56px, 7vw, 96px)',
+                fontSize: 'clamp(48px, 6vw, 88px)',
                 lineHeight: 1.0,
-                color: '#FF6B00',
-                letterSpacing: '0.01em',
+                color: '#FFD700',
+                letterSpacing: '0.05em',
                 marginBottom: '24px',
-                textShadow: '0 0 40px rgba(255,107,0,0.5), 0 0 80px rgba(255,107,0,0.3)',
-                animation: 'glow 2s ease-in-out infinite alternate',
+                textShadow: '0 0 40px rgba(255,215,0,0.5), 0 0 80px rgba(255,215,0,0.3)',
               }}>
-                TRADERS
+                traders
               </h1>
 
               <p className="fade-up-3" style={{
-                color: '#FED7AA',
+                color: '#B8B8B8',
                 fontSize: '18px',
                 lineHeight: 1.7,
                 maxWidth: '480px',
@@ -297,25 +191,25 @@ export default function HomePage() {
                 fontWeight: 500,
                 marginBottom: '40px',
               }}>
-                Your trusted wholesale partner for playing cards, party supplies, sports goods, and more. 💝
-                Serving retailers across India for over 20 years with love! 🧡
+                Your trusted wholesale partner for playing cards, party supplies, sports goods, and more.
+                Serving retailers across India for over 20 years.
               </p>
 
               <div className="fade-up-4 flex flex-wrap gap-4">
                 <Link href="/catalog" style={{
                   display: 'inline-flex', alignItems: 'center', gap: '10px',
-                  background: '#FF6B00', color: '#fff',
+                  background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)', color: '#0D0D0D',
                   padding: '16px 32px', borderRadius: '12px',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 800, fontSize: '16px',
                   textDecoration: 'none',
-                  boxShadow: '0 8px 32px rgba(255,107,0,0.4), 0 0 60px rgba(255,107,0,0.2)',
+                  boxShadow: '0 8px 32px rgba(255,215,0,0.3), 0 0 60px rgba(255,215,0,0.15)',
                   transition: 'all 0.2s',
                   position: 'relative',
                   overflow: 'hidden',
                 }}>
-                  <span style={{ position:'absolute', top:'-50%', left:'-50%', width:'200%', height:'200%', background:'linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%)', animation:'shine 3s ease-in-out infinite' }} />
-                  {t.homeCta} ❤️
+                  <span style={{ position:'absolute', top:'-50%', left:'-50%', width:'200%', height:'200%', background:'linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%)', animation:'shine 3s ease-in-out infinite' }} />
+                  {t.homeCta}
                   <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -323,7 +217,7 @@ export default function HomePage() {
 
                 <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{
                   display: 'inline-flex', alignItems: 'center', gap: '10px',
-                  background: 'rgba(255,255,255,0.1)', color: '#fff',
+                  background: 'rgba(255,255,255,0.08)', color: '#fff',
                   padding: '16px 28px', borderRadius: '12px',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 700, fontSize: '16px',
@@ -397,7 +291,7 @@ export default function HomePage() {
       </div>
 
       {/* ── STATS ────────────────────────────────────────────────────── */}
-      <section style={{ background:'rgba(255,248,240,0.35)', borderBottom:'1px solid rgba(255,180,100,0.2)', backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)' }}>
+      <section style={{ background:'rgba(255,252,248,0.92)', borderBottom:'1px solid rgba(255,180,100,0.2)', backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)' }}>
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {STATS.map((s, i) => (
@@ -416,7 +310,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CATEGORIES ───────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 py-16" style={{ position: 'relative', zIndex: 1 }}>
+      <section className="max-w-7xl mx-auto px-6 py-16" style={{ background:'rgba(255,252,248,0.92)', position: 'relative', zIndex: 1 }}>
         <div className="text-center mb-12">
           <p style={{ color:'#FF6B00', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:700, fontSize:'13px', letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:'12px' }}>
             What We Supply ❤️
@@ -521,8 +415,8 @@ export default function HomePage() {
       </section>
 
       {/* ── WHY US ───────────────────────────────────────────────────── */}
-      <section style={{ background:'linear-gradient(135deg, rgba(26,8,0,0.75), rgba(124,45,18,0.75))', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
-        <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,107,0,0.08)', filter:'blur(80px)' }} />
+      <section style={{ background:'linear-gradient(135deg, rgba(13,13,13,0.92), rgba(60,20,10,0.92))', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,215,0,0.08)', filter:'blur(80px)' }} />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
@@ -546,7 +440,7 @@ export default function HomePage() {
                 <div key={f.title} style={{
                   background: 'rgba(255,255,255,0.08)',
                   backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255,200,100,0.2)',
+                  border: '1px solid rgba(255,215,0,0.15)',
                   borderRadius: '16px',
                   padding: '20px',
                 }}>
@@ -561,7 +455,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
-      <section style={{ background:'rgba(255,107,0,0.85)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
+      <section style={{ background:'rgba(255,107,0,0.92)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', top:0, left:0, right:0, bottom:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize:'40px 40px', pointerEvents:'none' }} />
         <div className="relative z-10">
           <h2 className="display-font" style={{ fontSize:'clamp(40px, 6vw, 72px)', color:'#fff', marginBottom:'16px', lineHeight:1 }}>

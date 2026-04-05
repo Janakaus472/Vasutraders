@@ -2,162 +2,127 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-const WARM_COLORS = ['#FF6B00', '#FF9A3C', '#FFD700', '#FFA500', '#FF8C42']
+const CASINO_COLORS = ['#FFD700', '#0D0D0D', '#DC2626', '#B8860B', '#800000']
+const CASINO_BG = '#0D0D0D'
 
-const POKER_CHIPS = [
-  { emoji: '🎰', price: '₹10', color: '#FF6B35' },
-  { emoji: '🎰', price: '₹50', color: '#F7931E' },
-  { emoji: '🎰', price: '₹100', color: '#FFD23F' },
-  { emoji: '🎰', price: '₹500', color: '#06FFA5' },
-  { emoji: '🎰', price: '₹1000', color: '#FFB800' },
-  { emoji: '🏆', price: '₹2000', color: '#FFD700' },
-  { emoji: '💰', price: '₹5000', color: '#FF6B00' },
-  { emoji: '🃏', price: '₹100', color: '#DC2626' },
+const PRODUCTS = [
+  '🃏', '🎰', '🎈', '🔮', '🏏', '⚽', '🏸', '🏐', '🏀', '🎾',
+  '🏓', '🪥', '📏', '📦', '⚗️', '🧴', '🧹', '🎯', '🏆', '💰'
 ]
 
-const SPORTS_ITEMS = [
-  '🏏', '⚽', '🏸', '🏐', '🏀', '🎾',
-  '🏑', '🏓', '🥊', '🏋️', '🚴', '🏃',
-  '⚾', '🎳', '🥏', '🛹', '⛳', '🏊',
-  '🤸', '🎯', '🏌️', '🚣', '🧘', '🏇'
-]
+type MarqueeItem = {
+  id: number
+  y: number
+  speed: number
+  emoji: string
+  scale: number
+  opacity: number
+}
 
-type FloatingChip = {
+type FloatingItem = {
   id: number
   x: number
   y: number
   size: number
   emoji: string
-  price: string
-  color: string
-  speed: number
-  wobble: number
-  wobbleSpeed: number
-  opacity: number
-  rotation: number
-  rotationSpeed: number
-}
-
-type FloatingSport = {
-  id: number
-  x: number
-  y: number
-  size: number
-  emoji: string
-  speed: number
-  wobble: number
-  wobbleSpeed: number
-  opacity: number
-  rotation: number
-  rotationSpeed: number
-}
-
-type WarmOrb = {
-  x: number
-  y: number
   vx: number
   vy: number
-  size: number
+  rotation: number
+  rotationSpeed: number
+  opacity: number
   color: string
-  alpha: number
 }
 
 export default function BackgroundEffect() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const glowRef = useRef<HTMLDivElement>(null)
-  const [chips, setChips] = useState<FloatingChip[]>([])
-  const [sports, setSports] = useState<FloatingSport[]>([])
-  const chipIdRef = useRef(0)
-  const sportIdRef = useRef(0)
+  const marqueeRef = useRef<HTMLDivElement>(null)
+  const [marqueeItems, setMarqueeItems] = useState<MarqueeItem[]>([])
+  const [floatingItems, setFloatingItems] = useState<FloatingItem[]>([])
+  const marqueeIdRef = useRef(0)
+  const floatingIdRef = useRef(0)
+  const animationRef = useRef<number | undefined>(undefined)
 
-  /* ── Floating Poker Chips (Indian Prices) ── */
+  /* ── Marquee Stripes (60% of animation) ── */
   useEffect(() => {
-    const spawnChip = (): FloatingChip => {
-      const chipData = POKER_CHIPS[Math.floor(Math.random() * POKER_CHIPS.length)]
+    const initialItems: MarqueeItem[] = []
+    for (let i = 0; i < 8; i++) {
+      initialItems.push({
+        id: marqueeIdRef.current++,
+        y: 8 + i * 12,
+        speed: 0.3 + Math.random() * 0.2,
+        emoji: PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)],
+        scale: 0.8 + Math.random() * 0.4,
+        opacity: 0.15 + Math.random() * 0.1,
+      })
+    }
+    setMarqueeItems(initialItems)
+
+    const updateMarquee = () => {
+      setMarqueeItems(prev => prev.map(item => ({
+        ...item,
+        y: item.y + item.speed,
+        emoji: Math.random() > 0.98 ? PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)] : item.emoji,
+      })).map(item => {
+        if (item.y > 108) {
+          return {
+            ...item,
+            y: -2,
+            emoji: PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)],
+          }
+        }
+        return item
+      }))
+    }
+
+    const interval = setInterval(updateMarquee, 50)
+    return () => clearInterval(interval)
+  }, [])
+
+  /* ── Floating Items from LEFT/RIGHT edges (40% of animation) ── */
+  useEffect(() => {
+    const spawnFloating = (fromRight = false): FloatingItem => {
       return {
-        id: chipIdRef.current++,
-        x: Math.random() * 100,
-        y: 100 + Math.random() * 25,
-        size: 35 + Math.random() * 45,
-        emoji: chipData.emoji,
-        price: chipData.price,
-        color: chipData.color,
-        speed: 0.04 + Math.random() * 0.05,
-        wobble: Math.random() * 100,
-        wobbleSpeed: 0.01 + Math.random() * 0.015,
-        opacity: 0.05 + Math.random() * 0.05,
-        rotation: (Math.random() - 0.5) * 15,
-        rotationSpeed: (Math.random() - 0.5) * 0.1,
+        id: floatingIdRef.current++,
+        x: fromRight ? 105 : -5,
+        y: 10 + Math.random() * 80,
+        size: 24 + Math.random() * 36,
+        emoji: PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)],
+        vx: fromRight ? -(0.08 + Math.random() * 0.1) : (0.08 + Math.random() * 0.1),
+        vy: (Math.random() - 0.5) * 0.02,
+        rotation: 0,
+        rotationSpeed: (Math.random() - 0.5) * 0.5,
+        opacity: 0.08 + Math.random() * 0.06,
+        color: CASINO_COLORS[Math.floor(Math.random() * CASINO_COLORS.length)],
       }
     }
 
-    const initial = Array.from({ length: 6 }, spawnChip)
-    setChips(initial)
+    const initial = Array.from({ length: 12 }, () => spawnFloating(Math.random() > 0.5))
+    setFloatingItems(initial)
 
-    const interval = setInterval(() => {
-      setChips(prev => {
+    const updateFloating = () => {
+      setFloatingItems(prev => {
         const updated = prev
-          .map(c => ({
-            ...c,
-            y: c.y - c.speed,
-            wobble: c.wobble + c.wobbleSpeed,
-            rotation: c.rotation + c.rotationSpeed,
+          .map(item => ({
+            ...item,
+            x: item.x + item.vx,
+            y: item.y + item.vy,
+            rotation: item.rotation + item.rotationSpeed,
           }))
-          .filter(c => c.y > -15)
+          .filter(item => item.x < 110 && item.x > -10)
 
-        if (updated.length < 8 && Math.random() > 0.8) {
-          updated.push(spawnChip())
+        while (updated.length < 15) {
+          updated.push(spawnFloating(Math.random() > 0.5))
         }
 
         return updated
       })
-    }, 80)
+    }
 
+    const interval = setInterval(updateFloating, 50)
     return () => clearInterval(interval)
   }, [])
 
-  /* ── Floating Sports Items (Indian Context) ── */
-  useEffect(() => {
-    const spawnSport = (): FloatingSport => ({
-      id: sportIdRef.current++,
-      x: Math.random() * 100,
-      y: 100 + Math.random() * 30,
-      size: 28 + Math.random() * 35,
-      emoji: SPORTS_ITEMS[Math.floor(Math.random() * SPORTS_ITEMS.length)],
-      speed: 0.03 + Math.random() * 0.04,
-      wobble: Math.random() * 100,
-      wobbleSpeed: 0.008 + Math.random() * 0.012,
-      opacity: 0.04 + Math.random() * 0.04,
-      rotation: (Math.random() - 0.5) * 15,
-      rotationSpeed: (Math.random() - 0.5) * 0.08,
-    })
-
-    const initial = Array.from({ length: 10 }, spawnSport)
-    setSports(initial)
-
-    const interval = setInterval(() => {
-      setSports(prev => {
-        const updated = prev
-          .map(s => ({
-            ...s,
-            y: s.y - s.speed,
-            wobble: s.wobble + s.wobbleSpeed,
-            rotation: s.rotation + s.rotationSpeed,
-          }))
-          .filter(s => s.y > -15)
-
-        if (updated.length < 12 && Math.random() > 0.85) {
-          updated.push(spawnSport())
-        }
-
-        return updated
-      })
-    }, 90)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  /* ── Warm Glow Orbs Canvas ── */
+  /* ── Subtle Casino Glow Canvas ── */
   useEffect(() => {
     const canvas = canvasRef.current!
     const ctx = canvas.getContext('2d')!
@@ -165,36 +130,21 @@ export default function BackgroundEffect() {
     let W = canvas.width = window.innerWidth
     let H = canvas.height = window.innerHeight
 
-    const orbs: WarmOrb[] = Array.from({ length: 8 }, () => ({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.25,
-      vy: (Math.random() - 0.5) * 0.25,
-      size: 80 + Math.random() * 120,
-      color: WARM_COLORS[Math.floor(Math.random() * WARM_COLORS.length)],
-      alpha: 0.02 + Math.random() * 0.02,
-    }))
+    const orbs = [
+      { x: W * 0.2, y: H * 0.3, size: 200, color: '#FFD700', alpha: 0.015 },
+      { x: W * 0.8, y: H * 0.7, size: 250, color: '#DC2626', alpha: 0.012 },
+      { x: W * 0.5, y: H * 0.5, size: 300, color: '#0D0D0D', alpha: 0.02 },
+    ]
 
     let raf: number
 
-    function frame() {
+    const frame = () => {
       ctx.clearRect(0, 0, W, H)
 
       for (const orb of orbs) {
-        orb.x += orb.vx
-        orb.y += orb.vy
-
-        if (orb.x < -orb.size) orb.x = W + orb.size
-        if (orb.x > W + orb.size) orb.x = -orb.size
-        if (orb.y < -orb.size) orb.y = H + orb.size
-        if (orb.y > H + orb.size) orb.y = -orb.size
-
-        const gradient = ctx.createRadialGradient(
-          orb.x, orb.y, 0,
-          orb.x, orb.y, orb.size
-        )
-        gradient.addColorStop(0, orb.color + '99')
-        gradient.addColorStop(0.5, orb.color + '22')
+        const gradient = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.size)
+        gradient.addColorStop(0, orb.color + '33')
+        gradient.addColorStop(0.5, orb.color + '11')
         gradient.addColorStop(1, 'transparent')
 
         ctx.beginPath()
@@ -221,42 +171,48 @@ export default function BackgroundEffect() {
     }
   }, [])
 
-  /* ── Cursor Glow ── */
-  useEffect(() => {
-    const glow = glowRef.current!
-    let mouseX = 0, mouseY = 0
-    let raf: number
-
-    const animate = () => {
-      glow.style.left = `${mouseX}px`
-      glow.style.top = `${mouseY}px`
-      raf = requestAnimationFrame(animate)
-    }
-
-    const move = (e: MouseEvent) => {
-      mouseX = e.clientX
-      mouseY = e.clientY
-    }
-
-    window.addEventListener('mousemove', move)
-    animate()
-
-    return () => {
-      window.removeEventListener('mousemove', move)
-      cancelAnimationFrame(raf)
-    }
-  }, [])
-
   return (
     <>
-      {/* Warm Glow Orbs */}
+      {/* Subtle Casino Glow Background */}
       <canvas
         ref={canvasRef}
         aria-hidden="true"
         style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}
       />
 
-      {/* Floating Poker Chips (Indian Rupee Prices) */}
+      {/* Marquee Stripes (Vertical Scroll) */}
+      <div
+        ref={marqueeRef}
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: 'none',
+          overflow: 'hidden',
+          background: 'transparent',
+        }}
+      >
+        {marqueeItems.map(item => (
+          <div
+            key={item.id}
+            style={{
+              position: 'absolute',
+              left: `${item.id * 14}%`,
+              top: `${item.y}%`,
+              fontSize: `${item.scale * 28}px`,
+              opacity: item.opacity,
+              userSelect: 'none',
+              lineHeight: 1,
+              filter: 'drop-shadow(0 0 4px rgba(255,215,0,0.3))',
+            }}
+          >
+            {item.emoji}
+          </div>
+        ))}
+      </div>
+
+      {/* Floating Items from LEFT/RIGHT Edges */}
       <div
         aria-hidden="true"
         style={{
@@ -265,81 +221,28 @@ export default function BackgroundEffect() {
           zIndex: 0,
           pointerEvents: 'none',
           overflow: 'hidden',
+          background: 'transparent',
         }}
       >
-        {chips.map(c => {
-          const wobbleX = Math.sin(c.wobble) * 15
-          return (
-            <div
-              key={c.id}
-              style={{
-                position: 'absolute',
-                left: `calc(${c.x}% + ${wobbleX}px)`,
-                top: `${c.y}%`,
-                fontSize: `${c.size}px`,
-                opacity: c.opacity,
-                transform: `rotate(${c.rotation}deg)`,
-                transition: 'opacity 0.5s ease',
-                userSelect: 'none',
-                lineHeight: 1,
-              }}
-            >
-              {c.emoji}
-            </div>
-          )
-        })}
+        {floatingItems.map(item => (
+          <div
+            key={item.id}
+            style={{
+              position: 'absolute',
+              left: `${item.x}%`,
+              top: `${item.y}%`,
+              fontSize: `${item.size}px`,
+              opacity: item.opacity,
+              transform: `rotate(${item.rotation}deg)`,
+              userSelect: 'none',
+              lineHeight: 1,
+              transition: 'opacity 0.3s ease',
+            }}
+          >
+            {item.emoji}
+          </div>
+        ))}
       </div>
-
-      {/* Floating Sports Items (All Indian Context) */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 0,
-          pointerEvents: 'none',
-          overflow: 'hidden',
-        }}
-      >
-        {sports.map(s => {
-          const wobbleX = Math.sin(s.wobble) * 12
-          return (
-            <div
-              key={s.id}
-              style={{
-                position: 'absolute',
-                left: `calc(${s.x}% + ${wobbleX}px)`,
-                top: `${s.y}%`,
-                fontSize: `${s.size}px`,
-                opacity: s.opacity,
-                transform: `rotate(${s.rotation}deg)`,
-                transition: 'opacity 0.5s ease',
-                userSelect: 'none',
-                lineHeight: 1,
-              }}
-            >
-              {s.emoji}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Cursor Glow */}
-      <div
-        ref={glowRef}
-        aria-hidden="true"
-        style={{
-          position: 'fixed',
-          width: '300px',
-          height: '300px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255,154,60,0.1) 0%, rgba(255,107,0,0.04) 40%, transparent 70%)',
-          transform: 'translate(-50%,-50%)',
-          pointerEvents: 'none',
-          zIndex: 0,
-          mixBlendMode: 'screen',
-        }}
-      />
     </>
   )
 }
