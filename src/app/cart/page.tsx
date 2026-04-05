@@ -4,11 +4,49 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useCart } from '@/context/CartContext'
 import { useProducts } from '@/hooks/useProducts'
+import { useLanguage } from '@/context/LanguageContext'
 import WhatsAppOrderButton from '@/components/cart/WhatsAppOrderButton'
+
+const CART_T = {
+  en: {
+    empty: 'Your order is empty',
+    emptyDesc: 'Add products from the catalog to place an order',
+    browse: 'Browse Products',
+    myOrder: 'My Order',
+    clearAll: 'Clear all',
+    product: 'Product',
+    price: 'Price',
+    qty: 'Qty',
+    subtotal: 'Subtotal',
+    onRequest: 'On Request',
+    items: 'Items',
+    estTotal: 'Estimated Total',
+    note: 'Items will be confirmed with Vasu Traders after sending your order on WhatsApp.',
+    per: 'per',
+  },
+  hi: {
+    empty: 'आपका ऑर्डर खाली है',
+    emptyDesc: 'ऑर्डर देने के लिए कैटलॉग से सामान जोड़ें',
+    browse: 'उत्पाद देखें',
+    myOrder: 'मेरा ऑर्डर',
+    clearAll: 'सब हटाएं',
+    product: 'उत्पाद',
+    price: 'कीमत',
+    qty: 'मात्रा',
+    subtotal: 'कुल',
+    onRequest: 'पूछताछ पर',
+    items: 'सामान',
+    estTotal: 'अनुमानित कुल',
+    note: 'व्हाट्सएप पर ऑर्डर भेजने के बाद वासु ट्रेडर्स पुष्टि करेंगे।',
+    per: 'प्रति',
+  },
+}
 
 export default function CartPage() {
   const { items, addItem, removeItem, clearCart } = useCart()
   const { products } = useProducts()
+  const { lang } = useLanguage()
+  const tx = CART_T[lang]
 
   const cartProducts = items
     .map((item) => {
@@ -19,97 +57,112 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="max-w-2xl mx-auto px-6 py-24 text-center">
-        <div className="text-7xl mb-6">🛒</div>
-        <h2 className="text-2xl font-bold text-gray-700 mb-3">Your order is empty</h2>
-        <p className="text-gray-400 mb-8">Add products from the catalog to place an order</p>
-        <Link
-          href="/catalog"
-          className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-10 py-4 rounded-xl inline-block text-lg transition-colors"
-        >
-          Browse Products
+      <div style={{
+        maxWidth: '600px', margin: '0 auto', padding: '80px 24px', textAlign: 'center',
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+      }}>
+        <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🛒</div>
+        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.5rem', color: '#0f2744', letterSpacing: '1px', marginBottom: '12px' }}>
+          {tx.empty}
+        </h2>
+        <p style={{ color: '#6b7280', fontSize: '16px', marginBottom: '32px' }}>{tx.emptyDesc}</p>
+        <Link href="/catalog" style={{
+          background: '#FF6B00', color: '#fff',
+          fontWeight: 700, padding: '14px 36px',
+          borderRadius: '14px', fontSize: '16px',
+          textDecoration: 'none', display: 'inline-block',
+          boxShadow: '0 4px 16px rgba(255,107,0,0.35)',
+        }}>
+          {tx.browse}
         </Link>
       </div>
     )
   }
 
-  const total = cartProducts.reduce(
-    (sum, item) => sum + item.product.pricePerUnit * item.quantity,
-    0
-  )
+  const total = cartProducts.reduce((sum, item) => sum + item.product.pricePerUnit * item.quantity, 0)
   const hasPrice = cartProducts.some((i) => i.product.pricePerUnit > 0)
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">My Order</h1>
-        <button onClick={clearCart} className="text-red-400 hover:text-red-600 text-sm font-medium transition-colors">
-          Clear all
+    <div style={{ maxWidth: '960px', margin: '0 auto', padding: '32px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+        <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.8rem', color: '#0f2744', letterSpacing: '1px', margin: 0 }}>
+          🛒 {tx.myOrder}
+        </h1>
+        <button
+          onClick={clearCart}
+          style={{
+            background: 'none', border: '1.5px solid #fca5a5', color: '#ef4444',
+            padding: '7px 16px', borderRadius: '10px', cursor: 'pointer',
+            fontSize: '13px', fontWeight: 600, transition: 'all 0.15s',
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#ef4444'; (e.currentTarget as HTMLButtonElement).style.color = '#fff' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; (e.currentTarget as HTMLButtonElement).style.color = '#ef4444' }}
+        >
+          {tx.clearAll}
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
-        {/* Table header */}
-        <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-          <div className="col-span-6">Product</div>
-          <div className="col-span-2 text-center">Price</div>
-          <div className="col-span-2 text-center">Qty</div>
-          <div className="col-span-2 text-right">Subtotal</div>
+      {/* Table */}
+      <div style={{ background: '#fff', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(15,39,68,0.08)', marginBottom: '24px' }}>
+        {/* Header row */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: '1fr auto auto auto',
+          gap: '16px', padding: '14px 24px',
+          background: '#0f2744', color: '#7bafd4',
+          fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase',
+        }}>
+          <div>{tx.product}</div>
+          <div style={{ textAlign: 'center', minWidth: '80px' }}>{tx.price}</div>
+          <div style={{ textAlign: 'center', minWidth: '100px' }}>{tx.qty}</div>
+          <div style={{ textAlign: 'right', minWidth: '80px' }}>{tx.subtotal}</div>
         </div>
 
-        {/* Rows */}
-        {cartProducts.map(({ productId, quantity, product }) => (
-          <div key={productId} className="grid grid-cols-12 gap-4 items-center px-6 py-4 border-b border-gray-100 last:border-0">
+        {cartProducts.map(({ productId, quantity, product }, idx) => (
+          <div
+            key={productId}
+            style={{
+              display: 'grid', gridTemplateColumns: '1fr auto auto auto',
+              gap: '16px', alignItems: 'center',
+              padding: '16px 24px',
+              borderBottom: idx < cartProducts.length - 1 ? '1px solid #f3f4f6' : 'none',
+            }}
+          >
             {/* Product */}
-            <div className="col-span-6 flex items-center gap-4">
-              <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-50 flex-shrink-0 border border-gray-100">
-                <Image
-                  src={product.imageUrl || '/placeholder-product.png'}
-                  alt={product.name}
-                  fill
-                  className="object-contain p-1"
-                />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ position: 'relative', width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', background: '#f8f7f4', flexShrink: 0, border: '1px solid #f0f0f0' }}>
+                <Image src={product.imageUrl || '/placeholder-product.png'} alt={product.name} fill style={{ objectFit: 'contain', padding: '6px' }} />
               </div>
               <div>
-                <p className="font-semibold text-gray-900 text-sm">{product.name}</p>
-                <p className="text-gray-400 text-xs mt-0.5">per {product.unit}</p>
+                <p style={{ fontWeight: 700, color: '#111827', fontSize: '15px', margin: '0 0 3px' }}>{product.name}</p>
+                <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>{tx.per} {product.unit}</p>
               </div>
             </div>
 
             {/* Price */}
-            <div className="col-span-2 text-center">
+            <div style={{ textAlign: 'center', minWidth: '80px' }}>
               {product.pricePerUnit > 0 ? (
-                <span className="font-semibold text-gray-700">₹{product.pricePerUnit.toFixed(0)}</span>
+                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#374151' }}>₹{product.pricePerUnit.toFixed(0)}</span>
               ) : (
-                <span className="text-orange-500 text-sm font-medium">On Request</span>
+                <span style={{ color: '#FF6B00', fontSize: '12px', fontWeight: 700 }}>{tx.onRequest}</span>
               )}
             </div>
 
-            {/* Qty stepper */}
-            <div className="col-span-2 flex items-center justify-center">
-              <div className="flex items-center gap-1 border border-gray-200 rounded-lg overflow-hidden">
-                <button
-                  onClick={() => removeItem(productId)}
-                  className="px-3 py-1.5 text-gray-600 hover:bg-gray-100 font-bold text-lg transition-colors"
-                >
-                  −
-                </button>
-                <span className="px-3 font-bold text-gray-900 min-w-[2rem] text-center">{quantity}</span>
-                <button
-                  onClick={() => addItem(productId)}
-                  className="px-3 py-1.5 text-gray-600 hover:bg-gray-100 font-bold text-lg transition-colors"
-                >
-                  +
-                </button>
+            {/* Stepper */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '100px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', background: '#FF6B00', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(255,107,0,0.3)' }}>
+                <button onClick={() => removeItem(productId)} style={{ width: '32px', height: '34px', color: '#fff', fontSize: '18px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>−</button>
+                <span style={{ color: '#fff', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', minWidth: '24px', textAlign: 'center' }}>{quantity}</span>
+                <button onClick={() => addItem(productId)} style={{ width: '32px', height: '34px', color: '#fff', fontSize: '18px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>+</button>
               </div>
             </div>
 
             {/* Subtotal */}
-            <div className="col-span-2 text-right">
+            <div style={{ textAlign: 'right', minWidth: '80px' }}>
               {product.pricePerUnit > 0 ? (
-                <span className="font-bold text-green-700">₹{(product.pricePerUnit * quantity).toFixed(0)}</span>
+                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.4rem', color: '#15803d' }}>₹{(product.pricePerUnit * quantity).toFixed(0)}</span>
               ) : (
-                <span className="text-gray-400 text-sm">—</span>
+                <span style={{ color: '#9ca3af' }}>—</span>
               )}
             </div>
           </div>
@@ -117,22 +170,18 @@ export default function CartPage() {
       </div>
 
       {/* Summary + order */}
-      <div className="flex items-start justify-between gap-8">
-        <div className="flex-1">
-          <p className="text-gray-500 text-sm">
-            Items will be confirmed with Vasu Traders after sending your order on WhatsApp.
-          </p>
-        </div>
-        <div className="w-72 flex-shrink-0">
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap' }}>
+        <p style={{ color: '#6b7280', fontSize: '14px', flex: 1, lineHeight: 1.6 }}>{tx.note}</p>
+        <div style={{ minWidth: '280px' }}>
           {hasPrice && (
-            <div className="bg-gray-50 rounded-xl p-4 mb-4 border border-gray-200">
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Items ({cartProducts.length})</span>
+            <div style={{ background: '#fff', borderRadius: '16px', padding: '18px 20px', marginBottom: '14px', boxShadow: '0 2px 12px rgba(15,39,68,0.07)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#6b7280', fontSize: '14px', marginBottom: '8px' }}>
+                <span>{tx.items} ({cartProducts.length})</span>
                 <span>₹{total.toFixed(0)}</span>
               </div>
-              <div className="flex justify-between font-bold text-gray-900 text-lg border-t border-gray-200 pt-2 mt-2">
-                <span>Estimated Total</span>
-                <span className="text-green-700">₹{total.toFixed(0)}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 800, fontSize: '18px', borderTop: '1px solid #f0f0f0', paddingTop: '10px' }}>
+                <span style={{ color: '#0f2744' }}>{tx.estTotal}</span>
+                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.8rem', color: '#15803d' }}>₹{total.toFixed(0)}</span>
               </div>
             </div>
           )}

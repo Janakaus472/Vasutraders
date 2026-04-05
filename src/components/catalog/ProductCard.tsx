@@ -115,15 +115,16 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
         <div style={{ padding: '16px 18px 14px', display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
 
           {/* Title — click opens modal */}
-          <div onClick={onOpen} style={{ flex: 1 }}>
+          {/* Title + description — no flex:1 so they stay tight together */}
+          <div onClick={onOpen}>
             <p style={{
               fontWeight: 800, color: '#111827',
               fontSize: '17px',
               lineHeight: 1.4,
               display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-              minHeight: '48px',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               transition: 'color 0.15s',
+              margin: 0,
             }}
             onMouseEnter={e => { (e.currentTarget as HTMLParagraphElement).style.color = '#FF6B00' }}
             onMouseLeave={e => { (e.currentTarget as HTMLParagraphElement).style.color = '#111827' }}
@@ -133,16 +134,16 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
             {product.description && (
               <p style={{
                 color: '#6b7280', fontSize: '13px', marginTop: '5px',
-                display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                lineHeight: 1.5,
+                display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                lineHeight: 1.5, margin: '5px 0 0',
               }}>
                 {product.description}
               </p>
             )}
           </div>
 
-          {/* Price + Add */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+          {/* Price + Add — pushed to bottom with marginTop auto */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginTop: 'auto' }}>
             <div>
               {product.pricePerUnit > 0 ? (
                 <>
