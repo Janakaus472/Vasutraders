@@ -66,18 +66,26 @@ export default function CursorGlow() {
           position: 'fixed',
           top: 0,
           left: 0,
-          width: '36px',
-          height: '36px',
-          borderRadius: '50%',
-          border: '2.5px solid transparent',
-          background: 'linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #FF9933 0%, #fff 33%, #138808 66%, #FF9933 100%) border-box',
-          boxShadow: '0 0 12px rgba(255,153,51,0.5), 0 0 24px rgba(19,136,8,0.3)',
           pointerEvents: 'none',
           zIndex: 99998,
-          marginLeft: '-18px',
-          marginTop: '-18px',
         }}
-      />
+      >
+        <svg width="28" height="34" viewBox="0 0 28 34" fill="none" style={{ display: 'block', filter: 'drop-shadow(0 0 6px rgba(255,153,51,0.6)) drop-shadow(0 0 12px rgba(19,136,8,0.4))' }}>
+          <defs>
+            <linearGradient id="flag" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FF9933" />
+              <stop offset="50%" stopColor="#fff" />
+              <stop offset="100%" stopColor="#138808" />
+            </linearGradient>
+          </defs>
+          <path d="M6 1L6 25L11 19L15 29L18.5 27.5L14.5 18L21 18L6 1Z"
+            fill="none"
+            stroke="url(#flag)"
+            strokeWidth="2.5"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
     </>
   )
 }
