@@ -49,18 +49,16 @@ export default function CursorGlow() {
           position: 'fixed',
           top: 0,
           left: 0,
-          width: '10px',
-          height: '10px',
-          borderRadius: '50%',
-          background: '#FF9933',
-          boxShadow: '0 0 8px #FF9933, 0 0 16px #FF9933',
           pointerEvents: 'none',
           zIndex: 99999,
-          marginLeft: '-5px',
-          marginTop: '-5px',
-          transition: 'background 0.2s, box-shadow 0.2s',
+          marginLeft: '2px',
+          marginTop: '2px',
         }}
-      />
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ display: 'block' }}>
+          <path d="M4 1L4 15L7.5 11.5L10.5 17L12.5 16L9.5 10L14 10L4 1Z" fill="#111" stroke="#fff" strokeWidth="1.5" strokeLinejoin="round"/>
+        </svg>
+      </div>
       <div
         ref={ringRef}
         aria-hidden="true"
