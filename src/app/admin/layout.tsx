@@ -21,13 +21,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div>
-      <div className="bg-gray-900 text-white px-4 py-3 flex items-center justify-between">
-        <span className="font-bold text-sm">⚙️ Admin Panel</span>
-        <Link href="/catalog" className="text-gray-400 text-xs hover:text-white">
+      <div className="bg-[#1a3c5e] text-white px-6 py-3 flex items-center justify-between">
+        <span className="font-bold text-sm">⚙️ Admin Panel — Vasu Traders</span>
+        <Link href="/catalog" className="text-blue-200 text-sm hover:text-white">
           ← Back to Store
         </Link>
       </div>
-      <div className="max-w-2xl mx-auto px-4 py-6">{children}</div>
+      <div className="max-w-3xl mx-auto px-6 py-6">{children}</div>
     </div>
   )
 }
