@@ -13,7 +13,7 @@ export default function Header() {
   const isAdmin = pathname.startsWith('/admin')
 
   return (
-    <header className="sticky top-0 z-50 animate-fadeInDown" style={{ background: 'transparent', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', boxShadow: '0 2px 20px rgba(0,0,0,0.15)' }}>
+    <header className="sticky top-0 z-50 animate-fadeInDown" style={{ background: 'rgba(139,26,26,0.92)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', boxShadow: '0 2px 20px rgba(139,26,26,0.3)' }}>
       <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '0 20px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
 
         {/* Logo */}
@@ -21,9 +21,9 @@ export default function Header() {
           <div style={{ background: '#FF6B00', borderRadius: '10px', width: '38px', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.4rem', color: '#fff', boxShadow: '0 3px 10px rgba(255,107,0,0.4)' }}>
             V
           </div>
-          <div style={{ lineHeight: 1.2 }}>
-            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.25rem', color: '#fff', letterSpacing: '1px' }}>{BUSINESS_NAME}</div>
-            <div style={{ color: '#7bafd4', fontSize: '10px', fontWeight: 600 }}>Wholesale Supplier · Indore</div>
+            <div style={{ lineHeight: 1.2 }}>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.25rem', color: '#FFE4CC', letterSpacing: '1px' }}>{BUSINESS_NAME}</div>
+            <div style={{ color: '#FFD4B0', fontSize: '10px', fontWeight: 600 }}>Wholesale Supplier · Indore</div>
           </div>
         </Link>
 

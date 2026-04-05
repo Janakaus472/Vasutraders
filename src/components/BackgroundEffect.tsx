@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-const CASINO_COLORS = ['#FFD700', '#0D0D0D', '#DC2626', '#B8860B', '#800000']
-const CASINO_BG = '#0D0D0D'
+const WARM_COLORS = ['#FF6B00', '#FF9933', '#FF4500', '#F4B400', '#FF8C00', '#E8531B', '#FFB347', '#FF5722']
 
 const PRODUCTS = [
   '🃏', '🎰', '🎈', '🔮', '🏏', '⚽', '🏸', '🏐', '🏀', '🎾',
@@ -30,7 +29,6 @@ type FloatingItem = {
   rotation: number
   rotationSpeed: number
   opacity: number
-  color: string
 }
 
 export default function BackgroundEffect() {
@@ -40,9 +38,59 @@ export default function BackgroundEffect() {
   const [floatingItems, setFloatingItems] = useState<FloatingItem[]>([])
   const marqueeIdRef = useRef(0)
   const floatingIdRef = useRef(0)
-  const animationRef = useRef<number | undefined>(undefined)
 
-  /* ── Marquee Stripes (60% of animation) ── */
+  /* ── Warm Background Gradient ── */
+  useEffect(() => {
+    const canvas = canvasRef.current!
+    const ctx = canvas.getContext('2d')!
+
+    let W = canvas.width = window.innerWidth
+    let H = canvas.height = window.innerHeight
+
+    const orbs = [
+      { x: W * 0.1, y: H * 0.2, size: 250, color: '#FF9933', alpha: 0.06 },
+      { x: W * 0.9, y: H * 0.3, size: 200, color: '#FF5722', alpha: 0.05 },
+      { x: W * 0.5, y: H * 0.8, size: 300, color: '#F4B400', alpha: 0.04 },
+      { x: W * 0.3, y: H * 0.6, size: 220, color: '#FF6B00', alpha: 0.05 },
+      { x: W * 0.7, y: H * 0.9, size: 180, color: '#E8531B', alpha: 0.04 },
+    ]
+
+    let raf: number
+
+    const frame = () => {
+      ctx.clearRect(0, 0, W, H)
+
+      for (const orb of orbs) {
+        const gradient = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.size)
+        gradient.addColorStop(0, orb.color + '66')
+        gradient.addColorStop(0.5, orb.color + '22')
+        gradient.addColorStop(1, 'transparent')
+
+        ctx.beginPath()
+        ctx.arc(orb.x, orb.y, orb.size, 0, Math.PI * 2)
+        ctx.fillStyle = gradient
+        ctx.globalAlpha = orb.alpha
+        ctx.fill()
+        ctx.globalAlpha = 1
+      }
+
+      raf = requestAnimationFrame(frame)
+    }
+
+    frame()
+
+    const onResize = () => {
+      W = canvas.width = window.innerWidth
+      H = canvas.height = window.innerHeight
+    }
+    window.addEventListener('resize', onResize)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', onResize)
+    }
+  }, [])
+
+  /* ── Marquee Stripes (Vertical Scroll) ── */
   useEffect(() => {
     const initialItems: MarqueeItem[] = []
     for (let i = 0; i < 8; i++) {
@@ -52,7 +100,7 @@ export default function BackgroundEffect() {
         speed: 0.3 + Math.random() * 0.2,
         emoji: PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)],
         scale: 0.8 + Math.random() * 0.4,
-        opacity: 0.15 + Math.random() * 0.1,
+        opacity: 0.18 + Math.random() * 0.1,
       })
     }
     setMarqueeItems(initialItems)
@@ -78,7 +126,7 @@ export default function BackgroundEffect() {
     return () => clearInterval(interval)
   }, [])
 
-  /* ── Floating Items from LEFT/RIGHT edges (40% of animation) ── */
+  /* ── Floating Items from LEFT/RIGHT edges ── */
   useEffect(() => {
     const spawnFloating = (fromRight = false): FloatingItem => {
       return {
@@ -91,8 +139,7 @@ export default function BackgroundEffect() {
         vy: (Math.random() - 0.5) * 0.02,
         rotation: 0,
         rotationSpeed: (Math.random() - 0.5) * 0.5,
-        opacity: 0.08 + Math.random() * 0.06,
-        color: CASINO_COLORS[Math.floor(Math.random() * CASINO_COLORS.length)],
+        opacity: 0.1 + Math.random() * 0.08,
       }
     }
 
@@ -122,65 +169,28 @@ export default function BackgroundEffect() {
     return () => clearInterval(interval)
   }, [])
 
-  /* ── Subtle Casino Glow Canvas ── */
-  useEffect(() => {
-    const canvas = canvasRef.current!
-    const ctx = canvas.getContext('2d')!
-
-    let W = canvas.width = window.innerWidth
-    let H = canvas.height = window.innerHeight
-
-    const orbs = [
-      { x: W * 0.2, y: H * 0.3, size: 200, color: '#FFD700', alpha: 0.015 },
-      { x: W * 0.8, y: H * 0.7, size: 250, color: '#DC2626', alpha: 0.012 },
-      { x: W * 0.5, y: H * 0.5, size: 300, color: '#0D0D0D', alpha: 0.02 },
-    ]
-
-    let raf: number
-
-    const frame = () => {
-      ctx.clearRect(0, 0, W, H)
-
-      for (const orb of orbs) {
-        const gradient = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.size)
-        gradient.addColorStop(0, orb.color + '33')
-        gradient.addColorStop(0.5, orb.color + '11')
-        gradient.addColorStop(1, 'transparent')
-
-        ctx.beginPath()
-        ctx.arc(orb.x, orb.y, orb.size, 0, Math.PI * 2)
-        ctx.fillStyle = gradient
-        ctx.globalAlpha = orb.alpha
-        ctx.fill()
-        ctx.globalAlpha = 1
-      }
-
-      raf = requestAnimationFrame(frame)
-    }
-
-    frame()
-
-    const onResize = () => {
-      W = canvas.width = window.innerWidth
-      H = canvas.height = window.innerHeight
-    }
-    window.addEventListener('resize', onResize)
-    return () => {
-      cancelAnimationFrame(raf)
-      window.removeEventListener('resize', onResize)
-    }
-  }, [])
-
   return (
     <>
-      {/* Subtle Casino Glow Background */}
+      {/* Warm Gradient Background */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: 'none',
+          background: 'linear-gradient(135deg, #FFF8F0 0%, #FFECD2 30%, #FFE4CC 60%, #FFF0E6 100%)',
+        }}
+      />
+
+      {/* Warm Color Orbs Canvas */}
       <canvas
         ref={canvasRef}
         aria-hidden="true"
         style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}
       />
 
-      {/* Marquee Stripes (Vertical Scroll) */}
+      {/* Marquee Stripes */}
       <div
         ref={marqueeRef}
         aria-hidden="true"
@@ -190,7 +200,6 @@ export default function BackgroundEffect() {
           zIndex: 0,
           pointerEvents: 'none',
           overflow: 'hidden',
-          background: 'transparent',
         }}
       >
         {marqueeItems.map(item => (
@@ -204,7 +213,7 @@ export default function BackgroundEffect() {
               opacity: item.opacity,
               userSelect: 'none',
               lineHeight: 1,
-              filter: 'drop-shadow(0 0 4px rgba(255,215,0,0.3))',
+              filter: 'drop-shadow(0 0 4px rgba(255,107,0,0.4))',
             }}
           >
             {item.emoji}
@@ -221,7 +230,6 @@ export default function BackgroundEffect() {
           zIndex: 0,
           pointerEvents: 'none',
           overflow: 'hidden',
-          background: 'transparent',
         }}
       >
         {floatingItems.map(item => (
@@ -237,6 +245,7 @@ export default function BackgroundEffect() {
               userSelect: 'none',
               lineHeight: 1,
               transition: 'opacity 0.3s ease',
+              filter: 'drop-shadow(0 0 3px rgba(255,107,0,0.3))',
             }}
           >
             {item.emoji}

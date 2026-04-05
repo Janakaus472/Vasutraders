@@ -140,16 +140,16 @@ export default function HomePage() {
 
       {/* ── HERO ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden" style={{
-        background: 'rgba(13,13,13,0.55)',
+        background: 'linear-gradient(150deg, rgba(139,26,26,0.82) 0%, rgba(194,65,12,0.82) 40%, rgba(255,107,0,0.82) 100%)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
         minHeight: '92vh',
-        borderBottom: '3px solid #FFD700',
+        borderBottom: '3px solid #FF9933',
       }}>
-        {/* Casino gold decorative glows */}
-        <div style={{ position:'absolute', top:'-60px', right:'-60px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,215,0,0.08)', filter:'blur(70px)' }} />
-        <div style={{ position:'absolute', bottom:'-80px', left:'-40px', width:'400px', height:'400px', borderRadius:'50%', background:'rgba(220,38,38,0.06)', filter:'blur(80px)' }} />
-        <div style={{ position:'absolute', top:'35%', left:'25%', width:'300px', height:'300px', borderRadius:'50%', background:'rgba(255,215,0,0.05)', filter:'blur(50px)' }} />
+        {/* warm decorative glows */}
+        <div style={{ position:'absolute', top:'-60px', right:'-60px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,153,51,0.12)', filter:'blur(70px)' }} />
+        <div style={{ position:'absolute', bottom:'-80px', left:'-40px', width:'400px', height:'400px', borderRadius:'50%', background:'rgba(244,180,0,0.10)', filter:'blur(80px)' }} />
+        <div style={{ position:'absolute', top:'35%', left:'25%', width:'300px', height:'300px', borderRadius:'50%', background:'rgba(255,87,34,0.08)', filter:'blur(50px)' }} />
 
         <div className="max-w-7xl mx-auto px-6 pt-20 pb-12 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -185,7 +185,7 @@ export default function HomePage() {
               </h1>
 
               <p className="fade-up-3" style={{
-                color: '#B8B8B8',
+                color: '#FFE4CC',
                 fontSize: '18px',
                 lineHeight: 1.7,
                 maxWidth: '480px',
@@ -219,14 +219,14 @@ export default function HomePage() {
 
                 <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{
                   display: 'inline-flex', alignItems: 'center', gap: '10px',
-                  background: 'rgba(255,255,255,0.08)', color: '#fff',
+                  background: 'rgba(255,255,255,0.18)', color: '#fff',
                   padding: '16px 28px', borderRadius: '12px',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 700, fontSize: '16px',
                   textDecoration: 'none',
-                  border: '1px solid rgba(255,255,255,0.2)',
+                  border: '1px solid rgba(255,255,255,0.3)',
                   backdropFilter: 'blur(8px)',
-                  boxShadow: '0 0 30px rgba(37,211,102,0.2)',
+                  boxShadow: '0 0 30px rgba(37,211,102,0.3)',
                 }}>
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="#25D366">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
@@ -250,7 +250,7 @@ export default function HomePage() {
                   position: 'absolute',
                   top: card.top, left: card.left,
                   transform: `rotate(${card.rotation})`,
-                  background: 'rgba(255,255,255,0.08)',
+                  background: 'rgba(255,255,255,0.15)',
                   backdropFilter: 'blur(12px)',
                   border: `1.5px solid ${card.color}`,
                   borderRadius: '16px',
@@ -269,12 +269,12 @@ export default function HomePage() {
 
         {/* Bottom wave */}
         <svg style={{ position:'absolute', bottom:0, left:0, right:0, display:'block' }} viewBox="0 0 1440 60" preserveAspectRatio="none" height="60">
-          <path d="M0,60 L0,30 Q360,0 720,30 Q1080,60 1440,20 L1440,60 Z" fill="rgba(255,252,248,0.92)" />
+          <path d="M0,60 L0,30 Q360,0 720,30 Q1080,60 1440,20 L1440,60 Z" fill="rgba(255,240,230,0.92)" />
         </svg>
       </section>
 
       {/* ── MARQUEE ──────────────────────────────────────────────────── */}
-      <div style={{ background:'linear-gradient(90deg, #FF6B00, #FF9A3C, #FF6B00)', padding:'14px 0', overflow:'hidden', boxShadow: '0 4px 30px rgba(255,107,0,0.3)' }}>
+      <div style={{ background:'linear-gradient(90deg, #C2410C, #F97316, #C2410C)', padding:'14px 0', overflow:'hidden', boxShadow: '0 4px 30px rgba(194,65,12,0.3)' }}>
         <div className="marquee-track" style={{ display:'flex', gap:'0', whiteSpace:'nowrap', width:'max-content' }}>
           {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
             <span key={i} style={{
@@ -286,14 +286,14 @@ export default function HomePage() {
               letterSpacing: '0.1em',
             }}>
               {item}
-              <span style={{ color:'rgba(255,255,255,0.5)', fontSize:'12px' }}>❤️</span>
+              <span style={{ color:'rgba(255,255,255,0.5)', fontSize:'12px' }}>✨</span>
             </span>
           ))}
         </div>
       </div>
 
       {/* ── STATS ────────────────────────────────────────────────────── */}
-      <section style={{ background:'rgba(255,252,248,0.88)', borderBottom:'1px solid rgba(255,180,100,0.2)', backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)' }}>
+      <section style={{ background:'rgba(255,240,230,0.92)', borderBottom:'1px solid rgba(255,180,100,0.25)', backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)' }}>
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {STATS.map((s, i) => (
@@ -301,10 +301,10 @@ export default function HomePage() {
                 animation: `float${(i % 3) + 1} ${4 + i * 0.5}s ease-in-out infinite`,
               }}>
                 <div className="display-font" style={{
-                  fontSize:'52px', color:'#FF6B00', lineHeight:1,
-                  textShadow: '0 0 20px rgba(255,107,0,0.4), 0 0 40px rgba(255,107,0,0.2)',
-                }}>{s.value} <span style={{ fontSize:'32px' }}>{['❤️', '🧡', '✨', '💝'][i]}</span></div>
-                <div style={{ color:'#6B7280', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:600, fontSize:'14px', marginTop:'4px' }}>{lang === 'hi' ? s.labelHi : s.labelEn}</div>
+                  fontSize:'52px', color:'#C2691A', lineHeight:1,
+                  textShadow: '0 0 20px rgba(194,105,26,0.3)',
+                }}>{s.value}</div>
+                <div style={{ color:'#5C2D0F', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:700, fontSize:'14px', marginTop:'4px' }}>{lang === 'hi' ? s.labelHi : s.labelEn}</div>
               </div>
             ))}
           </div>
@@ -312,16 +312,16 @@ export default function HomePage() {
       </section>
 
       {/* ── CATEGORIES ───────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 py-16" style={{ background:'rgba(255,252,248,0.85)', position: 'relative', zIndex: 1 }}>
+      <section className="max-w-7xl mx-auto px-6 py-16" style={{ background:'rgba(255,240,230,0.92)', position: 'relative', zIndex: 1 }}>
         <div className="text-center mb-12">
-          <p style={{ color:'#FF6B00', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:700, fontSize:'13px', letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:'12px' }}>
-            What We Supply ❤️
+          <p style={{ color:'#C2691A', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:700, fontSize:'13px', letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:'12px' }}>
+            What We Supply
           </p>
-          <h2 className="display-font" style={{ fontSize:'clamp(40px, 5vw, 64px)', color:'#7c2d12', lineHeight:1.05 }}>
+          <h2 className="display-font" style={{ fontSize:'clamp(40px, 5vw, 64px)', color:'#5C2D0F', lineHeight:1.05 }}>
             {lang === 'hi' ? 'श्रेणी के अनुसार' : 'BROWSE BY CATEGORY'}
           </h2>
-          <p style={{ color:'#6B7280', fontSize:'16px', marginTop:'8px', fontFamily:"'Plus Jakarta Sans', sans-serif" }}>
-            Made with love for you 💝
+          <p style={{ color:'#8B4513', fontSize:'16px', marginTop:'8px', fontFamily:"'Plus Jakarta Sans', sans-serif" }}>
+            Serving retailers across India for 20+ years
           </p>
         </div>
 
@@ -378,7 +378,7 @@ export default function HomePage() {
                 fontSize: '13px',
                 color: cat.color,
               }}>
-                {cat.count} products ❤️
+                {cat.count} products
               </div>
               <div style={{ marginTop:'16px', width:'32px', height:'3px', borderRadius:'2px', background: cat.color }} />
             </Link>
@@ -408,7 +408,7 @@ export default function HomePage() {
             el.style.boxShadow = '0 8px 32px rgba(255,107,0,0.4), 0 0 60px rgba(255,107,0,0.2)'
           }}
           >
-            View All 68 Products ❤️
+            View All Products
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
@@ -417,18 +417,18 @@ export default function HomePage() {
       </section>
 
       {/* ── WHY US ───────────────────────────────────────────────────── */}
-      <section style={{ background:'rgba(13,13,13,0.80)', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
-        <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,215,0,0.06)', filter:'blur(80px)' }} />
+      <section style={{ background:'linear-gradient(135deg, rgba(139,26,26,0.88), rgba(194,65,12,0.88))', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,153,51,0.10)', filter:'blur(80px)' }} />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
               <p style={{ color:'#FF6B00', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:700, fontSize:'13px', letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:'16px' }}>
                 {t.whyUs}
               </p>
-              <h2 className="display-font" style={{ fontSize:'clamp(40px, 5vw, 60px)', color:'#fff', lineHeight:1.05, marginBottom:'24px' }}>
+              <h2 className="display-font" style={{ fontSize:'clamp(40px, 5vw, 60px)', color:'#FFE4CC', lineHeight:1.05, marginBottom:'24px' }}>
                 INDORE'S TRUSTED<br/>WHOLESALE DEALER
               </h2>
-              <p style={{ color:'#94BFDD', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'17px', lineHeight:1.8 }}>
+              <p style={{ color:'#FFD4B0', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'17px', lineHeight:1.8 }}>
                 From small retailers to large distributors, we supply quality wholesale goods at competitive prices. Fast delivery, genuine products, and a relationship built on trust.
               </p>
             </div>
@@ -440,15 +440,15 @@ export default function HomePage() {
                 { icon:'📞', title:'WhatsApp Ordering', desc:'Simple ordering directly on WhatsApp' },
               ].map((f) => (
                 <div key={f.title} style={{
-                  background: 'rgba(255,255,255,0.12)',
+                  background: 'rgba(255,255,255,0.15)',
                   backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255,215,0,0.20)',
+                  border: '1px solid rgba(255,200,100,0.25)',
                   borderRadius: '16px',
                   padding: '20px',
                 }}>
                   <div style={{ fontSize:'28px', marginBottom:'10px' }}>{f.icon}</div>
-                  <div style={{ color:'#fff', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:700, fontSize:'14px', marginBottom:'6px' }}>{f.title}</div>
-                  <div style={{ color:'#7ba8c9', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'13px', lineHeight:1.6 }}>{f.desc}</div>
+                  <div style={{ color:'#FFE4CC', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:700, fontSize:'14px', marginBottom:'6px' }}>{f.title}</div>
+                  <div style={{ color:'#FFD4B0', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'13px', lineHeight:1.6 }}>{f.desc}</div>
                 </div>
               ))}
             </div>
@@ -457,19 +457,19 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
-      <section style={{ background:'rgba(13,13,13,0.80)', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
-        <div style={{ position:'absolute', top:0, left:0, right:0, bottom:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize:'40px 40px', pointerEvents:'none' }} />
+      <section style={{ background:'linear-gradient(135deg, rgba(194,65,12,0.88), rgba(255,107,0,0.88))', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', top:0, left:0, right:0, bottom:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize:'40px 40px', pointerEvents:'none' }} />
         <div className="relative z-10">
           <h2 className="display-font" style={{ fontSize:'clamp(40px, 6vw, 72px)', color:'#fff', marginBottom:'16px', lineHeight:1 }}>
             READY TO ORDER?
           </h2>
-          <p style={{ color:'rgba(255,255,255,0.85)', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'18px', marginBottom:'36px', fontWeight:500 }}>
+          <p style={{ color:'rgba(255,255,255,0.9)', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'18px', marginBottom:'36px', fontWeight:500 }}>
             {t.readyDesc}
           </p>
           <div style={{ display:'flex', gap:'16px', justifyContent:'center', flexWrap:'wrap' }}>
             <Link href="/catalog" style={{
               display:'inline-flex', alignItems:'center', gap:'10px',
-              background:'#fff', color:'#FF6B00',
+              background:'#fff', color:'#C2410C',
               padding:'16px 36px', borderRadius:'12px',
               fontFamily:"'Plus Jakarta Sans', sans-serif",
               fontWeight:800, fontSize:'16px', textDecoration:'none',
@@ -495,8 +495,8 @@ export default function HomePage() {
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────── */}
-      <footer style={{ background:'rgba(13,13,13,0.80)', backdropFilter:'blur(6px)', WebkitBackdropFilter:'blur(6px)', padding:'32px 24px', textAlign:'center' }}>
-        <p style={{ color:'#4a6275', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'14px' }}>
+      <footer style={{ background:'linear-gradient(135deg, rgba(92,45,15,0.90), rgba(139,26,26,0.90))', backdropFilter:'blur(6px)', WebkitBackdropFilter:'blur(6px)', padding:'32px 24px', textAlign:'center' }}>
+        <p style={{ color:'#FFE4CC', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'14px' }}>
           © 2025 {BUSINESS_NAME} · Indore, Madhya Pradesh · All rights reserved
         </p>
       </footer>
