@@ -61,14 +61,14 @@ export async function POST(req: NextRequest) {
   try {
     const { messages } = await req.json()
 
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const res = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-chat',
+        model: 'deepseek-chat',
         max_tokens: 300,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
