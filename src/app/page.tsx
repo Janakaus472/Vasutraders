@@ -140,9 +140,9 @@ export default function HomePage() {
 
       {/* ── HERO ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden" style={{
-        background: 'linear-gradient(150deg, rgba(139,26,26,0.82) 0%, rgba(194,65,12,0.82) 40%, rgba(255,107,0,0.82) 100%)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
+        background: 'rgba(139,26,26,0.55)',
+        backdropFilter: 'blur(6px)',
+        WebkitBackdropFilter: 'blur(6px)',
         minHeight: '92vh',
         borderBottom: '3px solid #FF9933',
       }}>
@@ -417,8 +417,8 @@ export default function HomePage() {
       </section>
 
       {/* ── WHY US ───────────────────────────────────────────────────── */}
-      <section style={{ background:'linear-gradient(135deg, rgba(139,26,26,0.88), rgba(194,65,12,0.88))', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
-        <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,153,51,0.10)', filter:'blur(80px)' }} />
+      <section style={{ background:'rgba(139,26,26,0.55)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,153,51,0.08)', filter:'blur(80px)' }} />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
@@ -457,7 +457,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
-      <section style={{ background:'linear-gradient(135deg, rgba(194,65,12,0.88), rgba(255,107,0,0.88))', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
+      <section style={{ background:'rgba(194,65,12,0.60)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', top:0, left:0, right:0, bottom:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize:'40px 40px', pointerEvents:'none' }} />
         <div className="relative z-10">
           <h2 className="display-font" style={{ fontSize:'clamp(40px, 6vw, 72px)', color:'#fff', marginBottom:'16px', lineHeight:1 }}>
