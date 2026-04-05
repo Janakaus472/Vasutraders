@@ -30,6 +30,18 @@ const GLOW: Record<string, string> = {
   'Tapes':                '#0284C7',
 }
 
+const CATEGORY_EMOJIS: Record<string, string> = {
+  'Playing Cards': '🃏',
+  'Party Balloons': '🎈',
+  'Kanche & Glass Balls': '🔮',
+  'Sports & Games': '🏏',
+  'Rubber Bands': '🔁',
+  'Poker Chips': '🎰',
+  'Toothbrushes': '🪥',
+  'Boric Acid': '⚗️',
+  'Tapes': '📦',
+}
+
 export default function ProductCard({ product, cartQuantity, onAdd, onRemove, onOpen, index = 0 }: ProductCardProps) {
   const { t } = useLanguage()
   const isInCart = cartQuantity > 0

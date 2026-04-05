@@ -150,3 +150,42 @@ body.modal-open { overflow: hidden; }
   background-size: 200% 200%;
   animation: gradientShift 5s ease infinite;
 }
+
+/* ── Magical Love Animations ── */
+@keyframes floatHeart {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-15px) rotate(5deg); }
+  75% { transform: translateY(-8px) rotate(-3deg); }
+}
+
+@keyframes pulseHeart {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.4; transform: scale(0.9) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+}
+
+@keyframes glow {
+  0% { text-shadow: 0 0 20px rgba(255,107,0,0.4), 0 0 40px rgba(255,107,0,0.2); }
+  100% { text-shadow: 0 0 40px rgba(255,107,0,0.6), 0 0 80px rgba(255,107,0,0.4); }
+}
+
+@keyframes shine {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(200%) rotate(45deg); }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+.animate-floatHeart { animation: floatHeart 3s ease-in-out infinite; }
+.animate-pulseHeart { animation: pulseHeart 1.5s ease-in-out infinite; }
+.animate-sparkle { animation: sparkle 2s ease-in-out infinite; }
+.animate-glow { animation: glow 2s ease-in-out infinite alternate; }
+.animate-breathe { animation: breathe 4s ease-in-out infinite; }
+
