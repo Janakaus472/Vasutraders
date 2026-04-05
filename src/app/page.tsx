@@ -417,7 +417,7 @@ export default function HomePage() {
       </section>
 
       {/* ── WHY US ───────────────────────────────────────────────────── */}
-      <section style={{ background:'transparent', padding:'80px 0', position:'relative', overflow:'hidden' }}>
+      <section style={{ background:'rgba(13,13,13,0.80)', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,215,0,0.06)', filter:'blur(80px)' }} />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid md:grid-cols-2 gap-16 items-center">
@@ -457,7 +457,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
-      <section style={{ background:'transparent', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
+      <section style={{ background:'rgba(13,13,13,0.80)', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', top:0, left:0, right:0, bottom:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize:'40px 40px', pointerEvents:'none' }} />
         <div className="relative z-10">
           <h2 className="display-font" style={{ fontSize:'clamp(40px, 6vw, 72px)', color:'#fff', marginBottom:'16px', lineHeight:1 }}>
@@ -495,7 +495,7 @@ export default function HomePage() {
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────── */}
-      <footer style={{ background:'transparent', padding:'32px 24px', textAlign:'center' }}>
+      <footer style={{ background:'rgba(13,13,13,0.80)', backdropFilter:'blur(6px)', WebkitBackdropFilter:'blur(6px)', padding:'32px 24px', textAlign:'center' }}>
         <p style={{ color:'#4a6275', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'14px' }}>
           © 2025 {BUSINESS_NAME} · Indore, Madhya Pradesh · All rights reserved
         </p>

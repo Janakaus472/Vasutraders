@@ -62,7 +62,9 @@ export default function CatalogPage() {
 
       {/* ── Banner ── */}
       <div style={{
-        background: 'transparent',
+        background: 'rgba(13,13,13,0.80)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
         position: 'relative', overflow: 'hidden',
       }}>
 
