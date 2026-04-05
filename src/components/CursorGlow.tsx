@@ -21,8 +21,8 @@ export default function CursorGlow() {
         dotRef.current.style.transform = `translate(${dotX}px, ${dotY}px)`
       }
       if (ringRef.current) {
-        ringX += (dotX - ringX) * 0.15
-        ringY += (dotY - ringY) * 0.15
+        ringX += (dotX - ringX) * 0.85
+        ringY += (dotY - ringY) * 0.85
         ringRef.current.style.transform = `translate(${ringX}px, ${ringY}px)`
       }
       rafId = requestAnimationFrame(animate)
