@@ -397,7 +397,7 @@ export default function HomePage() {
       </div>
 
       {/* ── STATS ────────────────────────────────────────────────────── */}
-      <section style={{ background:'rgba(255,248,240,0.55)', borderBottom:'1px solid rgba(255,180,100,0.2)', backdropFilter:'blur(14px)' }}>
+      <section style={{ background:'rgba(255,248,240,0.35)', borderBottom:'1px solid rgba(255,180,100,0.2)', backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)' }}>
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {STATS.map((s, i) => (
@@ -521,7 +521,7 @@ export default function HomePage() {
       </section>
 
       {/* ── WHY US ───────────────────────────────────────────────────── */}
-      <section style={{ background:'linear-gradient(135deg, #1a0800, #7c2d12)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
+      <section style={{ background:'linear-gradient(135deg, rgba(26,8,0,0.75), rgba(124,45,18,0.75))', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,107,0,0.08)', filter:'blur(80px)' }} />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid md:grid-cols-2 gap-16 items-center">
@@ -561,7 +561,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
-      <section style={{ background:'#FF6B00', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
+      <section style={{ background:'rgba(255,107,0,0.85)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', top:0, left:0, right:0, bottom:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize:'40px 40px', pointerEvents:'none' }} />
         <div className="relative z-10">
           <h2 className="display-font" style={{ fontSize:'clamp(40px, 6vw, 72px)', color:'#fff', marginBottom:'16px', lineHeight:1 }}>
@@ -599,7 +599,7 @@ export default function HomePage() {
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────── */}
-      <footer style={{ background:'#080F1A', padding:'32px 24px', textAlign:'center' }}>
+      <footer style={{ background:'rgba(8,15,26,0.9)', backdropFilter:'blur(6px)', WebkitBackdropFilter:'blur(6px)', padding:'32px 24px', textAlign:'center' }}>
         <p style={{ color:'#4a6275', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'14px' }}>
           © 2025 {BUSINESS_NAME} · Indore, Madhya Pradesh · All rights reserved
         </p>

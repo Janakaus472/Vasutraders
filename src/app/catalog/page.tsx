@@ -62,7 +62,9 @@ export default function CatalogPage() {
 
       {/* ── Banner ── */}
       <div style={{
-        background: 'linear-gradient(150deg, #1a0800 0%, #7c2d12 40%, #c2410c 75%, #fb923c 100%)',
+        background: 'linear-gradient(150deg, rgba(26,8,0,0.85) 0%, rgba(124,45,18,0.85) 40%, rgba(194,65,12,0.85) 75%, rgba(251,147,60,0.85) 100%)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
         position: 'relative', overflow: 'hidden',
       }}>
         <div style={{
@@ -77,7 +79,7 @@ export default function CatalogPage() {
             <p style={{ color: '#FF6B00', fontSize: '10px', fontWeight: 700, letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '6px' }}>
               {t.wholesaleCatalog}
             </p>
-            <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.8rem, 5vw, 4.5rem)', color: '#fff', lineHeight: 1, letterSpacing: '2px' }}>
+            <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.8rem, 5vw, 4.5rem)', color: '#fff', lineHeight: 1, letterSpacing: '2px', textShadow: '0 0 30px rgba(255,107,0,0.4), 0 0 60px rgba(255,107,0,0.2)' }}>
               {activeCategory === 'All' ? t.allProducts : catLabel(activeCategory)}
             </h1>
             <p style={{ color: '#fcd9b0', fontSize: '14px', marginTop: '8px' }}>{t.tagline}</p>
@@ -88,7 +90,7 @@ export default function CatalogPage() {
               { val: isLoading ? '…' : categories.length - 1, label: t.categories },
             ].map(({ val, label }) => (
               <div key={label} style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '3.5rem', color: '#FF6B00', lineHeight: 1 }}>{val}</div>
+                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '3.5rem', color: '#FF6B00', lineHeight: 1, textShadow: '0 0 20px rgba(255,107,0,0.5), 0 0 40px rgba(255,107,0,0.25)' }}>{val}</div>
                 <div style={{ color: '#fcd9b0', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '3px' }}>{label}</div>
               </div>
             ))}

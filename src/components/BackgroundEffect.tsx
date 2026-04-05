@@ -4,9 +4,58 @@ import { useEffect, useRef, useState } from 'react'
 
 const HEARTS = ['❤️', '💕', '💖', '💗', '💝', '💘', '💓', '✨', '⭐', '🌟', '💫', '🦋', '🌸', '🧡', '🍊']
 const WARM_COLORS = ['#FF6B00', '#FF9A3C', '#FFD700', '#FF4500', '#FFA500', '#E91E8C', '#ff6b9d', '#f59e0b', '#FF8C42', '#FFB347']
+
 const SUITS = ['♠', '♥', '♦', '♣']
 
+const POKER_CHIPS = [
+  { emoji: '🎰', price: '₹10', color: '#FF6B35' },
+  { emoji: '🎰', price: '₹50', color: '#F7931E' },
+  { emoji: '🎰', price: '₹100', color: '#FFD23F' },
+  { emoji: '🎰', price: '₹500', color: '#06FFA5' },
+  { emoji: '🎰', price: '₹1000', color: '#FFB800' },
+  { emoji: '🏆', price: '₹2000', color: '#FFD700' },
+  { emoji: '💰', price: '₹5000', color: '#FF6B00' },
+  { emoji: '🃏', price: '₹100', color: '#DC2626' },
+]
+
+const SPORTS_ITEMS = [
+  '🏏', '⚽', '🏸', '🏐', '🏀', '🎾',
+  '🏑', '🏓', '🥊', '🏋️', '🚴', '🏃',
+  '⚾', '🎳', '🥏', '🛹', '⛳', '🏊',
+  '🤸', '🎯', '🏌️', '🚣', '🧘', '🏇'
+]
+
 type FloatingHeart = {
+  id: number
+  x: number
+  y: number
+  size: number
+  emoji: string
+  speed: number
+  wobble: number
+  wobbleSpeed: number
+  opacity: number
+  rotation: number
+  rotationSpeed: number
+}
+
+type FloatingChip = {
+  id: number
+  x: number
+  y: number
+  size: number
+  emoji: string
+  price: string
+  color: string
+  speed: number
+  wobble: number
+  wobbleSpeed: number
+  opacity: number
+  rotation: number
+  rotationSpeed: number
+}
+
+type FloatingSport = {
   id: number
   x: number
   y: number
@@ -34,7 +83,11 @@ export default function BackgroundEffect() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const glowRef = useRef<HTMLDivElement>(null)
   const [hearts, setHearts] = useState<FloatingHeart[]>([])
+  const [chips, setChips] = useState<FloatingChip[]>([])
+  const [sports, setSports] = useState<FloatingSport[]>([])
   const heartIdRef = useRef(0)
+  const chipIdRef = useRef(0)
+  const sportIdRef = useRef(0)
 
   /* ── Floating Hearts ── */
   useEffect(() => {
@@ -73,6 +126,93 @@ export default function BackgroundEffect() {
         return updated
       })
     }, 50)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  /* ── Floating Poker Chips (Indian Prices) ── */
+  useEffect(() => {
+    const spawnChip = (): FloatingChip => {
+      const chipData = POKER_CHIPS[Math.floor(Math.random() * POKER_CHIPS.length)]
+      return {
+        id: chipIdRef.current++,
+        x: Math.random() * 100,
+        y: 100 + Math.random() * 25,
+        size: 35 + Math.random() * 45,
+        emoji: chipData.emoji,
+        price: chipData.price,
+        color: chipData.color,
+        speed: 0.06 + Math.random() * 0.08,
+        wobble: Math.random() * 100,
+        wobbleSpeed: 0.015 + Math.random() * 0.025,
+        opacity: 0.08 + Math.random() * 0.08,
+        rotation: (Math.random() - 0.5) * 20,
+        rotationSpeed: (Math.random() - 0.5) * 0.2,
+      }
+    }
+
+    const initial = Array.from({ length: 8 }, spawnChip)
+    setChips(initial)
+
+    const interval = setInterval(() => {
+      setChips(prev => {
+        const updated = prev
+          .map(c => ({
+            ...c,
+            y: c.y - c.speed,
+            wobble: c.wobble + c.wobbleSpeed,
+            rotation: c.rotation + c.rotationSpeed,
+          }))
+          .filter(c => c.y > -15)
+
+        if (updated.length < 10 && Math.random() > 0.75) {
+          updated.push(spawnChip())
+        }
+
+        return updated
+      })
+    }, 60)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  /* ── Floating Sports Items (Indian Context) ── */
+  useEffect(() => {
+    const spawnSport = (): FloatingSport => ({
+      id: sportIdRef.current++,
+      x: Math.random() * 100,
+      y: 100 + Math.random() * 30,
+      size: 28 + Math.random() * 42,
+      emoji: SPORTS_ITEMS[Math.floor(Math.random() * SPORTS_ITEMS.length)],
+      speed: 0.05 + Math.random() * 0.07,
+      wobble: Math.random() * 100,
+      wobbleSpeed: 0.012 + Math.random() * 0.02,
+      opacity: 0.06 + Math.random() * 0.06,
+      rotation: (Math.random() - 0.5) * 25,
+      rotationSpeed: (Math.random() - 0.5) * 0.15,
+    })
+
+    const initial = Array.from({ length: 12 }, spawnSport)
+    setSports(initial)
+
+    const interval = setInterval(() => {
+      setSports(prev => {
+        const updated = prev
+          .map(s => ({
+            ...s,
+            y: s.y - s.speed,
+            wobble: s.wobble + s.wobbleSpeed,
+            rotation: s.rotation + s.rotationSpeed,
+          }))
+          .filter(s => s.y > -15)
+
+        if (updated.length < 14 && Math.random() > 0.8) {
+          updated.push(spawnSport())
+        }
+
+        return updated
+      })
+    }, 70)
 
     return () => clearInterval(interval)
   }, [])
@@ -206,6 +346,76 @@ export default function BackgroundEffect() {
               }}
             >
               {h.emoji}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Floating Poker Chips (Indian Rupee Prices) */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: 'none',
+          overflow: 'hidden',
+        }}
+      >
+        {chips.map(c => {
+          const wobbleX = Math.sin(c.wobble) * 20
+          return (
+            <div
+              key={c.id}
+              style={{
+                position: 'absolute',
+                left: `calc(${c.x}% + ${wobbleX}px)`,
+                top: `${c.y}%`,
+                fontSize: `${c.size}px`,
+                opacity: c.opacity,
+                transform: `rotate(${c.rotation}deg)`,
+                transition: 'opacity 0.5s ease',
+                userSelect: 'none',
+                lineHeight: 1,
+                filter: `drop-shadow(0 0 12px ${c.color}66)`,
+              }}
+            >
+              {c.emoji}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Floating Sports Items (All Indian Context) */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: 'none',
+          overflow: 'hidden',
+        }}
+      >
+        {sports.map(s => {
+          const wobbleX = Math.sin(s.wobble) * 18
+          return (
+            <div
+              key={s.id}
+              style={{
+                position: 'absolute',
+                left: `calc(${s.x}% + ${wobbleX}px)`,
+                top: `${s.y}%`,
+                fontSize: `${s.size}px`,
+                opacity: s.opacity,
+                transform: `rotate(${s.rotation}deg)`,
+                transition: 'opacity 0.5s ease',
+                userSelect: 'none',
+                lineHeight: 1,
+                filter: 'drop-shadow(0 0 10px rgba(255,107,0,0.25))',
+              }}
+            >
+              {s.emoji}
             </div>
           )
         })}
