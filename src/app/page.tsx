@@ -34,7 +34,7 @@ export default function HomePage() {
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hello Vasu Traders! I would like to enquire about wholesale products.')}`
 
   return (
-    <div className="bg-[#FFFBF5]" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", background: 'transparent' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
@@ -201,11 +201,11 @@ export default function HomePage() {
                   transform: `rotate(${card.rotation})`,
                   background: 'rgba(255,255,255,0.08)',
                   backdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(255,255,255,0.15)',
+                  border: `1.5px solid ${card.color}`,
                   borderRadius: '16px',
                   padding: '16px 20px',
                   minWidth: '150px',
-                  boxShadow: `0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)`,
+                  boxShadow: `0 0 16px ${card.color}66, 0 0 40px ${card.color}33, 0 8px 32px rgba(0,0,0,0.3)`,
                 }}>
                   <div style={{ fontSize:'28px', marginBottom:'6px' }}>{card.emoji}</div>
                   <div style={{ color:'#fff', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:700, fontSize:'13px', whiteSpace:'nowrap' }}>{catLabel(card.name)}</div>
@@ -242,12 +242,15 @@ export default function HomePage() {
       </div>
 
       {/* ── STATS ────────────────────────────────────────────────────── */}
-      <section style={{ background:'#fff', borderBottom:'1px solid #f0e8df' }}>
+      <section style={{ background:'rgba(255,255,255,0.92)', borderBottom:'1px solid #f0e8df', backdropFilter:'blur(8px)' }}>
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {STATS.map((s) => (
               <div key={s.labelEn} className="text-center">
-                <div className="display-font" style={{ fontSize:'52px', color:'#FF6B00', lineHeight:1 }}>{s.value}</div>
+                <div className="display-font" style={{
+                  fontSize:'52px', color:'#FF6B00', lineHeight:1,
+                  textShadow: '0 0 20px rgba(255,107,0,0.4), 0 0 40px rgba(255,107,0,0.2)',
+                }}>{s.value}</div>
                 <div style={{ color:'#6B7280', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:600, fontSize:'14px', marginTop:'4px' }}>{lang === 'hi' ? s.labelHi : s.labelEn}</div>
               </div>
             ))}
@@ -256,7 +259,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CATEGORIES ───────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 py-16">
+      <section className="max-w-7xl mx-auto px-6 py-16" style={{ position: 'relative', zIndex: 1 }}>
         <div className="text-center mb-12">
           <p style={{ color:'#FF6B00', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:700, fontSize:'13px', letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:'12px' }}>
             What We Supply
@@ -271,7 +274,6 @@ export default function HomePage() {
             <Link
               key={cat.name}
               href={`/catalog`}
-              className="card-hover"
               style={{
                 display: 'block',
                 background: cat.bg,
@@ -279,9 +281,21 @@ export default function HomePage() {
                 padding: '28px 24px',
                 textDecoration: 'none',
                 border: `2px solid transparent`,
-                transition: 'border-color 0.2s',
                 position: 'relative',
                 overflow: 'hidden',
+                transition: 'transform 0.22s, box-shadow 0.22s, border-color 0.22s',
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLElement
+                el.style.transform     = 'translateY(-8px) scale(1.03)'
+                el.style.boxShadow     = `0 0 0 2px ${cat.color}, 0 20px 50px ${cat.color}55`
+                el.style.borderColor   = cat.color
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLElement
+                el.style.transform     = ''
+                el.style.boxShadow     = ''
+                el.style.borderColor   = 'transparent'
               }}
             >
               <div style={{ position:'absolute', bottom:'-20px', right:'-20px', fontSize:'80px', opacity:0.12, lineHeight:1 }}>

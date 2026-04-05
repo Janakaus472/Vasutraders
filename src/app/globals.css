@@ -11,7 +11,7 @@
 }
 
 body {
-  background: var(--background);
+  background: transparent;   /* canvas provides the bg */
   color: var(--foreground);
   font-family: 'Plus Jakarta Sans', Arial, sans-serif;
 }
@@ -126,3 +126,27 @@ input, textarea, select {
 
 /* Modal body lock */
 body.modal-open { overflow: hidden; }
+
+/* ── Neon / holographic extras ── */
+@keyframes neonPulse {
+  0%, 100% { box-shadow: 0 0 8px currentColor, 0 0 20px currentColor; }
+  50%       { box-shadow: 0 0 18px currentColor, 0 0 40px currentColor, 0 0 60px currentColor; }
+}
+@keyframes rainbowBorder {
+  0%   { border-color: #ff0050; }
+  16%  { border-color: #ff8c00; }
+  33%  { border-color: #ffe600; }
+  50%  { border-color: #00ff88; }
+  66%  { border-color: #00b4ff; }
+  83%  { border-color: #b400ff; }
+  100% { border-color: #ff0050; }
+}
+@keyframes gradientShift {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
+}
+.animate-gradientShift {
+  background-size: 200% 200%;
+  animation: gradientShift 5s ease infinite;
+}
