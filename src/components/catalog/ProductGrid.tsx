@@ -15,13 +15,13 @@ export default function ProductGrid({ products, cartItems, onAdd, onRemove }: Pr
     return (
       <div className="text-center py-24 text-gray-400">
         <div className="text-6xl mb-4">📦</div>
-        <p className="text-lg">No products in this category</p>
+        <p className="text-lg font-medium">No products in this category</p>
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
       {products.map((product) => {
         const cartItem = cartItems.find((i) => i.productId === product.id)
         return (
