@@ -8,21 +8,22 @@ interface ProductGridProps {
   cartItems: { productId: string; quantity: number }[]
   onAdd: (productId: string) => void
   onRemove: (productId: string) => void
+  onOpen: (product: Product) => void
   noProductsLabel?: string
 }
 
-export default function ProductGrid({ products, cartItems, onAdd, onRemove, noProductsLabel = 'No products found' }: ProductGridProps) {
+export default function ProductGrid({ products, cartItems, onAdd, onRemove, onOpen, noProductsLabel = 'No products found' }: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0', color: '#9ca3af' }}>
         <div style={{ fontSize: '4rem', marginBottom: '16px' }}>📦</div>
-        <p style={{ fontSize: '16px', fontWeight: 600 }}>{noProductsLabel}</p>
+        <p style={{ fontSize: '18px', fontWeight: 600 }}>{noProductsLabel}</p>
       </div>
     )
   }
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '22px' }}>
       {products.map((product, index) => {
         const cartItem = cartItems.find((i) => i.productId === product.id)
         return (
@@ -32,6 +33,7 @@ export default function ProductGrid({ products, cartItems, onAdd, onRemove, noPr
             cartQuantity={cartItem?.quantity || 0}
             onAdd={() => onAdd(product.id)}
             onRemove={() => onRemove(product.id)}
+            onOpen={() => onOpen(product)}
             index={index}
           />
         )
