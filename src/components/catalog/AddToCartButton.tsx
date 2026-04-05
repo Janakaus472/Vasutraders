@@ -8,13 +8,31 @@ interface AddToCartButtonProps {
 }
 
 export default function AddToCartButton({ quantity, onAdd, onRemove, disabled }: AddToCartButtonProps) {
-  if (disabled) return null
+  if (disabled) return (
+    <span style={{ fontSize: '10px', color: '#9ca3af', fontWeight: 600, letterSpacing: '0.5px' }}>
+      Out of stock
+    </span>
+  )
 
   if (quantity === 0) {
     return (
       <button
         onClick={onAdd}
-        className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition-colors whitespace-nowrap"
+        style={{
+          background: '#0f2744',
+          color: '#fff',
+          fontWeight: 700,
+          fontSize: '12px',
+          padding: '7px 16px',
+          borderRadius: '10px',
+          border: 'none',
+          cursor: 'pointer',
+          transition: 'background 0.15s',
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          letterSpacing: '0.3px',
+        }}
+        onMouseOver={e => ((e.currentTarget as HTMLButtonElement).style.background = '#FF6B00')}
+        onMouseOut={e => ((e.currentTarget as HTMLButtonElement).style.background = '#0f2744')}
       >
         + Add
       </button>
@@ -22,17 +40,47 @@ export default function AddToCartButton({ quantity, onAdd, onRemove, disabled }:
   }
 
   return (
-    <div className="flex items-center gap-1 bg-orange-500 rounded-lg overflow-hidden">
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      background: '#FF6B00',
+      borderRadius: '10px',
+      overflow: 'hidden',
+    }}>
       <button
         onClick={onRemove}
-        className="px-3 py-1.5 text-white text-lg font-bold hover:bg-orange-600 transition-colors"
+        style={{
+          width: '30px', height: '32px',
+          color: '#fff', fontSize: '18px', fontWeight: 700,
+          border: 'none', cursor: 'pointer',
+          background: 'transparent',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'background 0.1s',
+        }}
+        onMouseOver={e => ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,0,0,0.15)')}
+        onMouseOut={e => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}
       >
         −
       </button>
-      <span className="text-white font-bold text-base min-w-[1.5rem] text-center">{quantity}</span>
+      <span style={{
+        color: '#fff', fontWeight: 800, fontSize: '14px',
+        minWidth: '24px', textAlign: 'center',
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+      }}>
+        {quantity}
+      </span>
       <button
         onClick={onAdd}
-        className="px-3 py-1.5 text-white text-lg font-bold hover:bg-orange-600 transition-colors"
+        style={{
+          width: '30px', height: '32px',
+          color: '#fff', fontSize: '18px', fontWeight: 700,
+          border: 'none', cursor: 'pointer',
+          background: 'transparent',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'background 0.1s',
+        }}
+        onMouseOver={e => ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,0,0,0.15)')}
+        onMouseOut={e => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}
       >
         +
       </button>

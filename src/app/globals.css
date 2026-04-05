@@ -1,16 +1,24 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 /* Force light mode always — no dark mode */
 :root {
   color-scheme: light;
-  --background: #f8f9fa;
+  --background: #f5f4f0;
   --foreground: #111827;
+  --navy: #0f2744;
+  --orange: #FF6B00;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+}
+
+.font-display {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 0.02em;
 }
 
 /* Ensure inputs are always readable */
