@@ -19,12 +19,12 @@ interface ProductCardProps {
 
 /* Category → neon glow color */
 const GLOW: Record<string, string> = {
-  'Playing Cards':        '#FF6B00',
-  'Party Balloons':       '#E91E8C',
-  'Kanche & Glass Balls': '#7C3AED',
-  'Sports & Games':       '#059669',
-  'Rubber Bands':         '#DC2626',
-  'Poker Chips':          '#B45309',
+  'Playing Cards':        '#C2410C',
+  'Party Balloons':       '#C2410C',
+  'Kanche & Glass Balls': '#C2410C',
+  'Sports & Games':       '#15803d',
+  'Rubber Bands':         '#C2410C',
+  'Poker Chips':          '#C2691A',
   'Toothbrushes':         '#0891B2',
   'Boric Acid':           '#4F7942',
   'Tapes':                '#0284C7',
@@ -46,7 +46,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
   const { t } = useLanguage()
   const isInCart = cartQuantity > 0
   const imgBg    = CATEGORY_BG[product.category] || 'linear-gradient(135deg,#f8f7f4,#efefed)'
-  const glowColor = GLOW[product.category] || '#FF6B00'
+  const glowColor = GLOW[product.category] || '#C2410C'
   const delay     = Math.min(index, 14) * 0.055
 
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -109,7 +109,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
         style={{
-          background: 'rgba(255,252,248,0.78)',
+          background: 'rgba(255,245,235,0.88)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
           borderRadius: '22px',
@@ -117,13 +117,13 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
           display: 'flex',
           flexDirection: 'column',
           boxShadow: isInCart
-            ? '0 0 0 3px #FF6B00, 0 10px 30px rgba(255,107,0,0.2)'
-            : '0 4px 20px rgba(15,39,68,0.08)',
+            ? `0 0 0 3px #C2410C, 0 10px 30px rgba(194,65,12,0.2)`
+            : '0 4px 20px rgba(92,45,15,0.08)',
           transition: 'box-shadow 0.3s, transform 0.3s',
           cursor: 'pointer',
           transformStyle: 'preserve-3d',
           willChange: 'transform',
-          border: '1px solid rgba(255,200,150,0.25)',
+          border: '1px solid rgba(194,105,26,0.2)',
         }}
       >
         {/* ── Holographic overlay (sits above image, below content) ── */}
@@ -173,11 +173,11 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
           {cartQuantity > 0 && (
             <div style={{
               position: 'absolute', top: '10px', right: '10px',
-              background: '#FF6B00', color: '#fff',
+              background: '#C2410C', color: '#fff',
               fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem',
               width: '30px', height: '30px', borderRadius: '50%',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 3px 8px rgba(255,107,0,0.5)',
+              boxShadow: '0 3px 8px rgba(194,65,12,0.5)',
               animation: 'popIn 0.35s cubic-bezier(.34,1.56,.64,1)',
               zIndex: 5,
             }}>
@@ -235,7 +235,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
                 </>
               ) : (
                 <>
-                  <p style={{ color: '#FF6B00', fontWeight: 800, fontSize: '14px' }}>{t.callForPrice}</p>
+                  <p style={{ color: '#C2410C', fontWeight: 800, fontSize: '14px' }}>{t.callForPrice}</p>
                   <p style={{ color: '#9ca3af', fontSize: '12px', marginTop: '2px' }}>{t.per} {product.unit}</p>
                 </>
               )}
