@@ -11,8 +11,11 @@ import BackgroundEffect from "@/components/BackgroundEffect";
 const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Vasu Traders — Wholesale Products",
-  description: "Wholesale ordering for Vasu Traders customers — Indore",
+  title: "VASU TRADERS 🎰",
+  description: "Wholesale Supplier · Indore, MP",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

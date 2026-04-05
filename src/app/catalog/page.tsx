@@ -62,7 +62,7 @@ export default function CatalogPage() {
 
       {/* ── Banner ── */}
       <div style={{
-        background: 'linear-gradient(150deg, rgba(13,13,13,0.92) 0%, rgba(60,20,10,0.92) 40%, rgba(150,50,10,0.92) 75%, rgba(220,80,20,0.92) 100%)',
+        background: 'linear-gradient(150deg, rgba(13,13,13,0.80) 0%, rgba(60,20,10,0.80) 40%, rgba(150,50,10,0.80) 75%, rgba(220,80,20,0.80) 100%)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
         position: 'relative', overflow: 'hidden',
@@ -99,11 +99,11 @@ export default function CatalogPage() {
       </div>
 
       {/* ── Body ── */}
-      <div style={{ background: 'rgba(255,252,248,0.95)', maxWidth: '1600px', margin: '0 auto', padding: '24px 16px', display: 'flex', gap: '20px' }}>
+      <div style={{ background: 'rgba(255,252,248,0.88)', maxWidth: '1600px', margin: '0 auto', padding: '24px 16px', display: 'flex', gap: '20px' }}>
 
         {/* ── Sidebar ── */}
         <aside className={`w-56 flex-shrink-0 hidden md:block ${mounted ? 'animate-slideInLeft' : ''}`}>
-          <div style={{ background: 'rgba(255,248,240,0.92)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 24px rgba(200,100,0,0.1)', position: 'sticky', top: '80px', border: '1px solid rgba(255,200,150,0.3)' }}>
+          <div style={{ background: 'rgba(255,248,240,0.88)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 24px rgba(200,100,0,0.1)', position: 'sticky', top: '80px', border: '1px solid rgba(255,200,150,0.3)' }}>
             <div style={{ background: 'linear-gradient(135deg, #7c2d12, #c2410c)', padding: '18px 18px' }}>
               <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '9px', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase' }}>{t.browseBy}</p>
               <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem', color: '#fff', letterSpacing: '1px', marginTop: '2px' }}>{t.category}</p>
@@ -199,7 +199,7 @@ export default function CatalogPage() {
                 onChange={(e) => setSearch(e.target.value)}
                 style={{
                   paddingLeft: '40px', paddingRight: '18px', paddingTop: '12px', paddingBottom: '12px',
-                  background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)',
+                  background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(8px)',
                   border: '2px solid rgba(255,255,255,0.6)', borderRadius: '14px',
                   fontSize: '14px', outline: 'none', width: '280px', color: '#111827',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",

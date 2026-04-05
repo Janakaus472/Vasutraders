@@ -291,7 +291,7 @@ export default function HomePage() {
       </div>
 
       {/* ── STATS ────────────────────────────────────────────────────── */}
-      <section style={{ background:'rgba(255,252,248,0.92)', borderBottom:'1px solid rgba(255,180,100,0.2)', backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)' }}>
+      <section style={{ background:'rgba(255,252,248,0.88)', borderBottom:'1px solid rgba(255,180,100,0.2)', backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)' }}>
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {STATS.map((s, i) => (
@@ -310,7 +310,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CATEGORIES ───────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 py-16" style={{ background:'rgba(255,252,248,0.92)', position: 'relative', zIndex: 1 }}>
+      <section className="max-w-7xl mx-auto px-6 py-16" style={{ background:'rgba(255,252,248,0.85)', position: 'relative', zIndex: 1 }}>
         <div className="text-center mb-12">
           <p style={{ color:'#FF6B00', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:700, fontSize:'13px', letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:'12px' }}>
             What We Supply ❤️
@@ -415,7 +415,7 @@ export default function HomePage() {
       </section>
 
       {/* ── WHY US ───────────────────────────────────────────────────── */}
-      <section style={{ background:'linear-gradient(135deg, rgba(13,13,13,0.92), rgba(60,20,10,0.92))', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
+      <section style={{ background:'linear-gradient(135deg, rgba(13,13,13,0.80), rgba(60,20,10,0.80))', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,215,0,0.08)', filter:'blur(80px)' }} />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid md:grid-cols-2 gap-16 items-center">
@@ -455,7 +455,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
-      <section style={{ background:'rgba(255,107,0,0.92)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
+      <section style={{ background:'rgba(255,107,0,0.88)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', padding:'72px 24px', textAlign:'center', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', top:0, left:0, right:0, bottom:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize:'40px 40px', pointerEvents:'none' }} />
         <div className="relative z-10">
           <h2 className="display-font" style={{ fontSize:'clamp(40px, 6vw, 72px)', color:'#fff', marginBottom:'16px', lineHeight:1 }}>
