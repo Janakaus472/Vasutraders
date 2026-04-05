@@ -84,7 +84,7 @@ export default function CatalogPage() {
               { val: isLoading ? '…' : categories.length - 1, label: t.categories },
             ].map(({ val, label }) => (
               <div key={label} style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '3.5rem', color: '#FF6B00', lineHeight: 1, textShadow: '0 0 20px rgba(255,107,0,0.5), 0 0 40px rgba(255,107,0,0.25)' }}>{val}</div>
+                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '3.5rem', lineHeight: 1, background: 'linear-gradient(135deg, #FF6B00 0%, #FFE000 35%, #00E5FF 65%, #BF00FF 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 12px rgba(255,107,0,0.8)) drop-shadow(0 0 24px rgba(0,229,255,0.5))' }}>{val}</div>
                 <div style={{ color: '#fcd9b0', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '3px' }}>{label}</div>
               </div>
             ))}
