@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useCart } from '@/context/CartContext'
 import { useLanguage } from '@/context/LanguageContext'
 import { useProducts } from '@/hooks/useProducts'
@@ -22,16 +23,22 @@ const CATEGORY_EMOJIS: Record<string, string> = {
   'Burnt Balls': '⚫',
 }
 
-export default function CatalogPage() {
+function CatalogContent() {
   const { items, addItem, removeItem } = useCart()
   const { t, catLabel } = useLanguage()
   const { products, isLoading } = useProducts()
-  const [activeCategory, setActiveCategory] = useState('All')
+  const searchParams = useSearchParams()
+  const [activeCategory, setActiveCategory] = useState(() => searchParams.get('category') || 'All')
   const [search, setSearch] = useState('')
   const [mounted, setMounted] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
+
+  useEffect(() => {
+    const cat = searchParams.get('category')
+    if (cat) setActiveCategory(cat)
+  }, [searchParams])
 
   const categories = useMemo(() => {
     const cats = Array.from(new Set(products.map((p) => p.category).filter(Boolean)))
@@ -265,5 +272,13 @@ export default function CatalogPage() {
         />
       )}
     </div>
+  )
+}
+
+export default function CatalogPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh' }} />}>
+      <CatalogContent />
+    </Suspense>
   )
 }

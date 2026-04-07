@@ -329,7 +329,7 @@ export default function HomePage() {
           {CATEGORIES.map((cat, i) => (
             <Link
               key={cat.name}
-              href={`/catalog`}
+              href={`/catalog?category=${encodeURIComponent(cat.name)}`}
               className={`animate-popIn`}
               style={{
                 display: 'block',
