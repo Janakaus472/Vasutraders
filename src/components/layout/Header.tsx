@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/context/CartContext'
+import { useLanguage } from '@/context/LanguageContext'
 import { BUSINESS_NAME } from '@/lib/constants'
 import { usePathname } from 'next/navigation'
 
@@ -20,6 +21,7 @@ const LOGO = (
 
 export default function Header() {
   const { itemCount } = useCart()
+  const { lang, setLang } = useLanguage()
   const pathname = usePathname()
   const router = useRouter()
   const isAdmin = pathname.startsWith('/admin')
@@ -67,6 +69,21 @@ export default function Header() {
             </Link>
           )}
         </nav>
+
+        {/* Language toggle */}
+          <button
+            onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
+            style={{
+              display: 'flex', alignItems: 'center',
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '20px', overflow: 'hidden',
+              cursor: 'pointer', padding: 0,
+            }}
+          >
+            <span style={{ padding: '5px 10px', fontSize: '11px', fontWeight: 700, background: lang === 'en' ? '#FF6B00' : 'transparent', color: lang === 'en' ? '#fff' : 'rgba(255,255,255,0.5)', transition: 'all 0.2s' }}>EN</span>
+            <span style={{ padding: '5px 10px', fontSize: '11px', fontWeight: 700, background: lang === 'hi' ? '#FF6B00' : 'transparent', color: lang === 'hi' ? '#fff' : 'rgba(255,255,255,0.5)', transition: 'all 0.2s' }}>हिं</span>
+          </button>
 
         {/* Cart button */}
         <Link
