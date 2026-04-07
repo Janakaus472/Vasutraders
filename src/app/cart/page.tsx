@@ -186,95 +186,135 @@ export default function CartPage() {
 
   // ─── STEP: CART ─────────────────────────────────────────────────
   if (step === 'cart') {
-    return (
-      <div style={{ maxWidth: '960px', margin: '0 auto', padding: '32px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.8rem', color: '#5C2D0F', letterSpacing: '1px', margin: 0 }}>
-            🛒 {lang === 'hi' ? 'मेरा ऑर्डर' : 'My Order'}
-          </h1>
-          <button
-            onClick={clearCart}
-            style={{
-              background: 'none', border: '1.5px solid #fca5a5', color: '#ef4444',
-              padding: '7px 16px', borderRadius: '10px', cursor: 'pointer',
-              fontSize: '13px', fontWeight: 600,
-            }}
-          >
-            {lang === 'hi' ? 'सब हटाएं' : 'Clear all'}
-          </button>
-        </div>
+    const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    const hasPrice = cartProducts.some(i => i.product.pricePerUnit > 0)
+    const total = cartProducts.reduce((s, i) => s + i.product.pricePerUnit * i.quantity, 0)
 
-        {/* Items */}
-        <div style={{ background: '#fff', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(92,45,15,0.10)', marginBottom: '24px' }}>
-          <div style={{
-            display: 'grid', gridTemplateColumns: '1fr auto auto auto',
-            gap: '16px', padding: '14px 24px',
-            background: '#5C2D0F', color: '#FFD4A0',
-            fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase',
-          }}>
-            <div>{lang === 'hi' ? 'उत्पाद' : 'Product'}</div>
-            <div style={{ textAlign: 'center', minWidth: '80px' }}>{lang === 'hi' ? 'कीमत' : 'Price'}</div>
-            <div style={{ textAlign: 'center', minWidth: '100px' }}>{lang === 'hi' ? 'मात्रा' : 'Qty'}</div>
-            <div style={{ textAlign: 'right', minWidth: '80px' }}>{lang === 'hi' ? 'कुल' : 'Total'}</div>
+    return (
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        <style>{`
+          @media (max-width: 767px) { .cart-notepad { display: none !important; } }
+          .notepad-line { border-bottom: 1.5px solid #d4e4f7; padding: 10px 0 10px 12px; display: flex; justify-content: space-between; align-items: center; }
+        `}</style>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px', alignItems: 'start' }}>
+
+          {/* ── LEFT: Editable cart ── */}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.8rem', color: '#5C2D0F', letterSpacing: '1px', margin: 0 }}>
+                🛒 {lang === 'hi' ? 'मेरा ऑर्डर' : 'My Order'}
+              </h1>
+              <button onClick={clearCart} style={{ background: 'none', border: '1.5px solid #fca5a5', color: '#ef4444', padding: '7px 16px', borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}>
+                {lang === 'hi' ? 'सब हटाएं' : 'Clear all'}
+              </button>
+            </div>
+
+            <div style={{ background: '#fff', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(92,45,15,0.10)', marginBottom: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '16px', padding: '14px 24px', background: '#5C2D0F', color: '#FFD4A0', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>
+                <div>{lang === 'hi' ? 'उत्पाद' : 'Product'}</div>
+                <div style={{ textAlign: 'center', minWidth: '80px' }}>{lang === 'hi' ? 'कीमत' : 'Price'}</div>
+                <div style={{ textAlign: 'center', minWidth: '100px' }}>{lang === 'hi' ? 'मात्रा' : 'Qty'}</div>
+                <div style={{ textAlign: 'right', minWidth: '80px' }}>{lang === 'hi' ? 'कुल' : 'Total'}</div>
+              </div>
+
+              {cartProducts.map(({ productId, quantity, product }, idx) => (
+                <div key={productId} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '16px', alignItems: 'center', padding: '16px 24px', borderBottom: idx < cartProducts.length - 1 ? '1px solid #FFF0E0' : 'none' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{ position: 'relative', width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', background: '#FFF8F0', flexShrink: 0, border: '1px solid #FFE0C0' }}>
+                      <Image src={product.imageUrl || '/placeholder-product.png'} alt={product.name} fill style={{ objectFit: 'contain', padding: '6px' }} />
+                    </div>
+                    <div>
+                      <p style={{ fontWeight: 700, color: '#1a1a1a', fontSize: '15px', margin: '0 0 3px' }}>{product.name}</p>
+                      <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>per {product.unit}</p>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'center', minWidth: '80px' }}>
+                    {product.pricePerUnit > 0
+                      ? <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#374151' }}>₹{product.pricePerUnit.toFixed(0)}</span>
+                      : <span style={{ color: '#FF6B00', fontSize: '12px', fontWeight: 700 }}>On Request</span>}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '100px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', background: '#FF6B00', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(255,107,0,0.3)' }}>
+                      <button onClick={() => removeItem(productId)} style={{ width: '32px', height: '34px', color: '#fff', fontSize: '18px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>−</button>
+                      <span style={{ color: '#fff', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', minWidth: '24px', textAlign: 'center' }}>{quantity}</span>
+                      <button onClick={() => addItem(productId)} style={{ width: '32px', height: '34px', color: '#fff', fontSize: '18px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>+</button>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right', minWidth: '80px' }}>
+                    {product.pricePerUnit > 0
+                      ? <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.4rem', color: '#15803d' }}>₹{(product.pricePerUnit * quantity).toFixed(0)}</span>
+                      : <span style={{ color: '#9ca3af' }}>—</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={() => setStep('details')} style={{ background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff', border: 'none', cursor: 'pointer', padding: '20px 48px', borderRadius: '16px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '22px', boxShadow: '0 8px 32px rgba(255,107,0,0.45)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {lang === 'hi' ? 'ऑर्डर पक्का करें →' : 'Confirm Order →'}
+              </button>
+            </div>
           </div>
 
-          {cartProducts.map(({ productId, quantity, product }, idx) => (
-            <div key={productId} style={{
-              display: 'grid', gridTemplateColumns: '1fr auto auto auto',
-              gap: '16px', alignItems: 'center', padding: '16px 24px',
-              borderBottom: idx < cartProducts.length - 1 ? '1px solid #FFF0E0' : 'none',
+          {/* ── RIGHT: Notepad ── */}
+          <div className="cart-notepad" style={{ position: 'sticky', top: '80px' }}>
+            {/* Spiral holes */}
+            <div style={{ display: 'flex', justifyContent: 'space-around', padding: '0 24px', marginBottom: '-8px', position: 'relative', zIndex: 2 }}>
+              {Array.from({ length: 7 }).map((_, i) => (
+                <div key={i} style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(92,45,15,0.15)', border: '2.5px solid rgba(92,45,15,0.25)', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.15)' }} />
+              ))}
+            </div>
+
+            {/* Paper */}
+            <div style={{
+              background: '#FEFCE8',
+              borderRadius: '4px',
+              boxShadow: '2px 4px 16px rgba(0,0,0,0.18), 4px 8px 32px rgba(0,0,0,0.10)',
+              overflow: 'hidden',
+              backgroundImage: 'repeating-linear-gradient(transparent, transparent 31px, #d4e4f7 31px, #d4e4f7 32px)',
+              backgroundSize: '100% 32px',
+              position: 'relative',
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <div style={{ position: 'relative', width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', background: '#FFF8F0', flexShrink: 0, border: '1px solid #FFE0C0' }}>
-                  <Image src={product.imageUrl || '/placeholder-product.png'} alt={product.name} fill style={{ objectFit: 'contain', padding: '6px' }} />
-                </div>
-                <div>
-                  <p style={{ fontWeight: 700, color: '#1a1a1a', fontSize: '15px', margin: '0 0 3px' }}>{product.name}</p>
-                  <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>per {product.unit}</p>
-                </div>
+              {/* Red margin line */}
+              <div style={{ position: 'absolute', left: '44px', top: 0, bottom: 0, width: '2px', background: 'rgba(220,60,60,0.35)', zIndex: 1 }} />
+
+              {/* Header block */}
+              <div style={{ background: '#5C2D0F', padding: '16px 20px 14px 52px', position: 'relative', zIndex: 2 }}>
+                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#FFD4A0', letterSpacing: '2px' }}>VASU TRADERS</div>
+                <div style={{ fontSize: '10px', color: '#FFB880', fontWeight: 600, marginTop: '2px' }}>ORDER SLIP · {today}</div>
               </div>
-              <div style={{ textAlign: 'center', minWidth: '80px' }}>
-                {product.pricePerUnit > 0 ? (
-                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#374151' }}>₹{product.pricePerUnit.toFixed(0)}</span>
-                ) : (
-                  <span style={{ color: '#FF6B00', fontSize: '12px', fontWeight: 700 }}>On Request</span>
+
+              {/* Items */}
+              <div style={{ padding: '8px 20px 8px 52px', position: 'relative', zIndex: 2 }}>
+                {cartProducts.map(({ productId, quantity, product }) => (
+                  <div key={productId} className="notepad-line">
+                    <span style={{ fontWeight: 700, fontSize: '13px', color: '#1a1a1a', flex: 1, paddingRight: '8px', lineHeight: 1.3 }}>{product.name}</span>
+                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#C2410C', whiteSpace: 'nowrap' }}>× {quantity}</span>
+                  </div>
+                ))}
+
+                {/* Total */}
+                {hasPrice && (
+                  <div style={{ borderTop: '2px solid #C2410C', marginTop: '8px', paddingTop: '12px', paddingBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 800, fontSize: '13px', color: '#5C2D0F' }}>TOTAL</span>
+                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem', color: '#15803d' }}>₹{total.toFixed(0)}</span>
+                  </div>
                 )}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '100px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', background: '#FF6B00', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(255,107,0,0.3)' }}>
-                  <button onClick={() => removeItem(productId)} style={{ width: '32px', height: '34px', color: '#fff', fontSize: '18px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>−</button>
-                  <span style={{ color: '#fff', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', minWidth: '24px', textAlign: 'center' }}>{quantity}</span>
-                  <button onClick={() => addItem(productId)} style={{ width: '32px', height: '34px', color: '#fff', fontSize: '18px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>+</button>
+
+                {/* Footer note */}
+                <div style={{ paddingTop: hasPrice ? '4px' : '16px', paddingBottom: '16px' }}>
+                  <p style={{ fontSize: '10px', color: '#92400e', fontStyle: 'italic', margin: 0, lineHeight: 1.5 }}>
+                    * Prices confirmed on order. Wholesale rates apply.
+                  </p>
                 </div>
-              </div>
-              <div style={{ textAlign: 'right', minWidth: '80px' }}>
-                {product.pricePerUnit > 0 ? (
-                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.4rem', color: '#15803d' }}>₹{(product.pricePerUnit * quantity).toFixed(0)}</span>
-                ) : (
-                  <span style={{ color: '#9ca3af' }}>—</span>
-                )}
               </div>
             </div>
-          ))}
-        </div>
 
-        {/* Confirm button */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            onClick={() => setStep('details')}
-            style={{
-              background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)',
-              color: '#fff', border: 'none', cursor: 'pointer',
-              padding: '20px 48px', borderRadius: '16px',
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 800, fontSize: '22px',
-              boxShadow: '0 8px 32px rgba(255,107,0,0.45), 0 0 60px rgba(255,107,0,0.2)',
-              display: 'flex', alignItems: 'center', gap: '12px',
-            }}
-          >
-            ऑर्डर पक्का करें →
-          </button>
+            {/* Paper shadow/fold */}
+            <div style={{ height: '6px', background: 'linear-gradient(to bottom, rgba(0,0,0,0.06), transparent)', marginTop: '-2px', borderRadius: '0 0 4px 4px' }} />
+          </div>
+
         </div>
       </div>
     )
