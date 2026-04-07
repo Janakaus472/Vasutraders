@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import Image from 'next/image'
 import { Product } from '@/types/product'
 import { useLanguage } from '@/context/LanguageContext'
+import { getDescription } from '@/lib/i18n'
 import AddToCartButton from './AddToCartButton'
 import { CATEGORY_BG, LOGOS, MARKETPLACE_LINKS } from './marketplaceConfig'
 import CategoryIcon from './CategoryIcon'
@@ -43,7 +44,7 @@ const CATEGORY_EMOJIS: Record<string, string> = {
 }
 
 export default function ProductCard({ product, cartQuantity, onAdd, onRemove, onOpen, index = 0 }: ProductCardProps) {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const isInCart = cartQuantity > 0
   const imgBg    = CATEGORY_BG[product.category] || 'linear-gradient(135deg,#f8f7f4,#efefed)'
   const glowColor = GLOW[product.category] || '#C2410C'
@@ -213,13 +214,13 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
             }}>
               {product.name}
             </p>
-            {product.description && (
+            {getDescription(product.description, lang) && (
               <p style={{
                 color: '#6b7280', fontSize: '13px', marginTop: '5px',
                 display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                 lineHeight: 1.5, margin: '5px 0 0',
               }}>
-                {product.description}
+                {getDescription(product.description, lang)}
               </p>
             )}
           </div>

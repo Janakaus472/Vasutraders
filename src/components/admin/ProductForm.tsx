@@ -4,6 +4,7 @@ import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { Product, ProductUnit } from '@/types/product'
 import { addProduct, updateProduct } from '@/lib/supabase/products'
+import { generateProductDescription } from '@/lib/openai'
 import ImageUploader from './ImageUploader'
 
 const UNITS: ProductUnit[] = ['kg', 'litre', 'piece', 'dozen', 'box']
@@ -17,7 +18,8 @@ export default function ProductForm({ product }: ProductFormProps) {
   const isEdit = !!product
 
   const [name, setName] = useState(product?.name || '')
-  const [description, setDescription] = useState(product?.description || '')
+  const [descriptionEn, setDescriptionEn] = useState('')
+  const [descriptionHi, setDescriptionHi] = useState('')
   const [imageUrl, setImageUrl] = useState(product?.imageUrl || '')
   const [unit, setUnit] = useState<ProductUnit>(product?.unit || 'kg')
   const [pricePerUnit, setPricePerUnit] = useState(product?.pricePerUnit?.toString() || '')
@@ -27,6 +29,7 @@ export default function ProductForm({ product }: ProductFormProps) {
   const [inStock, setInStock] = useState(product?.inStock ?? true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [generating, setGenerating] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -35,7 +38,7 @@ export default function ProductForm({ product }: ProductFormProps) {
     try {
       const data = {
         name,
-        description,
+        description: JSON.stringify({ en: descriptionEn, hi: descriptionHi }),
         imageUrl,
         unit,
         pricePerUnit: parseFloat(pricePerUnit),
@@ -72,14 +75,57 @@ export default function ProductForm({ product }: ProductFormProps) {
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-orange-400 resize-none"
-          rows={2}
-        />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Description (English)</label>
+          <div className="relative">
+            <textarea
+              value={descriptionEn}
+              onChange={(e) => setDescriptionEn(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-orange-400 resize-none pr-12"
+              rows={2}
+              placeholder="Product description in English"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Description (Hindi)</label>
+          <div className="relative">
+            <textarea
+              value={descriptionHi}
+              onChange={(e) => setDescriptionHi(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-orange-400 resize-none pr-12"
+              rows={2}
+              placeholder="Product description in Hindi"
+            />
+          </div>
+        </div>
+      </div>
+      <div className="flex justify-center">
+        <button
+          type="button"
+          disabled={generating || !name || !category}
+          onClick={async () => {
+            if (!name || !category) {
+              setError('Please fill Product Name and Category first')
+              return
+            }
+            setGenerating(true)
+            setError('')
+            try {
+              const result = await generateProductDescription(name, category, unit)
+              setDescriptionEn(result.en)
+              setDescriptionHi(result.hi)
+            } catch (err) {
+              setError('Failed to generate. Check API key.')
+            } finally {
+              setGenerating(false)
+            }
+          }}
+          className="text-sm px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 disabled:opacity-50 flex items-center gap-2"
+        >
+          {generating ? '⏳ Generating...' : '✨ Generate Descriptions (EN + HI)'}
+        </button>
       </div>
 
       <div className="grid grid-cols-2 gap-4">

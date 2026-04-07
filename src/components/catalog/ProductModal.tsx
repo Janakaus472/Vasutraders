@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import Image from 'next/image'
 import { Product } from '@/types/product'
 import { useLanguage } from '@/context/LanguageContext'
+import { getDescription } from '@/lib/i18n'
 import AddToCartButton from './AddToCartButton'
 import { CATEGORY_BG, LOGOS, MARKETPLACE_LINKS } from './marketplaceConfig'
 import CategoryIcon from './CategoryIcon'
@@ -17,7 +18,7 @@ interface ProductModalProps {
 }
 
 export default function ProductModal({ product, cartQuantity, onAdd, onRemove, onClose }: ProductModalProps) {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
@@ -161,7 +162,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
             </h2>
 
             {/* Description */}
-            {product.description ? (
+            {getDescription(product.description, lang) ? (
               <p style={{
                 color: '#4b5563',
                 fontSize: '16px',
@@ -169,7 +170,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
                 marginTop: '14px',
                 fontWeight: 400,
               }}>
-                {product.description}
+                {getDescription(product.description, lang)}
               </p>
             ) : (
               <p style={{ color: '#9ca3af', fontSize: '15px', marginTop: '10px', fontStyle: 'italic' }}>
