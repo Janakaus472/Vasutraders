@@ -322,104 +322,91 @@ export default function CartPage() {
 
   // ─── STEP: DETAILS ──────────────────────────────────────────────
   if (step === 'details') {
+    const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    const hasPrice = cartProducts.some(i => i.product.pricePerUnit > 0)
+    const total = cartProducts.reduce((s, i) => s + i.product.pricePerUnit * i.quantity, 0)
+
     return (
-      <div style={{ maxWidth: '560px', margin: '0 auto', padding: '40px 24px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-        <button onClick={() => setStep('cart')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8B4513', fontSize: '16px', fontWeight: 700, marginBottom: '24px', padding: 0 }}>
-          ← वापस जाएं
-        </button>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 24px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        <style>{`.cart-notepad-d { display: block; } @media (max-width: 767px) { .cart-notepad-d { display: none !important; } } .notepad-line { border-bottom: 1.5px solid #d4e4f7; padding: 10px 0 10px 12px; display: flex; justify-content: space-between; align-items: center; }`}</style>
 
-        <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2rem, 7vw, 3rem)', color: '#5C2D0F', letterSpacing: '1px', marginBottom: '8px' }}>
-          आपकी जानकारी
-        </h1>
-        <p style={{ color: '#8B4513', fontSize: '16px', marginBottom: '36px' }}>
-          ऑर्डर के लिए नीचे भरें
-        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px', alignItems: 'start' }}>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* ── LEFT: Form ── */}
           <div>
-            <label style={LABEL_STYLE}>🏪 दुकान का नाम *</label>
-            <input
-              type="text"
-              value={details.shopName}
-              onChange={e => setDetails(d => ({ ...d, shopName: e.target.value }))}
-              placeholder="जैसे: शर्मा जनरल स्टोर"
-              style={FIELD_STYLE}
-              onFocus={e => (e.target.style.borderColor = '#FF6B00')}
-              onBlur={e => (e.target.style.borderColor = '#FFD4A0')}
-            />
+            <button onClick={() => setStep('cart')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8B4513', fontSize: '16px', fontWeight: 700, marginBottom: '24px', padding: 0 }}>
+              ← Back
+            </button>
+
+            <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2rem, 7vw, 3rem)', color: '#5C2D0F', letterSpacing: '1px', marginBottom: '8px' }}>
+              Your Details
+            </h1>
+            <p style={{ color: '#8B4513', fontSize: '16px', marginBottom: '36px' }}>
+              Fill in below to place your order
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div>
+                <label style={LABEL_STYLE}>🏪 Shop Name *</label>
+                <input type="text" value={details.shopName} onChange={e => setDetails(d => ({ ...d, shopName: e.target.value }))} placeholder="e.g. Sharma General Store" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
+              </div>
+              <div>
+                <label style={LABEL_STYLE}>👤 Your Name</label>
+                <input type="text" value={details.contactName} onChange={e => setDetails(d => ({ ...d, contactName: e.target.value }))} placeholder="e.g. Ram Sharma" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
+              </div>
+              <div>
+                <label style={LABEL_STYLE}>📱 Mobile Number *</label>
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" maxLength={10} value={details.phone} onChange={e => setDetails(d => ({ ...d, phone: e.target.value.replace(/\D/g, '') }))} placeholder="10-digit number" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
+                {details.phone && !/^\d{10}$/.test(details.phone) && (
+                  <p style={{ color: '#ef4444', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>Enter a valid 10-digit number</p>
+                )}
+              </div>
+              <div>
+                <label style={LABEL_STYLE}>📍 Area / Locality *</label>
+                <input type="text" value={details.locality} onChange={e => setDetails(d => ({ ...d, locality: e.target.value }))} placeholder="e.g. Rajwada, Indore" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
+              </div>
+            </div>
+
+            <button onClick={() => setStep('review')} disabled={!isDetailsValid} style={{ marginTop: '36px', width: '100%', background: isDetailsValid ? 'linear-gradient(135deg, #FF6B00, #FF9A3C)' : '#e5e7eb', color: isDetailsValid ? '#fff' : '#9ca3af', border: 'none', cursor: isDetailsValid ? 'pointer' : 'not-allowed', padding: '22px', borderRadius: '16px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '22px', boxShadow: isDetailsValid ? '0 8px 32px rgba(255,107,0,0.4)' : 'none', transition: 'all 0.2s' }}>
+              Next →
+            </button>
           </div>
 
-          <div>
-            <label style={LABEL_STYLE}>👤 आपका नाम</label>
-            <input
-              type="text"
-              value={details.contactName}
-              onChange={e => setDetails(d => ({ ...d, contactName: e.target.value }))}
-              placeholder="जैसे: राम शर्मा"
-              style={FIELD_STYLE}
-              onFocus={e => (e.target.style.borderColor = '#FF6B00')}
-              onBlur={e => (e.target.style.borderColor = '#FFD4A0')}
-            />
+          {/* ── RIGHT: Notepad ── */}
+          <div className="cart-notepad-d" style={{ position: 'sticky', top: '80px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-around', padding: '0 24px', marginBottom: '-8px', position: 'relative', zIndex: 2 }}>
+              {Array.from({ length: 7 }).map((_, i) => (
+                <div key={i} style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(92,45,15,0.15)', border: '2.5px solid rgba(92,45,15,0.25)', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.15)' }} />
+              ))}
+            </div>
+            <div style={{ background: '#FEFCE8', borderRadius: '4px', boxShadow: '2px 4px 16px rgba(0,0,0,0.18), 4px 8px 32px rgba(0,0,0,0.10)', overflow: 'hidden', backgroundImage: 'repeating-linear-gradient(transparent, transparent 31px, #d4e4f7 31px, #d4e4f7 32px)', backgroundSize: '100% 32px', position: 'relative' }}>
+              <div style={{ position: 'absolute', left: '44px', top: 0, bottom: 0, width: '2px', background: 'rgba(220,60,60,0.35)', zIndex: 1 }} />
+              <div style={{ background: '#5C2D0F', padding: '16px 20px 14px 52px', position: 'relative', zIndex: 2 }}>
+                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#FFD4A0', letterSpacing: '2px' }}>VASU TRADERS</div>
+                <div style={{ fontSize: '10px', color: '#FFB880', fontWeight: 600, marginTop: '2px' }}>ORDER SLIP · {today}</div>
+              </div>
+              <div style={{ padding: '8px 20px 8px 52px', position: 'relative', zIndex: 2 }}>
+                {cartProducts.map(({ productId, quantity, product }) => (
+                  <div key={productId} className="notepad-line">
+                    <span style={{ fontWeight: 700, fontSize: '13px', color: '#1a1a1a', flex: 1, paddingRight: '8px', lineHeight: 1.3 }}>{product.name}</span>
+                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#C2410C', whiteSpace: 'nowrap' }}>× {quantity}</span>
+                  </div>
+                ))}
+                {hasPrice && (
+                  <div style={{ borderTop: '2px solid #C2410C', marginTop: '8px', paddingTop: '12px', paddingBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 800, fontSize: '13px', color: '#5C2D0F' }}>TOTAL</span>
+                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem', color: '#15803d' }}>₹{total.toFixed(0)}</span>
+                  </div>
+                )}
+                <div style={{ paddingTop: hasPrice ? '4px' : '16px', paddingBottom: '16px' }}>
+                  <p style={{ fontSize: '10px', color: '#92400e', fontStyle: 'italic', margin: 0, lineHeight: 1.5 }}>* Prices confirmed on order. Wholesale rates apply.</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ height: '6px', background: 'linear-gradient(to bottom, rgba(0,0,0,0.06), transparent)', marginTop: '-2px', borderRadius: '0 0 4px 4px' }} />
           </div>
 
-          <div>
-            <label style={LABEL_STYLE}>📱 मोबाइल नंबर *</label>
-            <input
-              type="tel"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              maxLength={10}
-              value={details.phone}
-              onChange={e => setDetails(d => ({ ...d, phone: e.target.value.replace(/\D/g, '') }))}
-              placeholder="10 अंक का नंबर"
-              style={FIELD_STYLE}
-              onFocus={e => (e.target.style.borderColor = '#FF6B00')}
-              onBlur={e => (e.target.style.borderColor = '#FFD4A0')}
-            />
-            {details.phone && !/^\d{10}$/.test(details.phone) && (
-              <p style={{ color: '#ef4444', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>
-                10 अंक का नंबर डालें
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label style={LABEL_STYLE}>📍 इलाका / मोहल्ला *</label>
-            <input
-              type="text"
-              value={details.locality}
-              onChange={e => setDetails(d => ({ ...d, locality: e.target.value }))}
-              placeholder="जैसे: राजवाड़ा, इंदौर"
-              style={FIELD_STYLE}
-              onFocus={e => (e.target.style.borderColor = '#FF6B00')}
-              onBlur={e => (e.target.style.borderColor = '#FFD4A0')}
-            />
-          </div>
         </div>
-
-        <button
-          onClick={() => setStep('review')}
-          disabled={!isDetailsValid}
-          style={{
-            marginTop: '36px',
-            width: '100%',
-            background: isDetailsValid
-              ? 'linear-gradient(135deg, #FF6B00, #FF9A3C)'
-              : '#e5e7eb',
-            color: isDetailsValid ? '#fff' : '#9ca3af',
-            border: 'none',
-            cursor: isDetailsValid ? 'pointer' : 'not-allowed',
-            padding: '22px',
-            borderRadius: '16px',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 800,
-            fontSize: '22px',
-            boxShadow: isDetailsValid ? '0 8px 32px rgba(255,107,0,0.4)' : 'none',
-            transition: 'all 0.2s',
-          }}
-        >
-          आगे बढ़ो →
-        </button>
       </div>
     )
   }
