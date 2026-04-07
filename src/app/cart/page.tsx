@@ -93,10 +93,11 @@ export default function CartPage() {
     }
   }
 
+  // Indian mobile: starts with 6,7,8,9 — 10 digits
+  const validPhone = /^[6-9]\d{9}$/.test(details.phone)
   const isDetailsValid =
     details.shopName.trim() &&
-    details.phone.trim().length === 10 &&
-    /^\d{10}$/.test(details.phone) &&
+    validPhone &&
     details.locality.trim()
 
   // ─── EMPTY CART ────────────────────────────────────────────────
@@ -140,14 +141,14 @@ export default function CartPage() {
           fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.5rem, 8vw, 4rem)',
           color: '#15803d', letterSpacing: '1px', marginBottom: '8px',
         }}>
-          ऑर्डर मिल गया!
+          Order Placed!
         </h1>
         <div style={{
           background: 'rgba(255,240,230,0.95)', border: '2px solid #FFD4A0',
           borderRadius: '20px', padding: '28px 24px', margin: '24px 0',
         }}>
           <p style={{ fontSize: '15px', color: '#8B4513', marginBottom: '8px', fontWeight: 600 }}>
-            ऑर्डर नंबर
+            Order Number
           </p>
           <p style={{
             fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.5rem',
@@ -156,12 +157,12 @@ export default function CartPage() {
             {orderNumber}
           </p>
           <p style={{ fontSize: '18px', color: '#5C2D0F', fontWeight: 700, lineHeight: 1.6 }}>
-            वासु ट्रेडर्स को आपका ऑर्डर मिल गया।<br />
-            हम जल्दी आपसे संपर्क करेंगे।
+            Vasu Traders has received your order.<br />
+            We will contact you shortly.
           </p>
         </div>
         <p style={{ color: '#8B4513', fontSize: '15px', marginBottom: '28px' }}>
-          किसी भी जानकारी के लिए हमें कॉल करें।
+          For any queries, feel free to call us.
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <a href={`tel:${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`} style={{
@@ -170,14 +171,14 @@ export default function CartPage() {
             fontSize: '18px', textDecoration: 'none',
             boxShadow: '0 8px 24px rgba(255,107,0,0.4)',
           }}>
-            📞 कॉल करें
+            📞 Call Us
           </a>
           <Link href="/" style={{
             background: 'rgba(92,45,15,0.1)', color: '#5C2D0F',
             fontWeight: 700, padding: '16px 32px', borderRadius: '14px',
             fontSize: '18px', textDecoration: 'none', border: '2px solid #FFD4A0',
           }}>
-            🏠 होम
+            🏠 Home
           </Link>
         </div>
       </div>
@@ -357,8 +358,8 @@ export default function CartPage() {
               <div>
                 <label style={LABEL_STYLE}>📱 Mobile Number *</label>
                 <input type="tel" inputMode="numeric" pattern="[0-9]*" maxLength={10} value={details.phone} onChange={e => setDetails(d => ({ ...d, phone: e.target.value.replace(/\D/g, '') }))} placeholder="10-digit number" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
-                {details.phone && !/^\d{10}$/.test(details.phone) && (
-                  <p style={{ color: '#ef4444', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>Enter a valid 10-digit number</p>
+                {details.phone && !validPhone && (
+                  <p style={{ color: '#ef4444', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>Enter a valid Indian mobile number (starts with 6-9)</p>
                 )}
               </div>
               <div>
