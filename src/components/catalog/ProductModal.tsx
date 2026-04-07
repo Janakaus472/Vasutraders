@@ -42,24 +42,76 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
         background: 'rgba(8, 20, 40, 0.75)',
         backdropFilter: 'blur(10px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '20px',
+        flexDirection: 'column',
+        padding: '0',
       }}
     >
+      <style>{`
+        .modal-panel {
+          background: #fff;
+          border-radius: 28px;
+          overflow: hidden;
+          width: 100%;
+          max-width: 960px;
+          max-height: 92vh;
+          display: flex;
+          box-shadow: 0 60px 120px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,107,0,0.15);
+          position: relative;
+          margin: 20px;
+        }
+        .modal-left-panel {
+          width: 44%;
+          flex-shrink: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 40px 32px;
+          position: relative;
+          min-height: 520px;
+        }
+        .modal-right-panel {
+          flex: 1;
+          overflow-y: auto;
+          padding: 44px 40px 36px;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+        .modal-image-container {
+          position: relative;
+          width: 100%;
+          height: 320px;
+        }
+        @media (max-width: 640px) {
+          .modal-panel {
+            flex-direction: column;
+            border-radius: 20px 20px 0 0;
+            max-height: 95dvh;
+            margin: 0;
+            margin-top: auto;
+            width: 100%;
+            max-width: 100%;
+            align-self: flex-end;
+          }
+          .modal-left-panel {
+            width: 100%;
+            min-height: unset;
+            padding: 20px 16px 12px;
+          }
+          .modal-image-container {
+            height: 200px;
+          }
+          .modal-right-panel {
+            padding: 16px 16px 24px;
+            gap: 14px;
+          }
+        }
+      `}</style>
       {/* Modal panel */}
       <div
-        className="animate-modalIn"
+        className="modal-panel animate-modalIn"
         onClick={e => e.stopPropagation()}
-        style={{
-          background: '#fff',
-          borderRadius: '28px',
-          overflow: 'hidden',
-          width: '100%',
-          maxWidth: '960px',
-          maxHeight: '92vh',
-          display: 'flex',
-          boxShadow: '0 60px 120px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,107,0,0.15)',
-          position: 'relative',
-        }}
       >
         {/* ── Close button ── */}
         <button
@@ -81,15 +133,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
         </button>
 
         {/* ── LEFT: Image panel ── */}
-        <div style={{
-          width: '44%', flexShrink: 0,
-          background: imgBg,
-          display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-          padding: '40px 32px',
-          position: 'relative',
-          minHeight: '520px',
-        }}>
+        <div className="modal-left-panel" style={{ background: imgBg }}>
           {/* Category badge top-left */}
           {product.category && (
             <div style={{
@@ -116,7 +160,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           )}
 
           {/* Large image */}
-          <div style={{ position: 'relative', width: '100%', height: '320px' }}>
+          <div className="modal-image-container">
             {product.imageUrl ? (
               <Image
                 src={product.imageUrl}
@@ -144,10 +188,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
         </div>
 
         {/* ── RIGHT: Details panel ── */}
-        <div style={{
-          flex: 1, overflowY: 'auto', padding: '44px 40px 36px',
-          display: 'flex', flexDirection: 'column', gap: '20px',
-        }}>
+        <div className="modal-right-panel">
 
           {/* Product name */}
           <div>
@@ -190,7 +231,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
               <>
                 <span style={{
                   fontFamily: "'Bebas Neue', sans-serif",
-                  fontSize: '4rem', color: '#15803d',
+                  fontSize: 'clamp(2rem, 8vw, 4rem)', color: '#15803d',
                   lineHeight: 1, letterSpacing: '1px',
                 }}>
                   ₹{product.pricePerUnit.toFixed(0)}

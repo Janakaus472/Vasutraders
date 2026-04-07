@@ -75,7 +75,7 @@ function CatalogContent() {
         position: 'relative', overflow: 'hidden',
       }}>
 
-        <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '28px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
+        <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '20px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', flexWrap: 'wrap', gap: '12px' }}>
           <div className={mounted ? 'animate-fadeInDown' : ''}>
             <p style={{ color: '#FF6B00', fontSize: '10px', fontWeight: 700, letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '6px' }}>
               {t.wholesaleCatalog}
@@ -100,7 +100,7 @@ function CatalogContent() {
       </div>
 
       {/* ── Body ── */}
-      <div style={{ background: 'rgba(255,240,230,0.92)', maxWidth: '1600px', margin: '0 auto', padding: '24px 16px', display: 'flex', gap: '20px' }}>
+      <div style={{ background: 'rgba(255,240,230,0.92)', maxWidth: '1600px', margin: '0 auto', padding: '16px 12px', display: 'flex', gap: '20px' }}>
 
         {/* ── Sidebar ── */}
         <aside className={`w-56 flex-shrink-0 hidden md:block ${mounted ? 'animate-slideInLeft' : ''}`}>
@@ -178,9 +178,9 @@ function CatalogContent() {
         <div style={{ flex: 1, minWidth: 0 }}>
 
           {/* Toolbar */}
-          <div className={`flex items-center gap-3 mb-6 flex-wrap ${mounted ? 'animate-fadeInDown' : ''}`}>
+          <div className={`flex flex-col sm:flex-row sm:items-center gap-3 mb-6 ${mounted ? 'animate-fadeInDown' : ''}`}>
             <div style={{ flex: 1 }}>
-              <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.4rem', color: '#5C2D0F', letterSpacing: '1px', lineHeight: 1 }}>
+              <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.6rem, 5vw, 2.4rem)', color: '#5C2D0F', letterSpacing: '1px', lineHeight: 1 }}>
                 {activeCategory === 'All' ? t.allProducts : catLabel(activeCategory)}
                 {!isLoading && (
                   <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.4rem', color: '#C2691A', marginLeft: '14px' }}>
@@ -189,7 +189,7 @@ function CatalogContent() {
                 )}
               </h2>
             </div>
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', width: '100%', maxWidth: '320px' }}>
               <svg style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', width: '16px', height: '16px', color: '#9ca3af' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -202,10 +202,11 @@ function CatalogContent() {
                   paddingLeft: '40px', paddingRight: '18px', paddingTop: '12px', paddingBottom: '12px',
                   background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)',
                   border: '2px solid rgba(194,105,26,0.2)', borderRadius: '14px',
-                  fontSize: '14px', outline: 'none', width: '280px', color: '#111827',
+                  fontSize: '16px', outline: 'none', width: '100%', color: '#111827',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   boxShadow: '0 2px 8px rgba(15,39,68,0.06)',
                   transition: 'border-color 0.2s, box-shadow 0.2s',
+                  boxSizing: 'border-box',
                 }}
                 onFocus={e => { e.target.style.borderColor = '#FF6B00'; e.target.style.boxShadow = '0 0 0 3px rgba(255,107,0,0.12)' }}
                 onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.6)'; e.target.style.boxShadow = '0 2px 8px rgba(15,39,68,0.06)' }}
@@ -214,7 +215,7 @@ function CatalogContent() {
           </div>
 
           {/* Mobile pills */}
-          <div className="flex gap-2 overflow-x-auto pb-2 mb-5 md:hidden" style={{ scrollbarWidth: 'none' }}>
+          <div className="flex gap-2 overflow-x-auto pb-2 mb-5 md:hidden" style={{ scrollbarWidth: 'none', paddingLeft: '2px', paddingRight: '2px' }}>
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -236,7 +237,7 @@ function CatalogContent() {
 
           {/* Grid */}
           {isLoading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '22px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '14px' }}>
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} style={{ borderRadius: '22px', overflow: 'hidden', animationDelay: `${i * 0.06}s` }} className="animate-shimmer">
                   <div style={{ height: '230px', background: '#e5e7eb' }} />

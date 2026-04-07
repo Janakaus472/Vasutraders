@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" style={{ colorScheme: 'light' }}>
-      <body className={`${geist.className} min-h-screen`} style={{ background: 'transparent' }}>
+      <body className={`${geist.className} min-h-screen`} style={{ background: 'transparent', overflowX: 'hidden' }}>
         <LanguageProvider>
           <CartProvider>
             <BackgroundEffect />

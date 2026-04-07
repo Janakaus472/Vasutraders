@@ -41,14 +41,14 @@ export default function ProductsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Products</h1>
           <p className="text-gray-500 text-sm">{products.length} total • {inStockCount} in stock • {outOfStockCount} out of stock</p>
         </div>
         <Link
           href="/admin/products/new"
-          className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-5 py-2.5 rounded-xl transition-colors flex items-center gap-2"
+          className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-5 py-2.5 rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap"
         >
           <span>➕</span>
           Add Product
@@ -56,13 +56,14 @@ export default function ProductsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3">
         <input
           type="text"
           placeholder="Search products..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="flex-1 min-w-48 px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="w-full sm:flex-1 sm:min-w-48 px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+          style={{ fontSize: '16px' }}
         />
         <select
           value={categoryFilter}

@@ -4,14 +4,18 @@ import { useState, useEffect } from 'react'
 import { Order } from '@/lib/supabase/orders'
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-700',
+  pending:   'bg-yellow-100 text-yellow-700',
+  notifying: 'bg-orange-100 text-orange-600',
+  notified:  'bg-purple-100 text-purple-700',
   confirmed: 'bg-green-100 text-green-700',
   delivered: 'bg-blue-100 text-blue-700',
   cancelled: 'bg-red-100 text-red-700',
 }
 
 const STATUS_LABELS: Record<string, string> = {
-  pending: 'Pending',
+  pending:   'Pending',
+  notifying: 'Sending WA…',
+  notified:  'WA Sent ✓',
   confirmed: 'Confirmed',
   delivered: 'Delivered',
   cancelled: 'Cancelled',
@@ -57,26 +61,27 @@ export default function OrdersPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-col gap-3">
         <input
           type="text"
           placeholder="Search orders..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="flex-1 min-w-48 px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+          style={{ fontSize: '16px' }}
         />
-        <div className="flex gap-2">
-          {['all', 'pending', 'confirmed', 'delivered', 'cancelled'].map(status => (
+        <div className="flex flex-wrap gap-2">
+          {['all', 'pending', 'notified', 'confirmed', 'delivered', 'cancelled'].map(status => (
             <button
               key={status}
               onClick={() => setFilter(status)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                filter === status 
-                  ? 'bg-orange-500 text-white' 
+              className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${
+                filter === status
+                  ? 'bg-orange-500 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
+              {status === 'all' ? 'All' : status === 'notified' ? 'WA Sent ✓' : status.charAt(0).toUpperCase() + status.slice(1)}
             </button>
           ))}
         </div>
@@ -128,9 +133,9 @@ export default function OrdersPage() {
                       <select
                         value={order.status}
                         onChange={e => updateStatus(order.id, e.target.value)}
-                        className={`text-xs px-2 py-1 rounded-full font-medium border-0 cursor-pointer ${STATUS_COLORS[order.status]}`}
+                        className={`text-xs px-2 py-1 rounded-full font-medium border-0 cursor-pointer ${STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-600'}`}
                       >
-                        {Object.entries(STATUS_LABELS).map(([val, label]) => (
+                        {Object.entries(STATUS_LABELS).filter(([val]) => val !== 'notifying').map(([val, label]) => (
                           <option key={val} value={val}>{label}</option>
                         ))}
                       </select>

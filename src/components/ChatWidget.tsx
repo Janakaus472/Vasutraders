@@ -69,8 +69,8 @@ export default function ChatWidget() {
         aria-label="Chat with us"
         style={{
           position: 'fixed',
-          bottom: '80px',
-          right: '20px',
+          bottom: '24px',
+          right: '16px',
           zIndex: 1000,
           width: '56px',
           height: '56px',
@@ -109,11 +109,11 @@ export default function ChatWidget() {
         <div
           style={{
             position: 'fixed',
-            bottom: '148px',
-            right: '20px',
+            bottom: '92px',
+            right: '16px',
             zIndex: 999,
-            width: '340px',
-            maxWidth: 'calc(100vw - 40px)',
+            width: 'min(340px, calc(100vw - 32px))',
+            maxWidth: 'calc(100vw - 32px)',
             borderRadius: '16px',
             overflow: 'hidden',
             boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
@@ -176,7 +176,7 @@ export default function ChatWidget() {
             display: 'flex',
             flexDirection: 'column',
             gap: '10px',
-            maxHeight: '320px',
+            maxHeight: 'min(320px, 50vh)',
             background: '#FFFBF5',
           }}>
             {messages.map((msg, i) => (

@@ -18,8 +18,8 @@ interface CustomerDetails {
 
 const FIELD_STYLE: React.CSSProperties = {
   width: '100%',
-  padding: '18px 20px',
-  fontSize: '20px',
+  padding: '14px 16px',
+  fontSize: '16px',
   borderRadius: '16px',
   border: '2.5px solid #FFD4A0',
   fontFamily: "'Plus Jakarta Sans', sans-serif",
@@ -35,9 +35,9 @@ const LABEL_STYLE: React.CSSProperties = {
   display: 'block',
   fontFamily: "'Plus Jakarta Sans', sans-serif",
   fontWeight: 800,
-  fontSize: '18px',
+  fontSize: '15px',
   color: '#5C2D0F',
-  marginBottom: '10px',
+  marginBottom: '8px',
 }
 
 export default function CartPage() {
@@ -104,7 +104,7 @@ export default function CartPage() {
   if (items.length === 0 && step !== 'success') {
     return (
       <div style={{
-        maxWidth: '600px', margin: '0 auto', padding: '80px 24px',
+        maxWidth: '600px', margin: '0 auto', padding: '48px 16px',
         textAlign: 'center', fontFamily: "'Plus Jakarta Sans', sans-serif",
       }}>
         <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🛒</div>
@@ -133,7 +133,7 @@ export default function CartPage() {
   if (step === 'success') {
     return (
       <div style={{
-        maxWidth: '560px', margin: '0 auto', padding: '60px 24px',
+        maxWidth: '560px', margin: '0 auto', padding: '40px 16px',
         textAlign: 'center', fontFamily: "'Plus Jakarta Sans', sans-serif",
       }}>
         <div style={{ fontSize: '6rem', marginBottom: '16px' }}>✅</div>
@@ -192,13 +192,21 @@ export default function CartPage() {
     const total = cartProducts.reduce((s, i) => s + i.product.pricePerUnit * i.quantity, 0)
 
     return (
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 14px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
         <style>{`
-          @media (max-width: 767px) { .cart-notepad { display: none !important; } }
           .notepad-line { border-bottom: 1.5px solid #d4e4f7; padding: 10px 0 10px 12px; display: flex; justify-content: space-between; align-items: center; }
+          .cart-grid { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
+          @media (min-width: 1024px) { .cart-grid { grid-template-columns: 1fr 340px; gap: 32px; } }
+          .cart-table-header { display: none; }
+          @media (min-width: 640px) { .cart-table-header { display: grid; } }
+          .cart-row { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; }
+          @media (min-width: 640px) { .cart-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 16px; align-items: center; padding: 16px 24px; } }
+          .cart-product-name { font-weight: 700; color: #1a1a1a; font-size: 15px; margin: 0 0 3px; }
+          .cart-mobile-row-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+          @media (min-width: 640px) { .cart-mobile-row-meta { display: contents; } }
         `}</style>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px', alignItems: 'start' }}>
+        <div className="cart-grid">
 
           {/* ── LEFT: Editable cart ── */}
           <div>
@@ -212,7 +220,7 @@ export default function CartPage() {
             </div>
 
             <div style={{ background: '#fff', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(92,45,15,0.10)', marginBottom: '24px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '16px', padding: '14px 24px', background: '#5C2D0F', color: '#FFD4A0', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>
+              <div className="cart-table-header" style={{ gridTemplateColumns: '1fr auto auto auto', gap: '16px', padding: '14px 24px', background: '#5C2D0F', color: '#FFD4A0', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 <div>{lang === 'hi' ? 'उत्पाद' : 'Product'}</div>
                 <div style={{ textAlign: 'center', minWidth: '80px' }}>{lang === 'hi' ? 'कीमत' : 'Price'}</div>
                 <div style={{ textAlign: 'center', minWidth: '100px' }}>{lang === 'hi' ? 'मात्रा' : 'Qty'}</div>
@@ -220,39 +228,41 @@ export default function CartPage() {
               </div>
 
               {cartProducts.map(({ productId, quantity, product }, idx) => (
-                <div key={productId} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '16px', alignItems: 'center', padding: '16px 24px', borderBottom: idx < cartProducts.length - 1 ? '1px solid #FFF0E0' : 'none' }}>
+                <div key={productId} className="cart-row" style={{ borderBottom: idx < cartProducts.length - 1 ? '1px solid #FFF0E0' : 'none' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <div style={{ position: 'relative', width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', background: '#FFF8F0', flexShrink: 0, border: '1px solid #FFE0C0' }}>
+                    <div style={{ position: 'relative', width: '56px', height: '56px', borderRadius: '12px', overflow: 'hidden', background: '#FFF8F0', flexShrink: 0, border: '1px solid #FFE0C0' }}>
                       <Image src={product.imageUrl || '/placeholder-product.png'} alt={product.name} fill style={{ objectFit: 'contain', padding: '6px' }} />
                     </div>
                     <div>
-                      <p style={{ fontWeight: 700, color: '#1a1a1a', fontSize: '15px', margin: '0 0 3px' }}>{product.name}</p>
+                      <p className="cart-product-name">{product.name}</p>
                       <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>per {product.unit}</p>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'center', minWidth: '80px' }}>
-                    {product.pricePerUnit > 0
-                      ? <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#374151' }}>₹{product.pricePerUnit.toFixed(0)}</span>
-                      : <span style={{ color: '#FF6B00', fontSize: '12px', fontWeight: 700 }}>On Request</span>}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '100px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', background: '#FF6B00', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(255,107,0,0.3)' }}>
-                      <button onClick={() => removeItem(productId)} style={{ width: '32px', height: '34px', color: '#fff', fontSize: '18px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>−</button>
-                      <span style={{ color: '#fff', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', minWidth: '24px', textAlign: 'center' }}>{quantity}</span>
-                      <button onClick={() => addItem(productId)} style={{ width: '32px', height: '34px', color: '#fff', fontSize: '18px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>+</button>
+                  <div className="cart-mobile-row-meta">
+                    <div style={{ textAlign: 'center', minWidth: '80px' }}>
+                      {product.pricePerUnit > 0
+                        ? <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#374151' }}>₹{product.pricePerUnit.toFixed(0)}</span>
+                        : <span style={{ color: '#FF6B00', fontSize: '12px', fontWeight: 700 }}>On Request</span>}
                     </div>
-                  </div>
-                  <div style={{ textAlign: 'right', minWidth: '80px' }}>
-                    {product.pricePerUnit > 0
-                      ? <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.4rem', color: '#15803d' }}>₹{(product.pricePerUnit * quantity).toFixed(0)}</span>
-                      : <span style={{ color: '#9ca3af' }}>—</span>}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '100px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', background: '#FF6B00', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(255,107,0,0.3)' }}>
+                        <button onClick={() => removeItem(productId)} style={{ width: '36px', height: '36px', color: '#fff', fontSize: '18px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>−</button>
+                        <span style={{ color: '#fff', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', minWidth: '24px', textAlign: 'center' }}>{quantity}</span>
+                        <button onClick={() => addItem(productId)} style={{ width: '36px', height: '36px', color: '#fff', fontSize: '18px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>+</button>
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right', minWidth: '70px' }}>
+                      {product.pricePerUnit > 0
+                        ? <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#15803d' }}>₹{(product.pricePerUnit * quantity).toFixed(0)}</span>
+                        : <span style={{ color: '#9ca3af' }}>—</span>}
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => setStep('details')} style={{ background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff', border: 'none', cursor: 'pointer', padding: '20px 48px', borderRadius: '16px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '22px', boxShadow: '0 8px 32px rgba(255,107,0,0.45)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <button onClick={() => setStep('details')} style={{ background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff', border: 'none', cursor: 'pointer', padding: '16px 32px', borderRadius: '16px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 'clamp(16px, 4vw, 20px)', boxShadow: '0 8px 32px rgba(255,107,0,0.45)', display: 'flex', alignItems: 'center', gap: '12px', width: '100%', justifyContent: 'center' }}>
                 {lang === 'hi' ? 'ऑर्डर पक्का करें →' : 'Confirm Order →'}
               </button>
             </div>
@@ -328,10 +338,10 @@ export default function CartPage() {
     const total = cartProducts.reduce((s, i) => s + i.product.pricePerUnit * i.quantity, 0)
 
     return (
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 24px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-        <style>{`.cart-notepad-d { display: block; } @media (max-width: 767px) { .cart-notepad-d { display: none !important; } } .notepad-line { border-bottom: 1.5px solid #d4e4f7; padding: 10px 0 10px 12px; display: flex; justify-content: space-between; align-items: center; }`}</style>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 14px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        <style>{`.notepad-line { border-bottom: 1.5px solid #d4e4f7; padding: 10px 0 10px 12px; display: flex; justify-content: space-between; align-items: center; } .cart-notepad-d { display: none; } @media (min-width: 1024px) { .cart-notepad-d { display: block; } } .details-grid { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; } @media (min-width: 1024px) { .details-grid { grid-template-columns: 1fr 340px; gap: 32px; } }`}</style>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px', alignItems: 'start' }}>
+        <div className="details-grid">
 
           {/* ── LEFT: Form ── */}
           <div>
@@ -368,7 +378,7 @@ export default function CartPage() {
               </div>
             </div>
 
-            <button onClick={() => setStep('review')} disabled={!isDetailsValid} style={{ marginTop: '36px', width: '100%', background: isDetailsValid ? 'linear-gradient(135deg, #FF6B00, #FF9A3C)' : '#e5e7eb', color: isDetailsValid ? '#fff' : '#9ca3af', border: 'none', cursor: isDetailsValid ? 'pointer' : 'not-allowed', padding: '22px', borderRadius: '16px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '22px', boxShadow: isDetailsValid ? '0 8px 32px rgba(255,107,0,0.4)' : 'none', transition: 'all 0.2s' }}>
+            <button onClick={() => setStep('review')} disabled={!isDetailsValid} style={{ marginTop: '24px', width: '100%', background: isDetailsValid ? 'linear-gradient(135deg, #FF6B00, #FF9A3C)' : '#e5e7eb', color: isDetailsValid ? '#fff' : '#9ca3af', border: 'none', cursor: isDetailsValid ? 'pointer' : 'not-allowed', padding: '18px', borderRadius: '16px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 'clamp(16px, 4vw, 20px)', boxShadow: isDetailsValid ? '0 8px 32px rgba(255,107,0,0.4)' : 'none', transition: 'all 0.2s' }}>
               Next →
             </button>
           </div>
@@ -414,7 +424,7 @@ export default function CartPage() {
 
   // ─── STEP: REVIEW ───────────────────────────────────────────────
   return (
-    <div style={{ maxWidth: '560px', margin: '0 auto', padding: '40px 24px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+    <div style={{ maxWidth: '560px', margin: '0 auto', padding: '24px 14px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <button onClick={() => setStep('details')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8B4513', fontSize: '16px', fontWeight: 700, marginBottom: '24px', padding: 0 }}>
         ← Back
       </button>
@@ -472,11 +482,11 @@ export default function CartPage() {
           color: loading ? '#9ca3af' : '#fff',
           border: 'none',
           cursor: loading ? 'not-allowed' : 'pointer',
-          padding: '22px',
+          padding: '18px',
           borderRadius: '16px',
           fontFamily: "'Plus Jakarta Sans', sans-serif",
           fontWeight: 800,
-          fontSize: '22px',
+          fontSize: 'clamp(16px, 4vw, 20px)',
           boxShadow: loading ? 'none' : '0 8px 32px rgba(21,128,61,0.4)',
           transition: 'all 0.2s',
         }}

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { useCart } from '@/context/CartContext'
 import { useLanguage } from '@/context/LanguageContext'
 import { BUSINESS_NAME } from '@/lib/constants'
@@ -24,12 +25,18 @@ export default function Header() {
   const { lang, setLang } = useLanguage()
   const pathname = usePathname()
   const router = useRouter()
-  const isAdmin = pathname.startsWith('/admin')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const isHome = pathname === '/'
+  const isAdminPage = pathname.startsWith('/admin')
+
+  const closeMenu = () => setMobileMenuOpen(false)
+
+  // Don't show the store header on admin pages (admin has its own layout)
+  if (isAdminPage) return null
 
   return (
     <header className="sticky top-0 z-50 animate-fadeInDown" style={{ background: 'rgba(139,26,26,0.92)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', boxShadow: '0 2px 20px rgba(139,26,26,0.3)' }}>
-      <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '0 20px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+      <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '0 16px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
 
         {/* Logo — home page: go to catalog, all other pages: go back */}
         {isHome ? (
@@ -45,7 +52,33 @@ export default function Header() {
           </button>
         )}
 
-        {/* Nav */}
+        {/* Mobile menu button - shows on small screens */}
+        <button
+          className="sm:hidden"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          style={{
+            background: 'rgba(255,255,255,0.1)',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '10px',
+            cursor: 'pointer',
+            minWidth: '44px',
+            minHeight: '44px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <svg style={{ width: '24px', height: '24px', fill: '#fff' }} viewBox="0 0 24 24">
+            {mobileMenuOpen ? (
+              <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" fill="none"/>
+            ) : (
+              <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" fill="none"/>
+            )}
+          </svg>
+        </button>
+
+        {/* Desktop Nav - hidden on mobile */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: 1, justifyContent: 'center' }} className="hidden sm:flex">
           <Link href="/catalog" style={{
             padding: '6px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600,
@@ -63,14 +96,11 @@ export default function Header() {
           }}>
             My Order
           </Link>
-          {!isAdmin && (
-            <Link href="/admin" style={{ padding: '6px 12px', fontSize: '11px', color: 'rgba(147,180,207,0.5)', textDecoration: 'none' }}>
-              Admin
-            </Link>
-          )}
         </nav>
 
-        {/* Language toggle */}
+        {/* Right side actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* Language toggle */}
           <button
             onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
             style={{
@@ -85,36 +115,75 @@ export default function Header() {
             <span style={{ padding: '5px 10px', fontSize: '11px', fontWeight: 700, background: lang === 'hi' ? '#FF6B00' : 'transparent', color: lang === 'hi' ? '#fff' : 'rgba(255,255,255,0.5)', transition: 'all 0.2s' }}>हिं</span>
           </button>
 
-        {/* Cart button */}
-        <Link
-          href="/cart"
+          {/* Cart button */}
+          <Link
+            href="/cart"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              background: '#FF6B00', color: '#fff',
+              fontWeight: 700, padding: '8px 14px',
+              borderRadius: '10px', textDecoration: 'none',
+              boxShadow: '0 3px 12px rgba(255,107,0,0.4)',
+              fontSize: '13px', transition: 'all 0.15s',
+              flexShrink: 0,
+            }}
+          >
+            <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span className="hidden sm:inline">Order</span>
+            {itemCount > 0 && (
+              <span style={{
+                background: '#fff', color: '#FF6B00',
+                fontSize: '10px', fontWeight: 900,
+                borderRadius: '50%', width: '20px', height: '20px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                animation: 'popIn 0.3s ease',
+              }}>
+                {itemCount > 9 ? '9+' : itemCount}
+              </span>
+            )}
+          </Link>
+        </div>
+      </div>
+
+      {/* Mobile menu dropdown */}
+      {mobileMenuOpen && (
+        <div 
+          className="sm:hidden"
           style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            background: '#FF6B00', color: '#fff',
-            fontWeight: 700, padding: '8px 18px',
-            borderRadius: '10px', textDecoration: 'none',
-            boxShadow: '0 3px 12px rgba(255,107,0,0.4)',
-            fontSize: '13px', transition: 'all 0.15s',
-            flexShrink: 0,
+            position: 'absolute',
+            top: '64px',
+            left: 0,
+            right: 0,
+            background: 'rgba(139,26,26,0.98)',
+            padding: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
           }}
         >
-          <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          Order
-          {itemCount > 0 && (
-            <span style={{
-              background: '#fff', color: '#FF6B00',
-              fontSize: '10px', fontWeight: 900,
-              borderRadius: '50%', width: '20px', height: '20px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              animation: 'popIn 0.3s ease',
-            }}>
-              {itemCount > 9 ? '9+' : itemCount}
-            </span>
-          )}
-        </Link>
-      </div>
+          <Link href="/catalog" onClick={closeMenu} style={{
+            padding: '14px 16px', borderRadius: '10px', fontSize: '15px', fontWeight: 600,
+            textDecoration: 'none',
+            background: pathname === '/catalog' ? 'rgba(255,255,255,0.18)' : 'transparent',
+            color: pathname === '/catalog' ? '#fff' : '#93b4cf',
+            display: 'block',
+          }}>
+            Products
+          </Link>
+          <Link href="/cart" onClick={closeMenu} style={{
+            padding: '14px 16px', borderRadius: '10px', fontSize: '15px', fontWeight: 600,
+            textDecoration: 'none',
+            background: pathname === '/cart' ? 'rgba(255,255,255,0.18)' : 'transparent',
+            color: pathname === '/cart' ? '#fff' : '#93b4cf',
+            display: 'block',
+          }}>
+            My Order
+          </Link>
+        </div>
+      )}
     </header>
   )
 }

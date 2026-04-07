@@ -150,7 +150,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
         {/* ── Image ── */}
         <div
           onClick={onOpen}
-          style={{ position: 'relative', background: imgBg, height: '230px', overflow: 'hidden', flexShrink: 0 }}
+          style={{ position: 'relative', background: imgBg, height: 'clamp(140px, 30vw, 230px)', overflow: 'hidden', flexShrink: 0 }}
         >
           {product.imageUrl ? (
             <Image
@@ -205,10 +205,10 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
         </div>
 
         {/* ── Content ── */}
-        <div style={{ padding: '16px 18px 14px', display: 'flex', flexDirection: 'column', gap: '12px', flex: 1, position: 'relative', zIndex: 5 }}>
+        <div style={{ padding: 'clamp(10px, 3vw, 16px) clamp(10px, 3vw, 18px) 12px', display: 'flex', flexDirection: 'column', gap: '10px', flex: 1, position: 'relative', zIndex: 5 }}>
           <div onClick={onOpen}>
             <p style={{
-              fontWeight: 800, color: '#111827', fontSize: '17px', lineHeight: 1.4,
+              fontWeight: 800, color: '#111827', fontSize: 'clamp(13px, 3.5vw, 17px)', lineHeight: 1.4,
               display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
               fontFamily: "'Plus Jakarta Sans', sans-serif", margin: 0,
             }}>
@@ -229,7 +229,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
             <div>
               {product.pricePerUnit > 0 ? (
                 <>
-                  <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.1rem', color: '#15803d', lineHeight: 1, letterSpacing: '0.5px' }}>
+                  <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.4rem, 5vw, 2.1rem)', color: '#15803d', lineHeight: 1, letterSpacing: '0.5px' }}>
                     ₹{product.pricePerUnit.toFixed(0)}
                   </p>
                   <p style={{ color: '#9ca3af', fontSize: '12px', marginTop: '2px' }}>{t.per} {product.unit}</p>

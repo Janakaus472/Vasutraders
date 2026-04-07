@@ -147,12 +147,12 @@ export default function HomePage() {
         borderBottom: '3px solid #FF9933',
       }}>
         {/* warm decorative glows */}
-        <div style={{ position:'absolute', top:'-60px', right:'-60px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,153,51,0.12)', filter:'blur(70px)' }} />
-        <div style={{ position:'absolute', bottom:'-80px', left:'-40px', width:'400px', height:'400px', borderRadius:'50%', background:'rgba(244,180,0,0.10)', filter:'blur(80px)' }} />
-        <div style={{ position:'absolute', top:'35%', left:'25%', width:'300px', height:'300px', borderRadius:'50%', background:'rgba(255,87,34,0.08)', filter:'blur(50px)' }} />
+        <div className="hidden sm:block" style={{ position:'absolute', top:'-60px', right:'-60px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,153,51,0.12)', filter:'blur(70px)' }} />
+        <div className="hidden sm:block" style={{ position:'absolute', bottom:'-80px', left:'-40px', width:'400px', height:'400px', borderRadius:'50%', background:'rgba(244,180,0,0.10)', filter:'blur(80px)' }} />
+        <div className="hidden sm:block" style={{ position:'absolute', top:'35%', left:'25%', width:'300px', height:'300px', borderRadius:'50%', background:'rgba(255,87,34,0.08)', filter:'blur(50px)' }} />
 
-        <div className="max-w-7xl mx-auto px-6 pt-20 pb-12 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-8 sm:pb-12 relative z-10 container-responsive">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
 
             {/* Left — text */}
             <div>
@@ -197,18 +197,19 @@ export default function HomePage() {
                 Serving retailers across India for over 20 years.
               </p>
 
-              <div className="fade-up-4 flex flex-wrap gap-4">
+              <div className="fade-up-4 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
                 <Link href="/catalog" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '10px',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
                   background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)', color: '#0D0D0D',
-                  padding: '16px 32px', borderRadius: '12px',
+                  padding: '14px 20px', borderRadius: '12px',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 800, fontSize: '16px',
+                  fontWeight: 800, fontSize: '15px',
                   textDecoration: 'none',
                   boxShadow: '0 8px 32px rgba(255,215,0,0.3), 0 0 60px rgba(255,215,0,0.15)',
                   transition: 'all 0.2s',
                   position: 'relative',
                   overflow: 'hidden',
+                  minHeight: '48px',
                 }}>
                   <span style={{ position:'absolute', top:'-50%', left:'-50%', width:'200%', height:'200%', background:'linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%)', animation:'shine 3s ease-in-out infinite' }} />
                   {t.homeCta}
@@ -218,15 +219,16 @@ export default function HomePage() {
                 </Link>
 
                 <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '10px',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
                   background: 'rgba(255,255,255,0.18)', color: '#fff',
-                  padding: '16px 28px', borderRadius: '12px',
+                  padding: '14px 20px', borderRadius: '12px',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 700, fontSize: '16px',
+                  fontWeight: 700, fontSize: '15px',
                   textDecoration: 'none',
                   border: '1px solid rgba(255,255,255,0.3)',
                   backdropFilter: 'blur(8px)',
                   boxShadow: '0 0 30px rgba(37,211,102,0.3)',
+                  minHeight: '48px',
                 }}>
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="#25D366">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
@@ -279,7 +281,7 @@ export default function HomePage() {
           {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
             <span key={i} style={{
               display: 'inline-flex', alignItems: 'center', gap: '12px',
-              padding: '0 32px',
+              padding: '0 16px',
               color: '#fff',
               fontFamily: "'Bebas Neue', sans-serif",
               fontSize: '18px',
@@ -294,7 +296,7 @@ export default function HomePage() {
 
       {/* ── STATS ────────────────────────────────────────────────────── */}
       <section style={{ background:'rgba(255,240,230,0.92)', borderBottom:'1px solid rgba(255,180,100,0.25)', backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)' }}>
-        <div className="max-w-7xl mx-auto px-6 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {STATS.map((s, i) => (
               <div key={s.labelEn} className="text-center" style={{
@@ -312,7 +314,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CATEGORIES ───────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 py-16" style={{ background:'rgba(255,240,230,0.92)', position: 'relative', zIndex: 1 }}>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-16" style={{ background:'rgba(255,240,230,0.92)', position: 'relative', zIndex: 1 }}>
         <div className="text-center mb-12">
           <p style={{ color:'#C2691A', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:700, fontSize:'13px', letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:'12px' }}>
             What We Supply
@@ -325,7 +327,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
           {CATEGORIES.map((cat, i) => (
             <Link
               key={cat.name}
@@ -335,7 +337,7 @@ export default function HomePage() {
                 display: 'block',
                 background: cat.bg,
                 borderRadius: '20px',
-                padding: '28px 24px',
+                padding: 'clamp(14px, 4vw, 28px) clamp(12px, 3vw, 24px)',
                 textDecoration: 'none',
                 border: `2px solid transparent`,
                 position: 'relative',
@@ -390,7 +392,7 @@ export default function HomePage() {
             display: 'inline-flex', alignItems: 'center', gap: '10px',
             background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)',
             color: '#fff',
-            padding: '16px 40px', borderRadius: '12px',
+            padding: '14px 24px', borderRadius: '12px',
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontWeight: 800, fontSize: '16px',
             textDecoration: 'none',
@@ -417,9 +419,9 @@ export default function HomePage() {
       </section>
 
       {/* ── WHY US ───────────────────────────────────────────────────── */}
-      <section style={{ background:'rgba(139,26,26,0.55)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', padding:'80px 0', position:'relative', overflow:'hidden' }}>
-        <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,153,51,0.08)', filter:'blur(80px)' }} />
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <section style={{ background:'rgba(139,26,26,0.55)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', padding:'48px 0', position:'relative', overflow:'hidden' }}>
+        <div className="hidden sm:block" style={{ position:'absolute', top:'-100px', right:'-100px', width:'500px', height:'500px', borderRadius:'50%', background:'rgba(255,153,51,0.08)', filter:'blur(80px)' }} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
               <p style={{ color:'#FF6B00', fontFamily:"'Plus Jakarta Sans', sans-serif", fontWeight:700, fontSize:'13px', letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:'16px' }}>
@@ -466,11 +468,11 @@ export default function HomePage() {
           <p style={{ color:'rgba(255,255,255,0.9)', fontFamily:"'Plus Jakarta Sans', sans-serif", fontSize:'18px', marginBottom:'36px', fontWeight:500 }}>
             {t.readyDesc}
           </p>
-          <div style={{ display:'flex', gap:'16px', justifyContent:'center', flexWrap:'wrap' }}>
+          <div style={{ display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap', padding:'0 16px' }}>
             <Link href="/catalog" style={{
               display:'inline-flex', alignItems:'center', gap:'10px',
               background:'#fff', color:'#C2410C',
-              padding:'16px 36px', borderRadius:'12px',
+              padding:'14px 24px', borderRadius:'12px',
               fontFamily:"'Plus Jakarta Sans', sans-serif",
               fontWeight:800, fontSize:'16px', textDecoration:'none',
               boxShadow:'0 8px 24px rgba(0,0,0,0.2)',
@@ -480,7 +482,7 @@ export default function HomePage() {
             <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{
               display:'inline-flex', alignItems:'center', gap:'10px',
               background:'#25D366', color:'#fff',
-              padding:'16px 36px', borderRadius:'12px',
+              padding:'14px 24px', borderRadius:'12px',
               fontFamily:"'Plus Jakarta Sans', sans-serif",
               fontWeight:800, fontSize:'16px', textDecoration:'none',
               boxShadow:'0 8px 24px rgba(0,0,0,0.2)',

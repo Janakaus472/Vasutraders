@@ -61,7 +61,7 @@ export default function ProductForm({ product }: ProductFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
+    <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-2xl">
       <ImageUploader currentUrl={imageUrl} onUpload={setImageUrl} />
 
       <div>
@@ -75,7 +75,7 @@ export default function ProductForm({ product }: ProductFormProps) {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Description (English)</label>
           <div className="relative">
@@ -128,7 +128,7 @@ export default function ProductForm({ product }: ProductFormProps) {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
           <input
@@ -154,7 +154,7 @@ export default function ProductForm({ product }: ProductFormProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
           <input

@@ -23,7 +23,7 @@ export default function ProductGrid({ products, cartItems, onAdd, onRemove, onOp
   }
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '22px' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '14px' }}>
       {products.map((product, index) => {
         const cartItem = cartItems.find((i) => i.productId === product.id)
         return (
