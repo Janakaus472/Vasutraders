@@ -231,14 +231,14 @@ export default function CartPage() {
                 </div>
                 <div>
                   <p style={{ fontWeight: 700, color: '#1a1a1a', fontSize: '15px', margin: '0 0 3px' }}>{product.name}</p>
-                  <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>प्रति {product.unit}</p>
+                  <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>per {product.unit}</p>
                 </div>
               </div>
               <div style={{ textAlign: 'center', minWidth: '80px' }}>
                 {product.pricePerUnit > 0 ? (
                   <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#374151' }}>₹{product.pricePerUnit.toFixed(0)}</span>
                 ) : (
-                  <span style={{ color: '#FF6B00', fontSize: '12px', fontWeight: 700 }}>पूछताछ पर</span>
+                  <span style={{ color: '#FF6B00', fontSize: '12px', fontWeight: 700 }}>On Request</span>
                 )}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '100px' }}>
