@@ -416,20 +416,20 @@ export default function CartPage() {
   return (
     <div style={{ maxWidth: '560px', margin: '0 auto', padding: '40px 24px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <button onClick={() => setStep('details')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8B4513', fontSize: '16px', fontWeight: 700, marginBottom: '24px', padding: 0 }}>
-        ← वापस जाएं
+        ← Back
       </button>
 
       <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2rem, 7vw, 3rem)', color: '#5C2D0F', letterSpacing: '1px', marginBottom: '8px' }}>
-        ऑर्डर जांचें
+        Review Order
       </h1>
       <p style={{ color: '#8B4513', fontSize: '16px', marginBottom: '28px' }}>
-        एक बार देख लें, फिर भेजें
+        Check once before placing
       </p>
 
       {/* Order items */}
       <div style={{ background: 'rgba(255,240,230,0.95)', border: '2px solid #FFD4A0', borderRadius: '20px', padding: '24px', marginBottom: '16px' }}>
         <p style={{ fontWeight: 800, fontSize: '16px', color: '#5C2D0F', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-          🛒 सामान
+          🛒 Items
         </p>
         {cartProducts.map(({ productId, quantity, product }) => (
           <div key={productId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #FFE0C0' }}>
@@ -442,13 +442,13 @@ export default function CartPage() {
       {/* Customer details */}
       <div style={{ background: 'rgba(255,240,230,0.95)', border: '2px solid #FFD4A0', borderRadius: '20px', padding: '24px', marginBottom: '28px' }}>
         <p style={{ fontWeight: 800, fontSize: '16px', color: '#5C2D0F', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-          👤 आपकी जानकारी
+          👤 Your Details
         </p>
         {[
-          { label: '🏪 दुकान', value: details.shopName },
-          { label: '👤 नाम', value: details.contactName || '—' },
-          { label: '📱 मोबाइल', value: details.phone },
-          { label: '📍 इलाका', value: details.locality },
+          { label: '🏪 Shop', value: details.shopName },
+          { label: '👤 Name', value: details.contactName || '—' },
+          { label: '📱 Mobile', value: details.phone },
+          { label: '📍 Area', value: details.locality },
         ].map(({ label, value }) => (
           <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #FFE0C0' }}>
             <span style={{ fontWeight: 600, fontSize: '16px', color: '#8B4513' }}>{label}</span>
@@ -481,7 +481,7 @@ export default function CartPage() {
           transition: 'all 0.2s',
         }}
       >
-        {loading ? '⏳ भेज रहे हैं...' : '✅ पक्का ऑर्डर भेजो'}
+        {loading ? '⏳ Placing order...' : '✅ Place Order'}
       </button>
     </div>
   )
