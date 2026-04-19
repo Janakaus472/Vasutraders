@@ -198,14 +198,16 @@ function CatalogContent() {
           {/* Toolbar */}
           <div className={`flex flex-col sm:flex-row sm:items-center gap-3 mb-6 ${mounted ? 'animate-fadeInDown' : ''}`}>
             <div style={{ flex: 1 }}>
-              <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.6rem, 5vw, 2.2rem)', color: '#1a1a1a', letterSpacing: '1px', lineHeight: 1 }}>
-                {activeCategory === 'All' ? (lang === 'hi' ? 'सभी श्रेणियाँ' : 'All Categories') : catLabel(activeCategory)}
-                {!isLoading && activeCategory !== 'All' && (
-                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#DC2626', marginLeft: '14px' }}>
-                    {filtered.length}
-                  </span>
-                )}
-              </h2>
+              {activeCategory === 'All' && (
+                <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.6rem, 5vw, 2.2rem)', color: '#1a1a1a', letterSpacing: '1px', lineHeight: 1 }}>
+                  {lang === 'hi' ? 'सभी श्रेणियाँ' : 'All Categories'}
+                </h2>
+              )}
+              {activeCategory !== 'All' && !isLoading && (
+                <p style={{ fontSize: '13px', color: '#6b7280' }}>
+                  {filtered.length} {lang === 'hi' ? 'उत्पाद' : 'products'}
+                </p>
+              )}
             </div>
             <div style={{ position: 'relative', width: '100%', maxWidth: '320px' }}>
               <svg style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', width: '16px', height: '16px', color: '#9ca3af' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -350,6 +352,7 @@ function CatalogContent() {
               onRemove={removeItem}
               onOpen={setSelectedProduct}
               noProductsLabel={t.noProducts}
+              hideCategory={activeCategory !== 'All'}
             />
           )}
         </div>

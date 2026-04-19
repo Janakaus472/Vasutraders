@@ -15,9 +15,10 @@ interface ProductCardProps {
   onRemove: () => void
   onOpen: () => void
   index?: number
+  hideCategory?: boolean
 }
 
-export default function ProductCard({ product, cartQuantity, onAdd, onRemove, onOpen, index = 0 }: ProductCardProps) {
+export default function ProductCard({ product, cartQuantity, onAdd, onRemove, onOpen, index = 0, hideCategory = false }: ProductCardProps) {
   const { t, lang } = useLanguage()
   const isInCart = cartQuantity > 0
   const imgBg = CATEGORY_BG[product.category] || 'linear-gradient(135deg,#f8f7f4,#efefed)'
@@ -93,7 +94,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
               {cartQuantity}
             </div>
           )}
-          {product.category && (
+          {product.category && !hideCategory && (
             <div style={{
               position: 'absolute', bottom: '8px', left: '8px',
               background: '#B91C1C', fontSize: '10px', fontWeight: 700,

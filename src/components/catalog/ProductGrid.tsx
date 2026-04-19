@@ -10,9 +10,10 @@ interface ProductGridProps {
   onRemove: (productId: string) => void
   onOpen: (product: Product) => void
   noProductsLabel?: string
+  hideCategory?: boolean
 }
 
-export default function ProductGrid({ products, cartItems, onAdd, onRemove, onOpen, noProductsLabel = 'No products found' }: ProductGridProps) {
+export default function ProductGrid({ products, cartItems, onAdd, onRemove, onOpen, noProductsLabel = 'No products found', hideCategory = false }: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0', color: '#9ca3af' }}>
@@ -55,6 +56,7 @@ export default function ProductGrid({ products, cartItems, onAdd, onRemove, onOp
               onRemove={() => onRemove(product.id)}
               onOpen={() => onOpen(product)}
               index={index}
+              hideCategory={hideCategory}
             />
           )
         })}
