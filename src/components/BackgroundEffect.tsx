@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-const WARM_COLORS = ['#FF6B00', '#FF9933', '#FF4500', '#F4B400', '#FF8C00', '#E8531B', '#FFB347', '#FF5722']
+const WARM_COLORS = ['#B91C1C', '#DC2626', '#EF4444', '#FAC41A', '#991b1b', '#7f1d1d', '#F87171', '#E5A800']
 
 const PRODUCTS = [
   '🃏', '🎰', '🎈', '🔮', '🏏', '⚽', '🏸', '🏐', '🏀', '🎾',

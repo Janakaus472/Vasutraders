@@ -4,10 +4,15 @@
 /* Force light mode always */
 :root {
   color-scheme: light;
-  --background: #faf8f3;
+  --background: #f9f9f9;
   --foreground: #111827;
-  --navy: #0f2744;
+  --navy: #1a1a1a;
   --orange: #FF6B00;
+  --red-dark: #7f1d1d;
+  --red: #B91C1C;
+  --red-light: #DC2626;
+  --gold: #FAC41A;
+  --gold-dark: #E5A800;
 }
 
 body {

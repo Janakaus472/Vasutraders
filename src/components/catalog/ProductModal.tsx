@@ -39,8 +39,8 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0, zIndex: 999,
-        background: 'rgba(8, 20, 40, 0.75)',
-        backdropFilter: 'blur(10px)',
+        background: 'rgba(0, 0, 0, 0.7)',
+        backdropFilter: 'blur(8px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexDirection: 'column',
         padding: '0',
@@ -49,13 +49,13 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
       <style>{`
         .modal-panel {
           background: #fff;
-          border-radius: 28px;
+          border-radius: 16px;
           overflow: hidden;
           width: 100%;
           max-width: 960px;
           max-height: 92vh;
           display: flex;
-          box-shadow: 0 60px 120px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,107,0,0.15);
+          box-shadow: 0 40px 80px rgba(0,0,0,0.3);
           position: relative;
           margin: 20px;
         }
@@ -86,7 +86,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
         @media (max-width: 640px) {
           .modal-panel {
             flex-direction: column;
-            border-radius: 20px 20px 0 0;
+            border-radius: 16px 16px 0 0;
             max-height: 95dvh;
             margin: 0;
             margin-top: auto;
@@ -126,7 +126,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
             fontSize: '20px', color: '#374151',
             transition: 'background 0.15s, transform 0.15s',
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#ef4444'; (e.currentTarget as HTMLButtonElement).style.color = '#fff' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#DC2626'; (e.currentTarget as HTMLButtonElement).style.color = '#fff' }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,0,0,0.08)'; (e.currentTarget as HTMLButtonElement).style.color = '#374151' }}
         >
           ✕
@@ -134,32 +134,29 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
 
         {/* ── LEFT: Image panel ── */}
         <div className="modal-left-panel" style={{ background: imgBg }}>
-          {/* Category badge top-left */}
           {product.category && (
             <div style={{
               position: 'absolute', top: '20px', left: '20px',
-              background: 'rgba(255,255,255,0.9)',
-              fontSize: '11px', fontWeight: 700, color: '#374151',
-              padding: '5px 12px', borderRadius: '20px',
-              letterSpacing: '0.3px',
+              background: '#B91C1C',
+              fontSize: '10px', fontWeight: 700, color: '#fff',
+              padding: '5px 12px', borderRadius: '4px',
+              letterSpacing: '1px', textTransform: 'uppercase',
             }}>
               {product.category}
             </div>
           )}
 
-          {/* Stock badge */}
           {!product.inStock && (
             <div style={{
               position: 'absolute', top: '20px', right: '20px',
-              background: '#ef4444', color: '#fff',
+              background: '#DC2626', color: '#fff',
               fontSize: '10px', fontWeight: 800, padding: '4px 12px',
-              borderRadius: '20px', letterSpacing: '1.5px', textTransform: 'uppercase',
+              borderRadius: '4px', letterSpacing: '1.5px', textTransform: 'uppercase',
             }}>
               {t.outOfStock}
             </div>
           )}
 
-          {/* Large image */}
           <div className="modal-image-container">
             {product.imageUrl ? (
               <Image
@@ -176,11 +173,10 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
             )}
           </div>
 
-          {/* Unit info pill */}
           <div style={{
             marginTop: '20px',
             background: 'rgba(255,255,255,0.85)',
-            padding: '8px 20px', borderRadius: '20px',
+            padding: '8px 20px', borderRadius: '6px',
             fontSize: '13px', fontWeight: 600, color: '#374151',
           }}>
             {t.per} <strong>{product.unit}</strong>
@@ -190,19 +186,17 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
         {/* ── RIGHT: Details panel ── */}
         <div className="modal-right-panel">
 
-          {/* Product name */}
           <div>
             <h2 style={{
               fontFamily: "'Bebas Neue', sans-serif",
               fontSize: 'clamp(2.2rem, 4vw, 3.6rem)',
-              color: '#0f2744',
+              color: '#1a1a1a',
               lineHeight: 1.05,
               letterSpacing: '1px',
             }}>
               {product.name}
             </h2>
 
-            {/* Description */}
             {getDescription(product.description, lang) ? (
               <p style={{
                 color: '#4b5563',
@@ -222,16 +216,17 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
 
           {/* Price */}
           <div style={{
-            background: '#f8f7f4',
-            borderRadius: '16px',
+            background: '#FEF2F2',
+            borderRadius: '12px',
             padding: '20px 24px',
             display: 'flex', alignItems: 'baseline', gap: '10px',
+            border: '1px solid #FECACA',
           }}>
             {product.pricePerUnit > 0 ? (
               <>
                 <span style={{
                   fontFamily: "'Bebas Neue', sans-serif",
-                  fontSize: 'clamp(2rem, 8vw, 4rem)', color: '#15803d',
+                  fontSize: 'clamp(2rem, 8vw, 4rem)', color: '#B91C1C',
                   lineHeight: 1, letterSpacing: '1px',
                 }}>
                   ₹{product.pricePerUnit.toFixed(0)}
@@ -243,7 +238,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
             ) : (
               <span style={{
                 fontFamily: "'Bebas Neue', sans-serif",
-                fontSize: '2.2rem', color: '#FF6B00', letterSpacing: '1px',
+                fontSize: '2.2rem', color: '#B91C1C', letterSpacing: '1px',
               }}>
                 {t.callForPrice}
               </span>
@@ -261,7 +256,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
               />
             </div>
             {cartQuantity > 0 && (
-              <span style={{ color: '#15803d', fontWeight: 700, fontSize: '15px' }}>
+              <span style={{ color: '#B91C1C', fontWeight: 700, fontSize: '15px' }}>
                 ✓ {cartQuantity} {t.itemsAdded}
               </span>
             )}
@@ -273,25 +268,24 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
               href="/cart"
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                background: '#15803d', color: '#fff',
-                padding: '14px 24px', borderRadius: '14px',
+                background: '#B91C1C', color: '#fff',
+                padding: '14px 24px', borderRadius: '8px',
                 fontWeight: 700, fontSize: '15px', textDecoration: 'none',
-                boxShadow: '0 4px 16px rgba(21,128,61,0.35)',
+                boxShadow: '0 4px 16px rgba(185,28,28,0.3)',
                 transition: 'all 0.15s',
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#166534' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#15803d' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#991b1b' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#B91C1C' }}
             >
               🛒 {t.viewOrder}
             </a>
           )}
 
-          {/* Divider */}
           <div style={{ borderTop: '1px solid #f0f0f0' }} />
 
           {/* Marketplace buttons */}
           <div>
-            <p style={{ fontSize: '12px', fontWeight: 700, color: '#9ca3af', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 800, color: '#9ca3af', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
               {t.buyOn}
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -303,7 +297,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
                   rel="noopener noreferrer"
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '14px 20px', borderRadius: '14px',
+                    padding: '14px 20px', borderRadius: '10px',
                     background: m.bg, border: `1.5px solid ${m.border}`,
                     textDecoration: 'none', transition: 'all 0.18s',
                   }}

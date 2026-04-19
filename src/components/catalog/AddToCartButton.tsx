@@ -30,23 +30,21 @@ export default function AddToCartButton({ quantity, onAdd, onRemove, disabled }:
         onClick={handleAdd}
         className={wiggle ? 'animate-wiggle' : ''}
         style={{
-          background: '#0f2744', color: '#fff',
-          fontWeight: 700, fontSize: '12px',
-          padding: '8px 16px', borderRadius: '10px',
+          background: '#FAC41A', color: '#7f1d1d',
+          fontWeight: 800, fontSize: '12px',
+          padding: '8px 18px', borderRadius: '6px',
           border: 'none', cursor: 'pointer',
           fontFamily: "'Plus Jakarta Sans', sans-serif",
-          letterSpacing: '0.3px', transition: 'background 0.15s, transform 0.1s',
-          boxShadow: '0 2px 8px rgba(15,39,68,0.25)',
+          letterSpacing: '0.5px', transition: 'background 0.15s, transform 0.1s',
+          textTransform: 'uppercase',
         }}
         onMouseEnter={e => {
           const el = e.currentTarget as HTMLButtonElement
-          el.style.background = '#FF6B00'
-          el.style.boxShadow = '0 4px 12px rgba(255,107,0,0.4)'
+          el.style.background = '#E5A800'
         }}
         onMouseLeave={e => {
           const el = e.currentTarget as HTMLButtonElement
-          el.style.background = '#0f2744'
-          el.style.boxShadow = '0 2px 8px rgba(15,39,68,0.25)'
+          el.style.background = '#FAC41A'
         }}
       >
         {t.add}
@@ -57,8 +55,8 @@ export default function AddToCartButton({ quantity, onAdd, onRemove, disabled }:
   return (
     <div style={{
       display: 'flex', alignItems: 'center',
-      background: '#FF6B00', borderRadius: '10px', overflow: 'hidden',
-      boxShadow: '0 3px 10px rgba(255,107,0,0.35)',
+      background: '#DC2626', borderRadius: '6px', overflow: 'hidden',
+      boxShadow: '0 2px 8px rgba(220,38,38,0.3)',
       animation: 'popIn 0.3s cubic-bezier(.34,1.56,.64,1)',
     }}>
       <button
