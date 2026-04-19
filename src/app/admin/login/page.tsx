@@ -22,9 +22,13 @@ export default function AdminLoginPage() {
         if (session.expires > Date.now()) {
           router.replace('/admin')
           return
+        } else {
+          localStorage.removeItem(SESSION_KEY)
         }
       }
-    } catch {}
+    } catch {
+      localStorage.removeItem(SESSION_KEY)
+    }
     setChecking(false)
   }, [router])
 

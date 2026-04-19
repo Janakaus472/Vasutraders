@@ -1,4 +1,4 @@
-import { supabase } from './client'
+import { supabase, adminSupabase } from './client'
 import { Product } from '@/types/product'
 
 function rowToProduct(row: any): Product {
@@ -8,10 +8,11 @@ function rowToProduct(row: any): Product {
     description: row.description || '',
     imageUrl: row.image_url || '',
     unit: row.unit,
-    pricePerUnit: Number(row.price_per_unit),
+    pricePerUnit: Number(row.price_per_unit) || 0,
     minOrderQty: row.min_order_qty || 1,
     inStock: row.in_stock,
     category: row.category || '',
+    subcategory: row.subcategory || '',
     displayOrder: row.display_order || 0,
     createdAt: new Date(row.created_at),
     updatedAt: new Date(row.updated_at),
@@ -45,7 +46,7 @@ export async function getProduct(id: string): Promise<Product | null> {
 }
 
 export async function addProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('products')
     .insert({
       name: product.name,
@@ -56,6 +57,7 @@ export async function addProduct(product: Omit<Product, 'id' | 'createdAt' | 'up
       min_order_qty: product.minOrderQty,
       in_stock: product.inStock,
       category: product.category,
+      subcategory: product.subcategory,
       display_order: product.displayOrder,
     })
     .select('id')
@@ -66,7 +68,7 @@ export async function addProduct(product: Omit<Product, 'id' | 'createdAt' | 'up
 }
 
 export async function updateProduct(id: string, product: Partial<Omit<Product, 'id' | 'createdAt'>>): Promise<void> {
-  const { error } = await supabase
+  const { error } = await adminSupabase
     .from('products')
     .update({
       ...(product.name !== undefined && { name: product.name }),
@@ -77,6 +79,7 @@ export async function updateProduct(id: string, product: Partial<Omit<Product, '
       ...(product.minOrderQty !== undefined && { min_order_qty: product.minOrderQty }),
       ...(product.inStock !== undefined && { in_stock: product.inStock }),
       ...(product.category !== undefined && { category: product.category }),
+      ...(product.subcategory !== undefined && { subcategory: product.subcategory }),
       ...(product.displayOrder !== undefined && { display_order: product.displayOrder }),
       updated_at: new Date().toISOString(),
     })
@@ -85,7 +88,35 @@ export async function updateProduct(id: string, product: Partial<Omit<Product, '
   if (error) throw error
 }
 
-export async function deleteProduct(id: string): Promise<void> {
-  const { error } = await supabase.from('products').delete().eq('id', id)
+export async function updateProductPrice(id: string, price: number): Promise<void> {
+  const { error } = await adminSupabase
+    .from('products')
+    .update({ price_per_unit: price, updated_at: new Date().toISOString() })
+    .eq('id', id)
   if (error) throw error
+}
+
+export async function bulkUpdatePrices(updates: { id: string; price: number }[]): Promise<void> {
+  await Promise.all(updates.map(u => updateProductPrice(u.id, u.price)))
+}
+
+export async function deleteProduct(id: string): Promise<void> {
+  const { error } = await adminSupabase.from('products').delete().eq('id', id)
+  if (error) throw error
+}
+
+export async function bulkDeleteProducts(ids: string[]): Promise<void> {
+  const { error } = await adminSupabase.from('products').delete().in('id', ids)
+  if (error) throw error
+}
+
+export async function duplicateProduct(id: string): Promise<Product> {
+  const product = await getProduct(id)
+  if (!product) throw new Error('Product not found')
+  const newId = await addProduct({
+    ...product,
+    name: `${product.name} (Copy)`,
+    displayOrder: product.displayOrder + 1,
+  })
+  return { ...product, id: newId, name: `${product.name} (Copy)` }
 }
