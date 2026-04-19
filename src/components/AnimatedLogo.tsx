@@ -63,8 +63,9 @@ export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
         }
 
         .logo-ring-layer {
-          position: absolute;
-          inset: 0;
+          position: relative;
+          width: 100%;
+          height: 100%;
         }
         .logo-wrap.stage-2 .logo-ring-layer {
           animation: logoRingSpin 20s linear infinite;
