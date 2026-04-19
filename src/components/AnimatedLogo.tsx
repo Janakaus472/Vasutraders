@@ -34,9 +34,13 @@ export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
-        @keyframes logoGlowPulse {
-          0%, 100% { filter: drop-shadow(0 0 6px rgba(250,196,26,0.2)); }
-          50% { filter: drop-shadow(0 0 20px rgba(250,196,26,0.5)) drop-shadow(0 0 40px rgba(220,38,38,0.15)); }
+        @keyframes logoVTShadow {
+          0%, 100% {
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)) drop-shadow(0 0 12px rgba(0,0,0,0.2));
+          }
+          50% {
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5)) drop-shadow(0 0 24px rgba(250,196,26,0.3));
+          }
         }
         @keyframes logoFloat {
           0%, 100% { transform: translateY(0); }
@@ -55,7 +59,7 @@ export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
         .logo-wrap.stage-2 {
           opacity: 1;
           transform: scale(1);
-          animation: logoGlowPulse 3s ease-in-out infinite, logoFloat 4s ease-in-out infinite;
+          animation: logoFloat 4s ease-in-out infinite;
         }
 
         .logo-ring-layer {
@@ -72,15 +76,14 @@ export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
           opacity: 0;
           transform: scale(0);
         }
-        .logo-wrap.stage-1 .logo-inner-layer,
-        .logo-wrap.stage-2 .logo-inner-layer {
+        .logo-wrap.stage-1 .logo-inner-layer {
           animation: logoInnerIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
           animation-delay: 0.3s;
         }
         .logo-wrap.stage-2 .logo-inner-layer {
           opacity: 1;
           transform: scale(1);
-          animation: none;
+          animation: logoVTShadow 3s ease-in-out infinite;
         }
       `}</style>
 
@@ -100,7 +103,7 @@ export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
           />
         </div>
 
-        {/* Inner VT - stays still */}
+        {/* Inner VT - stays still with shadow */}
         <div className="logo-inner-layer">
           <Image
             src="/logo-inner.png"
