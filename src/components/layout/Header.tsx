@@ -53,8 +53,8 @@ export default function Header() {
         {/* Top bar - contact info */}
         <div className="hidden sm:block" style={{
           background: '#5c1414',
-          padding: '4px 16px',
-          fontSize: '11px',
+          padding: '3px 16px',
+          fontSize: '10px',
           color: 'rgba(255,255,255,0.6)',
           textAlign: 'center',
           fontWeight: 500,
@@ -68,7 +68,7 @@ export default function Header() {
           maxWidth: '1600px',
           margin: '0 auto',
           padding: '0 16px',
-          height: '60px',
+          height: '50px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -80,13 +80,13 @@ export default function Header() {
               <Image
                 src="/logo.png"
                 alt={BUSINESS_NAME}
-                width={40}
-                height={40}
-                style={{ borderRadius: '8px', flexShrink: 0 }}
+                width={34}
+                height={34}
+                style={{ borderRadius: '6px', flexShrink: 0 }}
               />
               <div style={{ lineHeight: 1.2 }}>
-                <div style={{ fontFamily: "'Mandali', sans-serif", fontSize: '1.1rem', color: '#fff', letterSpacing: '1px', fontWeight: 700 }}>{BUSINESS_NAME}</div>
-                <div style={{ color: '#FAC41A', fontSize: '9px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>Since 2005</div>
+                <div style={{ fontFamily: "'Mandali', sans-serif", fontSize: '0.95rem', color: '#fff', letterSpacing: '1px', fontWeight: 700 }}>{BUSINESS_NAME}</div>
+                <div style={{ color: '#FAC41A', fontSize: '8px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase' }}>Since 2005</div>
               </div>
             </Link>
           ) : (
@@ -97,13 +97,13 @@ export default function Header() {
               <Image
                 src="/logo.png"
                 alt={BUSINESS_NAME}
-                width={40}
-                height={40}
-                style={{ borderRadius: '8px', flexShrink: 0 }}
+                width={34}
+                height={34}
+                style={{ borderRadius: '6px', flexShrink: 0 }}
               />
               <div style={{ lineHeight: 1.2 }}>
-                <div style={{ fontFamily: "'Mandali', sans-serif", fontSize: '1.1rem', color: '#fff', letterSpacing: '1px', fontWeight: 700 }}>{BUSINESS_NAME}</div>
-                <div style={{ color: '#FAC41A', fontSize: '9px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>Since 2005</div>
+                <div style={{ fontFamily: "'Mandali', sans-serif", fontSize: '0.95rem', color: '#fff', letterSpacing: '1px', fontWeight: 700 }}>{BUSINESS_NAME}</div>
+                <div style={{ color: '#FAC41A', fontSize: '8px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase' }}>Since 2005</div>
               </div>
             </button>
           )}
@@ -220,7 +220,7 @@ export default function Header() {
             className="sm:hidden"
             style={{
               position: 'absolute',
-              top: '60px',
+              top: '50px',
               left: 0,
               right: 0,
               background: '#7f1d1d',

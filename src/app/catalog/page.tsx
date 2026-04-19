@@ -93,24 +93,20 @@ function CatalogContent() {
           pointerEvents: 'none',
         }} />
 
-        <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '24px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', gap: '12px' }}>
           <div className={mounted ? 'animate-fadeInDown' : ''}>
-            <p style={{ color: '#FAC41A', fontSize: '10px', fontWeight: 800, letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '6px' }}>
-              {t.wholesaleCatalog}
-            </p>
-            <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.4rem, 5vw, 4rem)', color: '#fff', lineHeight: 1, letterSpacing: '2px' }}>
+            <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', color: '#fff', lineHeight: 1, letterSpacing: '2px' }}>
               {activeCategory === 'All' ? (lang === 'hi' ? 'सभी श्रेणियाँ' : 'Browse Categories') : catLabel(activeCategory)}
             </h1>
-            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', marginTop: '8px' }}>{t.tagline}</p>
           </div>
-          <div className={`hidden sm:flex items-center gap-10 ${mounted ? 'animate-fadeInDown stagger-2' : ''}`}>
+          <div className={`hidden sm:flex items-center gap-6 ${mounted ? 'animate-fadeInDown stagger-2' : ''}`}>
             {[
               { val: isLoading ? '…' : products.length, label: t.products },
               { val: isLoading ? '…' : categories.length - 1, label: t.categories },
             ].map(({ val, label }) => (
               <div key={label} style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '3rem', lineHeight: 1, color: '#FAC41A' }}>{val}</div>
-                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '3px', fontWeight: 700 }}>{label}</div>
+                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.8rem', lineHeight: 1, color: '#FAC41A' }}>{val}</div>
+                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', marginTop: '2px', fontWeight: 700 }}>{label}</div>
               </div>
             ))}
           </div>
@@ -122,7 +118,7 @@ function CatalogContent() {
 
         {/* ── Sidebar ── */}
         <aside className={`w-56 flex-shrink-0 hidden md:block ${mounted ? 'animate-slideInLeft' : ''}`}>
-          <div style={{ background: '#fff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.06)', position: 'sticky', top: '80px', border: '1px solid #f0f0f0' }}>
+          <div style={{ background: '#fff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.06)', position: 'sticky', top: '70px', border: '1px solid #f0f0f0' }}>
             <div style={{ background: 'linear-gradient(135deg, #7f1d1d, #B91C1C)', padding: '18px 18px' }}>
               <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px', fontWeight: 800, letterSpacing: '3px', textTransform: 'uppercase' }}>{t.browseBy}</p>
               <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.5rem', color: '#FAC41A', letterSpacing: '1px', marginTop: '2px' }}>{t.category}</p>
@@ -196,7 +192,7 @@ function CatalogContent() {
         <div style={{ flex: 1, minWidth: 0 }}>
 
           {/* Toolbar */}
-          <div className={`flex flex-col sm:flex-row sm:items-center gap-3 mb-6 ${mounted ? 'animate-fadeInDown' : ''}`}>
+          <div className={`flex flex-col sm:flex-row sm:items-center gap-3 mb-3 ${mounted ? 'animate-fadeInDown' : ''}`}>
             <div style={{ flex: 1 }}>
               {activeCategory === 'All' && (
                 <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.6rem, 5vw, 2.2rem)', color: '#1a1a1a', letterSpacing: '1px', lineHeight: 1 }}>
@@ -235,7 +231,7 @@ function CatalogContent() {
           </div>
 
           {/* Mobile pills */}
-          <div className="flex gap-2 overflow-x-auto pb-2 mb-5 md:hidden" style={{ scrollbarWidth: 'none', paddingLeft: '2px', paddingRight: '2px' }}>
+          <div className="flex gap-2 overflow-x-auto pb-2 mb-3 md:hidden" style={{ scrollbarWidth: 'none', paddingLeft: '2px', paddingRight: '2px' }}>
             {categories.map((cat) => (
               <button
                 key={cat}
