@@ -15,7 +15,11 @@ export const metadata: Metadata = {
   title: "VASU TRADERS 🎰",
   description: "Wholesale Supplier · Indore, MP",
   icons: {
-    icon: '/favicon.svg',
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
   },
 };
 

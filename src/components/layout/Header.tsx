@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useCart } from '@/context/CartContext'
@@ -76,24 +77,15 @@ export default function Header() {
           {/* Logo */}
           {isHome ? (
             <Link href="/catalog" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, textDecoration: 'none' }}>
-              <div style={{
-                background: '#FAC41A',
-                borderRadius: '8px',
-                width: '40px',
-                height: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontFamily: "'Bebas Neue', sans-serif",
-                fontSize: '1.5rem',
-                color: '#7f1d1d',
-                fontWeight: 900,
-                flexShrink: 0,
-              }}>
-                V
-              </div>
+              <Image
+                src="/logo.png"
+                alt={BUSINESS_NAME}
+                width={40}
+                height={40}
+                style={{ borderRadius: '8px', flexShrink: 0 }}
+              />
               <div style={{ lineHeight: 1.2 }}>
-                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#fff', letterSpacing: '2px' }}>{BUSINESS_NAME}</div>
+                <div style={{ fontFamily: "'Mandali', sans-serif", fontSize: '1.1rem', color: '#fff', letterSpacing: '1px', fontWeight: 700 }}>{BUSINESS_NAME}</div>
                 <div style={{ color: '#FAC41A', fontSize: '9px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>Since 2005</div>
               </div>
             </Link>
@@ -102,24 +94,15 @@ export default function Header() {
               onClick={() => router.back()}
               style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             >
-              <div style={{
-                background: '#FAC41A',
-                borderRadius: '8px',
-                width: '40px',
-                height: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontFamily: "'Bebas Neue', sans-serif",
-                fontSize: '1.5rem',
-                color: '#7f1d1d',
-                fontWeight: 900,
-                flexShrink: 0,
-              }}>
-                V
-              </div>
+              <Image
+                src="/logo.png"
+                alt={BUSINESS_NAME}
+                width={40}
+                height={40}
+                style={{ borderRadius: '8px', flexShrink: 0 }}
+              />
               <div style={{ lineHeight: 1.2 }}>
-                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#fff', letterSpacing: '2px' }}>{BUSINESS_NAME}</div>
+                <div style={{ fontFamily: "'Mandali', sans-serif", fontSize: '1.1rem', color: '#fff', letterSpacing: '1px', fontWeight: 700 }}>{BUSINESS_NAME}</div>
                 <div style={{ color: '#FAC41A', fontSize: '9px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>Since 2005</div>
               </div>
             </button>
