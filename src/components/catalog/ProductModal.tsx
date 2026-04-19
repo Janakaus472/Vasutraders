@@ -71,10 +71,11 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
         .modal-right-panel {
           flex: 1;
           overflow-y: auto;
-          padding: 24px 28px 20px;
+          padding: 28px 32px 24px;
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 16px;
+          justify-content: center;
         }
         .modal-image-container {
           position: relative;
@@ -209,7 +210,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           <div style={{
             background: '#FEF2F2',
             borderRadius: '8px',
-            padding: '12px 16px',
+            padding: '14px 18px',
             display: 'flex', alignItems: 'baseline', gap: '8px',
             border: '1px solid #FECACA',
           }}>
@@ -271,8 +272,8 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           </div>
 
           {/* Marketplace - horizontal row */}
-          <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '10px' }}>
-            <p style={{ fontSize: '9px', fontWeight: 800, color: '#9ca3af', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px' }}>
+          <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '14px', marginTop: '2px' }}>
+            <p style={{ fontSize: '9px', fontWeight: 800, color: '#9ca3af', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '10px' }}>
               {t.buyOn}
             </p>
             <div style={{ display: 'flex', gap: '8px' }}>
