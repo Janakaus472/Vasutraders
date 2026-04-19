@@ -63,17 +63,16 @@ export default function ChatWidget() {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button — smaller on mobile */}
       <button
         onClick={() => setOpen(o => !o)}
         aria-label="Chat with us"
+        className="chat-fab"
         style={{
           position: 'fixed',
-          bottom: '24px',
-          right: '16px',
+          bottom: '16px',
+          right: '12px',
           zIndex: 1000,
-          width: '56px',
-          height: '56px',
           borderRadius: '50%',
           background: '#B91C1C',
           border: 'none',
@@ -109,11 +108,11 @@ export default function ChatWidget() {
         <div
           style={{
             position: 'fixed',
-            bottom: '92px',
-            right: '16px',
+            bottom: '72px',
+            right: '12px',
             zIndex: 999,
-            width: 'min(340px, calc(100vw - 32px))',
-            maxWidth: 'calc(100vw - 32px)',
+            width: 'min(320px, calc(100vw - 24px))',
+            maxWidth: 'calc(100vw - 24px)',
             borderRadius: '12px',
             overflow: 'hidden',
             boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
@@ -290,6 +289,24 @@ export default function ChatWidget() {
       )}
 
       <style>{`
+        .chat-fab {
+          width: 44px;
+          height: 44px;
+        }
+        .chat-fab svg {
+          width: 20px;
+          height: 20px;
+        }
+        @media (min-width: 640px) {
+          .chat-fab {
+            width: 52px;
+            height: 52px;
+          }
+          .chat-fab svg {
+            width: 22px;
+            height: 22px;
+          }
+        }
         @keyframes chatSlideIn {
           from { opacity: 0; transform: translateY(12px) scale(0.97); }
           to   { opacity: 1; transform: translateY(0) scale(1); }

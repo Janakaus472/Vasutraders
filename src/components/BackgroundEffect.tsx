@@ -179,6 +179,7 @@ export default function BackgroundEffect() {
           inset: 0,
           zIndex: 0,
           pointerEvents: 'none',
+          overflow: 'hidden',
           background: 'linear-gradient(135deg, #FFF8F0 0%, #FFECD2 30%, #FFE4CC 60%, #FFF0E6 100%)',
         }}
       />

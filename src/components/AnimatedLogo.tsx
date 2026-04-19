@@ -118,7 +118,7 @@ export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
         }
       `}</style>
 
-      <div className={`al-wrap ${animate ? 'on' : ''}`} style={{ width: size, height: size }}>
+      <div className={`al-wrap ${animate ? 'on' : ''}`} style={{ width: size, height: size, overflow: 'visible', maxWidth: '90vw' }}>
         <div className="al-halo" />
         <div className="al-glow" />
         <div className="al-sweep" />

@@ -29,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" style={{ colorScheme: 'light' }}>
+    <html lang="en" style={{ colorScheme: 'light', overflowX: 'hidden' }}>
       <body className={`${geist.className} min-h-screen`} style={{ background: 'transparent', overflowX: 'hidden' }}>
         <LanguageProvider>
           <CartProvider>

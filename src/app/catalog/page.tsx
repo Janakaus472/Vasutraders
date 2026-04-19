@@ -65,7 +65,7 @@ function CatalogContent() {
   const selectedCartItem = selectedProduct ? items.find(i => i.productId === selectedProduct.id) : null
 
   return (
-    <div style={{ minHeight: '100vh', position: 'relative', background: '#f9f9f9' }}>
+    <div style={{ minHeight: '100vh', position: 'relative', background: '#f9f9f9', overflowX: 'hidden', width: '100%' }}>
       <style>{`
         .product-grid {
           display: grid;

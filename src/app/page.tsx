@@ -47,7 +47,7 @@ export default function HomePage() {
   }, [])
 
   return (
-    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
+    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", overflowX: 'hidden', width: '100%' }}>
       <style>{`
         .cat-card {
           transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;

@@ -1,12 +1,24 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export default function CursorGlow() {
   const dotRef = useRef<HTMLDivElement>(null)
   const ringRef = useRef<HTMLDivElement>(null)
+  const [isTouch, setIsTouch] = useState(true) // default hidden until we detect mouse
 
   useEffect(() => {
+    // Only enable on devices with fine pointer (mouse/trackpad)
+    const hasFineMouse = window.matchMedia('(pointer: fine)').matches
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+
+    if (!hasFineMouse || isTouchDevice) {
+      setIsTouch(true)
+      return
+    }
+
+    setIsTouch(false)
+
     let dotX = 0, dotY = 0
     let ringX = 0, ringY = 0
     let rafId: number
@@ -36,11 +48,16 @@ export default function CursorGlow() {
     }
   }, [])
 
+  // Don't render anything on touch devices
+  if (isTouch) return null
+
   return (
     <>
       <style>{`
-        * { cursor: none !important; }
-        a, button, [role="button"], input, textarea, select { cursor: none !important; }
+        @media (pointer: fine) {
+          * { cursor: none !important; }
+          a, button, [role="button"], input, textarea, select { cursor: none !important; }
+        }
       `}</style>
       <div
         ref={dotRef}
