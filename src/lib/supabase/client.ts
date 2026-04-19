@@ -18,3 +18,22 @@ export const supabase = new Proxy({} as SupabaseClient, {
     return (getSupabase() as any)[prop]
   },
 })
+
+// Admin client with service key for server-side operations
+let _admin: SupabaseClient | null = null
+
+export function getAdminSupabase(): SupabaseClient {
+  if (!_admin) {
+    _admin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+  }
+  return _admin
+}
+
+export const adminSupabase = new Proxy({} as SupabaseClient, {
+  get(_, prop) {
+    return (getAdminSupabase() as any)[prop]
+  },
+})
