@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { BUSINESS_NAME, WHATSAPP_NUMBER } from '@/lib/constants'
 import { useLanguage } from '@/context/LanguageContext'
 import { getProducts } from '@/lib/supabase/products'
+import AnimatedLogo from '@/components/AnimatedLogo'
 
 const CAT_ICONS: Record<string, { emoji: string; color: string; bg: string }> = {
   'Playing Cards':        { emoji: '🃏', color: '#DC2626', bg: '#FEF2F2' },
@@ -86,16 +86,9 @@ export default function HomePage() {
         }} />
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '700px', margin: '0 auto' }}>
-          {/* Logo */}
-          <div style={{ marginBottom: '20px' }}>
-            <Image
-              src="/logo.png"
-              alt={BUSINESS_NAME}
-              width={120}
-              height={120}
-              style={{ margin: '0 auto', borderRadius: '20px', background: 'rgba(255,255,255,0.1)', padding: '8px' }}
-              priority
-            />
+          {/* Animated Logo */}
+          <div style={{ marginBottom: '16px' }}>
+            <AnimatedLogo size={160} />
           </div>
 
           <div style={{
