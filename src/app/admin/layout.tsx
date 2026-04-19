@@ -13,6 +13,16 @@ const navItems = [
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+
+  if (pathname === '/admin/login') {
+    return <>{children}</>
+  }
+
+  return <AdminGuardedLayout>{children}</AdminGuardedLayout>
+}
+
+function AdminGuardedLayout({ children }: { children: React.ReactNode }) {
   const { isLoading, isAdmin } = useAdminGuard()
   const pathname = usePathname()
   const router = useRouter()
