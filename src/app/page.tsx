@@ -88,7 +88,7 @@ export default function HomePage() {
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '700px', margin: '0 auto' }}>
           {/* Animated Logo */}
           <div style={{ marginBottom: '16px' }}>
-            <AnimatedLogo size={160} />
+            <AnimatedLogo size={200} />
           </div>
 
           <div style={{
