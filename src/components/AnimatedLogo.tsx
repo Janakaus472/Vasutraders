@@ -1,148 +1,71 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 
 interface AnimatedLogoProps {
   size?: number
 }
 
 export default function AnimatedLogo({ size = 160 }: AnimatedLogoProps) {
-  const [animate, setAnimate] = useState(false)
+  const [stage, setStage] = useState(0)
 
   useEffect(() => {
-    const timer = setTimeout(() => setAnimate(true), 100)
-    return () => clearTimeout(timer)
+    // Stage 1: ring appears (spin in)
+    const t1 = setTimeout(() => setStage(1), 100)
+    // Stage 2: fully visible, start glow
+    const t2 = setTimeout(() => setStage(2), 900)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [])
 
   return (
     <>
       <style>{`
-        @keyframes logoRingSpin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes logoRingIn {
+        @keyframes logoSpinIn {
           0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-          60% { transform: scale(1.08) rotate(10deg); opacity: 1; }
+          60% { transform: scale(1.1) rotate(10deg); opacity: 1; }
+          80% { transform: scale(0.95) rotate(-3deg); opacity: 1; }
           100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
-        @keyframes logoCircleIn {
-          0% { transform: scale(0); opacity: 0; }
-          50% { transform: scale(0); opacity: 0; }
-          80% { transform: scale(1.06); opacity: 1; }
-          100% { transform: scale(1); opacity: 1; }
+        @keyframes logoGlowPulse {
+          0%, 100% {
+            filter: drop-shadow(0 0 6px rgba(250,196,26,0.2));
+          }
+          50% {
+            filter: drop-shadow(0 0 18px rgba(250,196,26,0.5)) drop-shadow(0 0 40px rgba(220,38,38,0.2));
+          }
         }
-        @keyframes logoVIn {
-          0%, 40% { transform: translateX(-30px) rotate(-15deg); opacity: 0; }
-          70% { transform: translateX(3px) rotate(2deg); opacity: 1; }
-          100% { transform: translateX(0) rotate(0deg); opacity: 1; }
+        @keyframes logoFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
         }
-        @keyframes logoTIn {
-          0%, 50% { transform: translateX(30px) rotate(15deg); opacity: 0; }
-          80% { transform: translateX(-3px) rotate(-2deg); opacity: 1; }
-          100% { transform: translateX(0) rotate(0deg); opacity: 1; }
-        }
-        @keyframes logoTextSpin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes logoGlow {
-          0%, 100% { filter: drop-shadow(0 0 8px rgba(250,196,26,0.3)); }
-          50% { filter: drop-shadow(0 0 20px rgba(250,196,26,0.6)); }
-        }
-        .logo-container {
-          position: relative;
+        .animated-logo {
           display: inline-block;
+          opacity: 0;
+          transform: scale(0) rotate(-180deg);
         }
-        .logo-container.animate .logo-glow {
-          animation: logoGlow 3s ease-in-out infinite 1.5s;
+        .animated-logo.stage-1 {
+          animation: logoSpinIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
-        .logo-container.animate .logo-ring {
-          animation: logoRingIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        .logo-container.animate .logo-circle {
-          animation: logoCircleIn 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        .logo-container.animate .logo-v {
-          animation: logoVIn 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        .logo-container.animate .logo-t {
-          animation: logoTIn 1.1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        .logo-container.animate .logo-text-ring {
-          animation: logoTextSpin 30s linear infinite 1.2s;
+        .animated-logo.stage-2 {
+          opacity: 1;
+          transform: scale(1) rotate(0deg);
+          animation: logoGlowPulse 3s ease-in-out infinite, logoFloat 4s ease-in-out infinite;
         }
       `}</style>
 
-      <div className={`logo-container ${animate ? 'animate' : ''}`}>
-        <svg
+      <div
+        className={`animated-logo ${stage >= 2 ? 'stage-2' : stage >= 1 ? 'stage-1' : ''}`}
+        style={{ width: size, height: size, borderRadius: '50%', overflow: 'hidden' }}
+      >
+        <Image
+          src="/logo.png"
+          alt="Vasu Traders"
           width={size}
           height={size}
-          viewBox="0 0 200 200"
-          className="logo-glow"
-        >
-          {/* Blue outer ring */}
-          <g className="logo-ring" style={{ transformOrigin: '100px 100px', opacity: 0 }}>
-            <circle cx="100" cy="100" r="96" fill="#2B5EA7" />
-            <circle cx="100" cy="100" r="72" fill="none" stroke="#2B5EA7" strokeWidth="0" />
-          </g>
-
-          {/* Red inner circle */}
-          <g className="logo-circle" style={{ transformOrigin: '100px 100px', opacity: 0 }}>
-            <circle cx="100" cy="100" r="70" fill="#C41E2A" />
-          </g>
-
-          {/* Rotating text around the ring */}
-          <g className="logo-text-ring" style={{ transformOrigin: '100px 100px' }}>
-            <defs>
-              <path
-                id="textCircle"
-                d="M 100, 100 m -82, 0 a 82,82 0 1,1 164,0 a 82,82 0 1,1 -164,0"
-              />
-            </defs>
-            <text
-              fill="#fff"
-              fontSize="11"
-              fontWeight="700"
-              fontFamily="'Plus Jakarta Sans', sans-serif"
-              letterSpacing="2.5"
-            >
-              <textPath href="#textCircle" startOffset="0%">
-                Wholesalers and Distributors · Playing Cards · Rubber Band · Sports Goods · General ·
-              </textPath>
-            </text>
-          </g>
-
-          {/* V letter */}
-          <g className="logo-v" style={{ transformOrigin: '85px 110px', opacity: 0 }}>
-            <text
-              x="58"
-              y="132"
-              fill="#fff"
-              fontSize="80"
-              fontWeight="900"
-              fontFamily="'Bebas Neue', Impact, sans-serif"
-              letterSpacing="-2"
-            >
-              V
-            </text>
-          </g>
-
-          {/* T letter */}
-          <g className="logo-t" style={{ transformOrigin: '115px 110px', opacity: 0 }}>
-            <text
-              x="97"
-              y="132"
-              fill="#fff"
-              fontSize="80"
-              fontWeight="900"
-              fontFamily="'Bebas Neue', Impact, sans-serif"
-              letterSpacing="-2"
-            >
-              T
-            </text>
-          </g>
-        </svg>
+          style={{ display: 'block', width: '100%', height: '100%', objectFit: 'contain' }}
+          priority
+        />
       </div>
     </>
   )
