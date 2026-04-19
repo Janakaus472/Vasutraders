@@ -58,7 +58,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
         {/* ── Image ── */}
         <div
           onClick={onOpen}
-          style={{ position: 'relative', background: imgBg, height: 'clamp(240px, 40vw, 340px)', overflow: 'hidden', flexShrink: 0 }}
+          style={{ position: 'relative', background: imgBg, height: 'clamp(260px, 45vw, 400px)', overflow: 'hidden', flexShrink: 0 }}
         >
           {product.imageUrl ? (
             <Image
@@ -66,7 +66,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
               alt={product.name}
               fill
               style={{ objectFit: 'contain', padding: '20px', transition: 'transform 0.3s ease' }}
-              sizes="(max-width: 768px) 50vw, 25vw"
+              sizes="(max-width: 540px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           ) : (
             <CategoryIcon category={product.category} size="card" />

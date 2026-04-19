@@ -23,21 +23,42 @@ export default function ProductGrid({ products, cartItems, onAdd, onRemove, onOp
   }
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '14px' }}>
-      {products.map((product, index) => {
-        const cartItem = cartItems.find((i) => i.productId === product.id)
-        return (
-          <ProductCard
-            key={product.id}
-            product={product}
-            cartQuantity={cartItem?.quantity || 0}
-            onAdd={() => onAdd(product.id)}
-            onRemove={() => onRemove(product.id)}
-            onOpen={() => onOpen(product)}
-            index={index}
-          />
-        )
-      })}
-    </div>
+    <>
+      <style>{`
+        .product-grid {
+          display: grid;
+          gap: 20px;
+          grid-template-columns: 1fr;
+        }
+        @media (min-width: 540px) {
+          .product-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+          }
+        }
+        @media (min-width: 1024px) {
+          .product-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+          }
+        }
+      `}</style>
+      <div className="product-grid">
+        {products.map((product, index) => {
+          const cartItem = cartItems.find((i) => i.productId === product.id)
+          return (
+            <ProductCard
+              key={product.id}
+              product={product}
+              cartQuantity={cartItem?.quantity || 0}
+              onAdd={() => onAdd(product.id)}
+              onRemove={() => onRemove(product.id)}
+              onOpen={() => onOpen(product)}
+              index={index}
+            />
+          )
+        })}
+      </div>
+    </>
   )
 }

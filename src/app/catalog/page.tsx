@@ -66,6 +66,19 @@ function CatalogContent() {
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative', background: '#f9f9f9' }}>
+      <style>{`
+        .product-grid {
+          display: grid;
+          gap: 20px;
+          grid-template-columns: 1fr;
+        }
+        @media (min-width: 540px) {
+          .product-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1024px) {
+          .product-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        }
+      `}</style>
 
       {/* ── Banner ── */}
       <div style={{
@@ -243,10 +256,10 @@ function CatalogContent() {
 
           {/* Grid */}
           {isLoading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
-              {Array.from({ length: 8 }).map((_, i) => (
+            <div className="product-grid">
+              {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} style={{ borderRadius: '12px', overflow: 'hidden', animationDelay: `${i * 0.06}s` }} className="animate-shimmer">
-                  <div style={{ height: '280px', background: '#e5e7eb' }} />
+                  <div style={{ height: '340px', background: '#e5e7eb' }} />
                   <div style={{ padding: '16px', background: '#fff' }}>
                     <div className="animate-shimmer" style={{ height: '16px', borderRadius: '4px', width: '80%', marginBottom: '10px' }} />
                     <div className="animate-shimmer" style={{ height: '13px', borderRadius: '4px', width: '55%', marginBottom: '18px' }} />
