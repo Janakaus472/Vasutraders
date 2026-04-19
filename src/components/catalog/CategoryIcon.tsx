@@ -18,7 +18,7 @@ interface Props {
 
 export default function CategoryIcon({ category, size = 'card' }: Props) {
   const icon = ICONS[category] || { symbol: '📦', color: '#6b7280' }
-  const fontSize = size === 'modal' ? '120px' : '96px'
+  const fontSize = size === 'modal' ? '96px' : '72px'
 
   return (
     <div style={{
