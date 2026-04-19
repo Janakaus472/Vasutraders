@@ -59,7 +59,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
         {/* ── Image ── */}
         <div
           onClick={onOpen}
-          style={{ position: 'relative', background: imgBg, height: 'clamp(260px, 45vw, 400px)', overflow: 'hidden', flexShrink: 0 }}
+          style={{ position: 'relative', background: imgBg, height: 'clamp(140px, calc(100vh - 420px), 340px)', overflow: 'hidden', flexShrink: 0 }}
         >
           {product.imageUrl ? (
             <Image
@@ -107,20 +107,20 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
         </div>
 
         {/* ── Content ── */}
-        <div style={{ padding: 'clamp(14px, 3vw, 20px)', display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
+        <div style={{ padding: 'clamp(10px, 2vw, 16px)', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
           <div onClick={onOpen}>
             <p style={{
-              fontWeight: 800, color: '#1a1a1a', fontSize: 'clamp(14px, 3.5vw, 17px)', lineHeight: 1.4,
-              display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+              fontWeight: 800, color: '#1a1a1a', fontSize: 'clamp(13px, 3vw, 16px)', lineHeight: 1.3,
+              display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden',
               fontFamily: "'Plus Jakarta Sans', sans-serif", margin: 0,
             }}>
               {product.name}
             </p>
             {getDescription(product.description, lang) && (
               <p style={{
-                color: '#6b7280', fontSize: '12px', marginTop: '4px',
-                display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                lineHeight: 1.5, margin: '4px 0 0',
+                color: '#6b7280', fontSize: '11px', marginTop: '3px',
+                display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                lineHeight: 1.4, margin: '3px 0 0',
               }}>
                 {getDescription(product.description, lang)}
               </p>
@@ -131,10 +131,10 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
             <div>
               {product.pricePerUnit > 0 ? (
                 <>
-                  <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.4rem, 5vw, 2rem)', color: '#B91C1C', lineHeight: 1, letterSpacing: '0.5px' }}>
+                  <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.2rem, 4vw, 1.6rem)', color: '#B91C1C', lineHeight: 1, letterSpacing: '0.5px' }}>
                     ₹{product.pricePerUnit.toFixed(0)}
                   </p>
-                  <p style={{ color: '#9ca3af', fontSize: '11px', marginTop: '2px' }}>{t.per} {product.unit}</p>
+                  <p style={{ color: '#9ca3af', fontSize: '10px', marginTop: '1px' }}>{t.per} {product.unit}</p>
                 </>
               ) : (
                 <>
@@ -146,7 +146,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
             <AddToCartButton quantity={cartQuantity} onAdd={onAdd} onRemove={onRemove} disabled={!product.inStock} />
           </div>
 
-          <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '10px', display: 'flex', gap: '6px' }}>
+          <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '6px', display: 'flex', gap: '5px' }}>
             {MARKETPLACE_LINKS.map(m => (
               <a
                 key={m.name}
@@ -157,7 +157,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
                 onClick={e => e.stopPropagation()}
                 style={{
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  padding: '7px 4px', borderRadius: '8px',
+                  padding: '5px 4px', borderRadius: '6px',
                   background: m.bg, border: `1.5px solid ${m.border}`,
                   textDecoration: 'none', transition: 'all 0.18s', overflow: 'hidden',
                 }}
