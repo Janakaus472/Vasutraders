@@ -25,7 +25,7 @@ const CATEGORY_EMOJIS: Record<string, string> = {
 
 function CatalogContent() {
   const { items, addItem, removeItem } = useCart()
-  const { t, catLabel } = useLanguage()
+  const { t, catLabel, lang } = useLanguage()
   const { products, isLoading } = useProducts()
   const searchParams = useSearchParams()
   const [activeCategory, setActiveCategory] = useState(() => searchParams.get('category') || 'All')
@@ -86,7 +86,7 @@ function CatalogContent() {
               {t.wholesaleCatalog}
             </p>
             <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.4rem, 5vw, 4rem)', color: '#fff', lineHeight: 1, letterSpacing: '2px' }}>
-              {activeCategory === 'All' ? t.allProducts : catLabel(activeCategory)}
+              {activeCategory === 'All' ? (lang === 'hi' ? 'सभी श्रेणियाँ' : 'Browse Categories') : catLabel(activeCategory)}
             </h1>
             <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', marginTop: '8px' }}>{t.tagline}</p>
           </div>
@@ -186,8 +186,8 @@ function CatalogContent() {
           <div className={`flex flex-col sm:flex-row sm:items-center gap-3 mb-6 ${mounted ? 'animate-fadeInDown' : ''}`}>
             <div style={{ flex: 1 }}>
               <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.6rem, 5vw, 2.2rem)', color: '#1a1a1a', letterSpacing: '1px', lineHeight: 1 }}>
-                {activeCategory === 'All' ? t.allProducts : catLabel(activeCategory)}
-                {!isLoading && (
+                {activeCategory === 'All' ? (lang === 'hi' ? 'सभी श्रेणियाँ' : 'All Categories') : catLabel(activeCategory)}
+                {!isLoading && activeCategory !== 'All' && (
                   <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#DC2626', marginLeft: '14px' }}>
                     {filtered.length}
                   </span>
@@ -253,6 +253,80 @@ function CatalogContent() {
                     <div className="animate-shimmer" style={{ height: '36px', borderRadius: '6px' }} />
                   </div>
                 </div>
+              ))}
+            </div>
+          ) : activeCategory === 'All' && !search.trim() ? (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))',
+              gap: '16px',
+            }}>
+              {categories.filter(c => c !== 'All').map((cat, i) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className="animate-popIn"
+                  style={{
+                    animationDelay: `${i * 0.05}s`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    background: '#fff',
+                    borderRadius: '12px',
+                    padding: '24px 20px',
+                    border: '2px solid #f0f0f0',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = '#DC2626'
+                    e.currentTarget.style.transform = 'translateY(-3px)'
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(185,28,28,0.12)'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = '#f0f0f0'
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'
+                  }}
+                >
+                  <div style={{
+                    fontSize: '44px',
+                    lineHeight: 1,
+                    flexShrink: 0,
+                    width: '64px',
+                    height: '64px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#FEF2F2',
+                    borderRadius: '12px',
+                  }}>
+                    {CATEGORY_EMOJIS[cat] || '📦'}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontWeight: 800,
+                      fontSize: '17px',
+                      color: '#1a1a1a',
+                      lineHeight: 1.3,
+                      marginBottom: '4px',
+                    }}>
+                      {catLabel(cat)}
+                    </div>
+                    <div style={{
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      color: '#DC2626',
+                    }}>
+                      {categoryCounts[cat] || 0} {t.products.toLowerCase()}
+                    </div>
+                  </div>
+                  <svg width="20" height="20" fill="none" stroke="#9ca3af" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
               ))}
             </div>
           ) : (
