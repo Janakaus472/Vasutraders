@@ -10,6 +10,7 @@ export interface Product {
   minOrderQty: number
   inStock: boolean
   category: string
+  subcategory: string
   displayOrder: number
   createdAt: Date
   updatedAt: Date

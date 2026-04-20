@@ -44,6 +44,7 @@ export default function ProductForm({ product }: ProductFormProps) {
         pricePerUnit: parseFloat(pricePerUnit),
         minOrderQty: parseInt(minOrderQty),
         category,
+        subcategory: '',
         displayOrder: parseInt(displayOrder),
         inStock,
       }
