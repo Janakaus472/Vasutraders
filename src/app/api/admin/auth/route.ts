@@ -14,5 +14,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Invalid credentials' }, { status: 401 })
   }
 
-  return NextResponse.json({ ok: true })
+  const res = NextResponse.json({ ok: true })
+  res.cookies.set('vt_admin', '1', {
+    httpOnly: true,
+    sameSite: 'strict',
+    maxAge: 24 * 60 * 60,
+    path: '/',
+  })
+  return res
+}
+
+export async function DELETE() {
+  const res = NextResponse.json({ ok: true })
+  res.cookies.delete('vt_admin')
+  return res
 }
