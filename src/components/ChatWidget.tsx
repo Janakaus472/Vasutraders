@@ -200,14 +200,27 @@ export default function ChatWidget() {
                   border: msg.role === 'assistant' ? '1px solid #e5e7eb' : 'none',
                   whiteSpace: 'pre-wrap',
                 }}>
-                  {msg.content.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/).map((part, j) => {
-                    if (part.startsWith('**') && part.endsWith('**'))
-                      return <strong key={j}>{part.slice(2, -2)}</strong>
-                    const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
-                    if (linkMatch)
-                      return <a key={j} href={linkMatch[2]} style={{ color: msg.role === 'user' ? '#FFD4A0' : '#B91C1C', fontWeight: 700, textDecoration: 'underline' }}>{linkMatch[1]}</a>
-                    return part
-                  })}
+                  {msg.content.replace(/\[[^\]]+\]\([^)]+\)/g, '').split(/(\*\*[^*]+\*\*)/).map((part, j) =>
+                    part.startsWith('**') && part.endsWith('**')
+                      ? <strong key={j}>{part.slice(2, -2)}</strong>
+                      : part
+                  )}
+                  {msg.role === 'assistant' && msg.content.includes('/catalog') && (
+                    <a href="/catalog" style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '6px',
+                      marginTop: '8px', padding: '8px 14px', borderRadius: '10px',
+                      background: '#B91C1C', color: '#fff', fontWeight: 700,
+                      fontSize: '12px', textDecoration: 'none',
+                    }}>📦 Browse Catalog</a>
+                  )}
+                  {msg.role === 'assistant' && msg.content.includes('/cart') && !msg.content.includes('/catalog') && (
+                    <a href="/cart" style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '6px',
+                      marginTop: '8px', padding: '8px 14px', borderRadius: '10px',
+                      background: '#B91C1C', color: '#fff', fontWeight: 700,
+                      fontSize: '12px', textDecoration: 'none',
+                    }}>🛒 Go to Cart</a>
+                  )}
                 </div>
               </div>
             ))}
