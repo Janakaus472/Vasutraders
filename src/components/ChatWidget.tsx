@@ -200,11 +200,14 @@ export default function ChatWidget() {
                   border: msg.role === 'assistant' ? '1px solid #e5e7eb' : 'none',
                   whiteSpace: 'pre-wrap',
                 }}>
-                  {msg.content.split(/(\*\*[^*]+\*\*)/).map((part, j) =>
-                    part.startsWith('**') && part.endsWith('**')
-                      ? <strong key={j}>{part.slice(2, -2)}</strong>
-                      : part
-                  )}
+                  {msg.content.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/).map((part, j) => {
+                    if (part.startsWith('**') && part.endsWith('**'))
+                      return <strong key={j}>{part.slice(2, -2)}</strong>
+                    const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
+                    if (linkMatch)
+                      return <a key={j} href={linkMatch[2]} style={{ color: msg.role === 'user' ? '#FFD4A0' : '#B91C1C', fontWeight: 700, textDecoration: 'underline' }}>{linkMatch[1]}</a>
+                    return part
+                  })}
                 </div>
               </div>
             ))}
