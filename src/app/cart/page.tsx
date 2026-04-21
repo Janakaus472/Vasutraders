@@ -194,8 +194,8 @@ export default function CartPage() {
             {orderNumber}
           </p>
           <p style={{ fontSize: '18px', color: '#5C2D0F', fontWeight: 700, lineHeight: 1.6 }}>
-            Your order has been sent to Vasu Traders<br />
-            on WhatsApp. We will confirm shortly!
+            Thank you for placing an order with us!<br />
+            We will confirm it shortly on WhatsApp.
           </p>
         </div>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
