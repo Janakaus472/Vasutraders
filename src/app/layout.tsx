@@ -38,6 +38,9 @@ export default function RootLayout({
             <Header />
             <main className="min-h-[calc(100vh-4rem)]" style={{ position: 'relative', zIndex: 1 }}>{children}</main>
             <BottomNav />
+            <footer style={{ textAlign: 'center', padding: '12px 0 72px', fontSize: '11px', color: 'rgba(0,0,0,0.2)', fontFamily: 'sans-serif' }}>
+              <a href="https://aussieai.shop" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>powered by AussieAI</a>
+            </footer>
             <ChatWidget />
           </CartProvider>
         </LanguageProvider>
