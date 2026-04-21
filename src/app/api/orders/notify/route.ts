@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const OWNER_EMAIL = 'vasutraders9809@gmail.com'
+const OWNER_EMAIL = 'janakaus472@gmail.com'
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.RESEND_API_KEY
