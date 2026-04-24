@@ -47,3 +47,11 @@ export async function renameCategory(id: string, name: string): Promise<void> {
   const { error } = await adminSupabase.from('categories').update({ name: name.trim() }).eq('id', id)
   if (error) throw error
 }
+
+export async function reorderCategories(updates: { id: string; display_order: number }[]): Promise<void> {
+  await Promise.all(
+    updates.map(u =>
+      adminSupabase.from('categories').update({ display_order: u.display_order }).eq('id', u.id)
+    )
+  )
+}

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { addProduct, updateProduct, updateProductPrice, bulkUpdatePrices, deleteProduct, duplicateProduct } from '@/lib/supabase/products'
+import { addProduct, updateProduct, updateProductPrice, bulkUpdatePrices, deleteProduct, duplicateProduct, reorderProducts, getProductsBySubcategory } from '@/lib/supabase/products'
 
 function isAdmin(req: NextRequest) {
   return req.cookies.get('vt_admin')?.value === '1'
@@ -27,6 +27,32 @@ export async function POST(req: NextRequest) {
     if (action === 'bulk') {
       const updates = await req.json()
       await bulkUpdatePrices(updates)
+      return NextResponse.json({ ok: true })
+    }
+    if (action === 'reorder') {
+      const updates = await req.json()
+      await reorderProducts(updates)
+      return NextResponse.json({ ok: true })
+    }
+    if (action === 'get_by_subcategory') {
+      const category = searchParams.get('category')
+      const subcategory = searchParams.get('subcategory')
+      if (!category || !subcategory) return NextResponse.json({ error: 'Missing category/subcategory' }, { status: 400 })
+      const products = await getProductsBySubcategory(category, subcategory)
+      return NextResponse.json(products)
+    }
+    if (action === 'bulk_action') {
+      const { ids, action: bulkType } = await req.json()
+      if (!Array.isArray(ids) || ids.length === 0) return NextResponse.json({ error: 'No ids' }, { status: 400 })
+      if (bulkType === 'delete') {
+        await Promise.all(ids.map((id: string) => deleteProduct(id)))
+      } else if (bulkType === 'out_of_stock') {
+        await Promise.all(ids.map((id: string) => updateProduct(id, { inStock: false })))
+      } else if (bulkType === 'available') {
+        await Promise.all(ids.map((id: string) => updateProduct(id, { inStock: true })))
+      } else {
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+      }
       return NextResponse.json({ ok: true })
     }
     const product = await req.json()

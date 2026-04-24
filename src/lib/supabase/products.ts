@@ -105,6 +105,25 @@ export async function deleteProduct(id: string): Promise<void> {
   if (error) throw error
 }
 
+export async function reorderProducts(updates: { id: string; displayOrder: number }[]): Promise<void> {
+  await Promise.all(
+    updates.map(u =>
+      adminSupabase.from('products').update({ display_order: u.displayOrder, updated_at: new Date().toISOString() }).eq('id', u.id)
+    )
+  )
+}
+
+export async function getProductsBySubcategory(category: string, subcategory: string): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('category', category)
+    .eq('subcategory', subcategory)
+    .order('display_order', { ascending: true })
+  if (error) throw error
+  return (data || []).map(rowToProduct)
+}
+
 export async function duplicateProduct(id: string): Promise<Product> {
   const product = await getProduct(id)
   if (!product) throw new Error('Product not found')

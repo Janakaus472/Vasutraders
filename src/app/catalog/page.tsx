@@ -32,6 +32,7 @@ function CatalogContent() {
   const [search, setSearch] = useState('')
   const [mounted, setMounted] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [orderedCats, setOrderedCats] = useState<string[]>([])
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -40,10 +41,26 @@ function CatalogContent() {
     if (cat) setActiveCategory(cat)
   }, [searchParams])
 
+  // Fetch category order from API
+  useEffect(() => {
+    fetch('/api/admin/categories')
+      .then(r => r.json())
+      .then((data: { name: string }[]) => {
+        if (Array.isArray(data)) setOrderedCats(data.map(c => c.name))
+      })
+      .catch(() => {})
+  }, [])
+
   const categories = useMemo(() => {
-    const cats = Array.from(new Set(products.map((p) => p.category).filter(Boolean)))
-    return ['All', ...cats.sort()]
-  }, [products])
+    const productCats = Array.from(new Set(products.map((p) => p.category).filter(Boolean)))
+    if (orderedCats.length > 0) {
+      // Use API order, then append any product categories not in the API list
+      const ordered = orderedCats.filter(c => productCats.includes(c))
+      const remaining = productCats.filter(c => !orderedCats.includes(c)).sort()
+      return ['All', ...ordered, ...remaining]
+    }
+    return ['All', ...productCats.sort()]
+  }, [products, orderedCats])
 
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { All: products.length }

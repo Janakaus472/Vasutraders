@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getCategories, addCategory, renameCategory, deleteCategory } from '@/lib/supabase/categories'
+import { getCategories, addCategory, renameCategory, deleteCategory, reorderCategories } from '@/lib/supabase/categories'
 
 function isAdmin(req: NextRequest) {
   return req.cookies.get('vt_admin')?.value === '1'
@@ -37,6 +37,18 @@ export async function PATCH(req: NextRequest) {
   try {
     const { id, name } = await req.json()
     await renameCategory(id, name)
+    return NextResponse.json({ ok: true })
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message }, { status: 500 })
+  }
+}
+
+// PUT /api/admin/categories — reorder: [{ id, display_order }]
+export async function PUT(req: NextRequest) {
+  if (!isAdmin(req)) return unauth()
+  try {
+    const updates = await req.json()
+    await reorderCategories(updates)
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
