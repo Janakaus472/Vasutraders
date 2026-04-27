@@ -289,17 +289,6 @@ export default function CartPage() {
                       <p className="cart-product-name">{product.name}</p>
                       <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>per {product.unit}</p>
                     </div>
-                    <button
-                      onClick={() => updateQuantity(productId, 0)}
-                      title="Remove item"
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#fca5a5', padding: '4px', flexShrink: 0, lineHeight: 1, borderRadius: '6px', transition: 'color 0.15s' }}
-                      onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
-                      onMouseLeave={e => (e.currentTarget.style.color = '#fca5a5')}
-                    >
-                      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
                   </div>
                   <div className="cart-mobile-row-meta">
                     <div style={{ textAlign: 'center', flexShrink: 0 }}>
@@ -319,6 +308,17 @@ export default function CartPage() {
                         ? <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#15803d' }}>₹{(product.pricePerUnit * quantity).toFixed(0)}</span>
                         : <span style={{ color: '#9ca3af' }}>—</span>}
                     </div>
+                    <button
+                      onClick={() => updateQuantity(productId, 0)}
+                      title="Remove item"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#fca5a5', padding: '4px', flexShrink: 0, lineHeight: 1, borderRadius: '6px', transition: 'color 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
+                      onMouseLeave={e => (e.currentTarget.style.color = '#fca5a5')}
+                    >
+                      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
               ))}
