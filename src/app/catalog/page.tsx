@@ -24,31 +24,56 @@ const CATEGORY_EMOJIS: Record<string, string> = {
 }
 
 function CatalogContent() {
-  const { items, addItem, removeItem } = useCart()
+  const { items, addItem, removeItem, updateQuantity } = useCart()
   const { t, catLabel, lang } = useLanguage()
   const { products, isLoading } = useProducts()
   const searchParams = useSearchParams()
   const [activeCategory, setActiveCategory] = useState(() => searchParams.get('category') || 'All')
+  const [activeSubcategory, setActiveSubcategory] = useState<string | null>(() => searchParams.get('subcategory') || null)
   const [search, setSearch] = useState('')
-  const [mounted, setMounted] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [orderedCats, setOrderedCats] = useState<string[]>([])
+  const [catSubMap, setCatSubMap] = useState<Record<string, string[]>>({})
+  const [catsLoaded, setCatsLoaded] = useState(false)
 
-  useEffect(() => { setMounted(true) }, [])
+  // Helper to update URL without triggering Next.js navigation (avoids Suspense freeze)
+  const syncUrl = (cat: string, sub: string | null) => {
+    const params = new URLSearchParams()
+    if (cat !== 'All') params.set('category', cat)
+    if (sub) params.set('subcategory', sub)
+    const qs = params.toString()
+    window.history.replaceState(null, '', `/catalog${qs ? `?${qs}` : ''}`)
+  }
 
-  useEffect(() => {
-    const cat = searchParams.get('category')
-    if (cat) setActiveCategory(cat)
-  }, [searchParams])
+  // Helper to switch category and reset subcategory
+  const selectCategory = (cat: string) => {
+    setActiveCategory(cat)
+    setActiveSubcategory(null)
+    syncUrl(cat, null)
+  }
 
-  // Fetch category order from API
+  // Helper to select subcategory
+  const selectSubcategory = (sub: string | null) => {
+    setActiveSubcategory(sub)
+    syncUrl(activeCategory, sub)
+  }
+
+  // Fetch category order from API (with subcategories)
   useEffect(() => {
     fetch('/api/admin/categories')
       .then(r => r.json())
-      .then((data: { name: string }[]) => {
-        if (Array.isArray(data)) setOrderedCats(data.map(c => c.name))
+      .then((data: { name: string; subcategories?: { name: string }[] }[]) => {
+        if (Array.isArray(data)) {
+          setOrderedCats(data.map(c => c.name))
+          const subMap: Record<string, string[]> = {}
+          data.forEach(c => {
+            if (c.subcategories) subMap[c.name] = c.subcategories.map(s => s.name)
+          })
+          setCatSubMap(subMap)
+        }
+        setCatsLoaded(true)
       })
-      .catch(() => {})
+      .catch(() => setCatsLoaded(true))
   }, [])
 
   const categories = useMemo(() => {
@@ -70,12 +95,39 @@ function CatalogContent() {
 
   const filtered = useMemo(() => {
     let list = activeCategory === 'All' ? products : products.filter((p) => p.category === activeCategory)
+    if (activeSubcategory) {
+      list = list.filter((p) => p.subcategory === activeSubcategory)
+    }
     if (search.trim()) {
       const q = search.toLowerCase()
       list = list.filter((p) => p.name.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q))
     }
     return list
-  }, [products, activeCategory, search])
+  }, [products, activeCategory, activeSubcategory, search])
+
+  // Get subcategories for active category (with product counts)
+  const activeSubcategories = useMemo(() => {
+    if (activeCategory === 'All') return []
+    const orderedSubs = catSubMap[activeCategory] || []
+    const catProducts = products.filter(p => p.category === activeCategory)
+    // Get all subcategories that have products
+    const subsWithProducts: { name: string; count: number }[] = []
+    const seen = new Set<string>()
+    // Admin-ordered subs first
+    for (const sub of orderedSubs) {
+      const count = catProducts.filter(p => p.subcategory === sub).length
+      if (count > 0) {
+        subsWithProducts.push({ name: sub, count })
+        seen.add(sub)
+      }
+    }
+    // Then any extra subs not in admin list
+    const extraSubs = Array.from(new Set(catProducts.map(p => p.subcategory).filter(s => s && !seen.has(s))))
+    for (const sub of extraSubs) {
+      subsWithProducts.push({ name: sub, count: catProducts.filter(p => p.subcategory === sub).length })
+    }
+    return subsWithProducts
+  }, [activeCategory, catSubMap, products])
 
   const totalItems = items.reduce((s, i) => s + i.quantity, 0)
 
@@ -111,12 +163,27 @@ function CatalogContent() {
         }} />
 
         <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', gap: '12px' }}>
-          <div className={mounted ? 'animate-fadeInDown' : ''}>
-            <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', color: '#fff', lineHeight: 1, letterSpacing: '2px' }}>
-              {activeCategory === 'All' ? (lang === 'hi' ? 'सभी श्रेणियाँ' : 'Browse Categories') : catLabel(activeCategory)}
+          <div>
+            <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', color: '#fff', lineHeight: 1, letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              {activeCategory === 'All' ? (lang === 'hi' ? 'सभी श्रेणियाँ' : 'Browse Categories') : (
+                <>
+                  <span
+                    onClick={() => { if (activeSubcategory) selectSubcategory(null) }}
+                    style={{ cursor: activeSubcategory ? 'pointer' : 'default', opacity: activeSubcategory ? 0.7 : 1 }}
+                  >
+                    {catLabel(activeCategory)}
+                  </span>
+                  {activeSubcategory && (
+                    <>
+                      <span style={{ opacity: 0.5, fontSize: '0.8em' }}>&rsaquo;</span>
+                      <span>{activeSubcategory}</span>
+                    </>
+                  )}
+                </>
+              )}
             </h1>
           </div>
-          <div className={`hidden sm:flex items-center gap-6 ${mounted ? 'animate-fadeInDown stagger-2' : ''}`}>
+          <div className="hidden sm:flex items-center gap-6">
             {[
               { val: isLoading ? '…' : products.length, label: t.products },
               { val: isLoading ? '…' : categories.length - 1, label: t.categories },
@@ -130,23 +197,95 @@ function CatalogContent() {
         </div>
       </div>
 
+      {/* ── Sticky navigation bar — category + subcategory pills ── */}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 20,
+        background: '#fff',
+        borderBottom: '1px solid #e5e7eb',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+      }}>
+        <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '8px 12px' }}>
+          {/* Category pills */}
+          <div className="flex gap-2 overflow-x-auto md:hidden" style={{ scrollbarWidth: 'none', paddingBottom: activeCategory !== 'All' && activeSubcategories.length > 0 && !search.trim() && catsLoaded ? '6px' : '0' }}>
+            {catsLoaded && categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => selectCategory(cat)}
+                style={{
+                  flexShrink: 0, padding: '7px 14px', borderRadius: '6px',
+                  fontSize: '12px', fontWeight: 700, cursor: 'pointer', border: 'none',
+                  background: activeCategory === cat ? '#DC2626' : '#f3f4f6',
+                  color: activeCategory === cat ? '#fff' : '#374151',
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  letterSpacing: '0.3px',
+                }}
+              >
+                {CATEGORY_EMOJIS[cat] || '📦'} {catLabel(cat)}
+              </button>
+            ))}
+          </div>
+
+          {/* Subcategory pills */}
+          {activeCategory !== 'All' && activeSubcategories.length > 0 && !search.trim() && catsLoaded && (
+            <div className="flex gap-2 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+              <button
+                onClick={() => selectSubcategory(null)}
+                style={{
+                  flexShrink: 0, padding: '6px 12px', borderRadius: '20px',
+                  fontSize: '12px', fontWeight: 700, cursor: 'pointer',
+                  border: !activeSubcategory ? '2px solid #DC2626' : '2px solid #e5e7eb',
+                  background: !activeSubcategory ? '#FEF2F2' : '#fff',
+                  color: !activeSubcategory ? '#DC2626' : '#374151',
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                }}
+              >
+                {lang === 'hi' ? 'सभी' : 'All'}
+              </button>
+              {activeSubcategories.map((sub) => (
+                <button
+                  key={sub.name}
+                  onClick={() => selectSubcategory(sub.name)}
+                  style={{
+                    flexShrink: 0, padding: '6px 12px', borderRadius: '20px',
+                    fontSize: '12px', fontWeight: 700, cursor: 'pointer',
+                    border: activeSubcategory === sub.name ? '2px solid #DC2626' : '2px solid #e5e7eb',
+                    background: activeSubcategory === sub.name ? '#FEF2F2' : '#fff',
+                    color: activeSubcategory === sub.name ? '#DC2626' : '#374151',
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  }}
+                >
+                  {sub.name} <span style={{ color: '#9ca3af', fontWeight: 600 }}>({sub.count})</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* ── Body ── */}
       <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '16px 12px', display: 'flex', gap: '20px' }}>
 
         {/* ── Sidebar ── */}
-        <aside className={`w-56 flex-shrink-0 hidden md:block ${mounted ? 'animate-slideInLeft' : ''}`}>
+        <aside className="w-56 flex-shrink-0 hidden md:block">
           <div style={{ background: '#fff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.06)', position: 'sticky', top: '70px', border: '1px solid #f0f0f0' }}>
             <div style={{ background: 'linear-gradient(135deg, #7f1d1d, #B91C1C)', padding: '18px 18px' }}>
               <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px', fontWeight: 800, letterSpacing: '3px', textTransform: 'uppercase' }}>{t.browseBy}</p>
               <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.5rem', color: '#FAC41A', letterSpacing: '1px', marginTop: '2px' }}>{t.category}</p>
             </div>
             <nav style={{ padding: '6px 0' }}>
-              {categories.map((cat, i) => {
+              {(!catsLoaded || isLoading) ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} style={{ padding: '10px 16px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <div style={{ width: '15px', height: '15px', borderRadius: '4px', background: '#e5e7eb' }} />
+                    <div style={{ flex: 1, height: '13px', borderRadius: '4px', background: '#e5e7eb' }} />
+                  </div>
+                ))
+              ) : categories.map((cat, i) => {
                 const active = activeCategory === cat
                 return (
                   <button
                     key={cat}
-                    onClick={() => setActiveCategory(cat)}
+                    onClick={() => selectCategory(cat)}
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center',
                       justifyContent: 'space-between',
@@ -159,9 +298,7 @@ function CatalogContent() {
                       borderLeft: 'none', borderTop: 'none', borderBottom: 'none',
                       cursor: 'pointer', textAlign: 'left', gap: '6px',
                       transition: 'all 0.15s',
-                      animationDelay: `${i * 0.04}s`,
                     }}
-                    className={mounted ? 'animate-fadeInUp' : ''}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: 0 }}>
                       <span style={{ fontSize: '15px', flexShrink: 0 }}>{CATEGORY_EMOJIS[cat] || '📦'}</span>
@@ -209,7 +346,7 @@ function CatalogContent() {
         <div style={{ flex: 1, minWidth: 0 }}>
 
           {/* Toolbar */}
-          <div className={`flex flex-col sm:flex-row sm:items-center gap-3 mb-3 ${mounted ? 'animate-fadeInDown' : ''}`}>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
             <div style={{ flex: 1 }}>
               {activeCategory === 'All' && (
                 <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.6rem, 5vw, 2.2rem)', color: '#1a1a1a', letterSpacing: '1px', lineHeight: 1 }}>
@@ -218,7 +355,24 @@ function CatalogContent() {
               )}
               {activeCategory !== 'All' && !isLoading && (
                 <p style={{ fontSize: '13px', color: '#6b7280' }}>
-                  {filtered.length} {lang === 'hi' ? 'उत्पाद' : 'products'}
+                  {activeSubcategory ? (
+                    <>
+                      <button
+                        onClick={() => selectSubcategory(null)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#DC2626', fontWeight: 700, fontSize: '13px', padding: 0, marginRight: '8px' }}
+                      >
+                        &larr; {lang === 'hi' ? 'वापस' : 'Back'}
+                      </button>
+                      {filtered.length} {lang === 'hi' ? 'उत्पाद' : 'products'}
+                    </>
+                  ) : (
+                    <>
+                      {activeSubcategories.length > 0
+                        ? `${activeSubcategories.length} ${lang === 'hi' ? 'उपश्रेणियाँ' : 'subcategories'}`
+                        : `${filtered.length} ${lang === 'hi' ? 'उत्पाद' : 'products'}`
+                      }
+                    </>
+                  )}
                 </p>
               )}
             </div>
@@ -247,30 +401,8 @@ function CatalogContent() {
             </div>
           </div>
 
-          {/* Mobile pills */}
-          <div className="flex gap-2 overflow-x-auto pb-2 mb-3 md:hidden" style={{ scrollbarWidth: 'none', paddingLeft: '2px', paddingRight: '2px' }}>
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                style={{
-                  flexShrink: 0, padding: '8px 16px', borderRadius: '6px',
-                  fontSize: '13px', fontWeight: 700, cursor: 'pointer', border: 'none',
-                  background: activeCategory === cat ? '#DC2626' : '#fff',
-                  color: activeCategory === cat ? '#fff' : '#374151',
-                  boxShadow: activeCategory === cat ? '0 2px 8px rgba(220,38,38,0.3)' : '0 1px 4px rgba(0,0,0,0.08)',
-                  transition: 'all 0.15s',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  letterSpacing: '0.3px',
-                }}
-              >
-                {CATEGORY_EMOJIS[cat] || '📦'} {catLabel(cat)}
-              </button>
-            ))}
-          </div>
-
           {/* Grid */}
-          {isLoading ? (
+          {(isLoading || !catsLoaded) ? (
             <div className="product-grid">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} style={{ borderRadius: '12px', overflow: 'hidden', animationDelay: `${i * 0.06}s` }} className="animate-shimmer">
@@ -292,10 +424,8 @@ function CatalogContent() {
               {categories.filter(c => c !== 'All').map((cat, i) => (
                 <button
                   key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className="animate-popIn"
+                  onClick={() => selectCategory(cat)}
                   style={{
-                    animationDelay: `${i * 0.05}s`,
                     display: 'flex',
                     alignItems: 'center',
                     gap: '16px',
@@ -305,18 +435,7 @@ function CatalogContent() {
                     border: '2px solid #f0f0f0',
                     cursor: 'pointer',
                     textAlign: 'left',
-                    transition: 'all 0.2s',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = '#DC2626'
-                    e.currentTarget.style.transform = 'translateY(-3px)'
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(185,28,28,0.12)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = '#f0f0f0'
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'
                   }}
                 >
                   <div style={{
@@ -363,6 +482,7 @@ function CatalogContent() {
               cartItems={items}
               onAdd={addItem}
               onRemove={removeItem}
+              onSetQuantity={updateQuantity}
               onOpen={setSelectedProduct}
               noProductsLabel={t.noProducts}
               hideCategory={activeCategory !== 'All'}
@@ -378,6 +498,7 @@ function CatalogContent() {
           cartQuantity={selectedCartItem?.quantity || 0}
           onAdd={() => addItem(selectedProduct.id)}
           onRemove={() => removeItem(selectedProduct.id)}
+          onSetQuantity={(qty) => updateQuantity(selectedProduct.id, qty)}
           onClose={() => setSelectedProduct(null)}
         />
       )}
