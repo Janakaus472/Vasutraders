@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useCart } from '@/context/CartContext'
@@ -51,6 +51,20 @@ export default function CartPage() {
     phone: '',
     locality: '',
   })
+  const [hasSavedDetails, setHasSavedDetails] = useState(false)
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('vt_customer')
+      if (saved) {
+        const parsed = JSON.parse(saved) as CustomerDetails
+        if (parsed.shopName && parsed.phone) {
+          setDetails(parsed)
+          setHasSavedDetails(true)
+        }
+      }
+    } catch {}
+  }, [])
   const [orderNumber, setOrderNumber] = useState('')
   const [successItems, setSuccessItems] = useState<{ name: string; quantity: number; unit: string }[]>([])
   const [loading, setLoading] = useState(false)
@@ -120,6 +134,10 @@ export default function CartPage() {
           items: order.items,
         }),
       }).catch(() => {})
+
+      // Save customer details for next order
+      try { localStorage.setItem('vt_customer', JSON.stringify(details)) } catch {}
+      setHasSavedDetails(true)
 
       clearCart()
       setStep('success')
@@ -281,7 +299,7 @@ export default function CartPage() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', background: '#FF6B00', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(255,107,0,0.3)' }}>
                         <button onClick={() => removeItem(productId)} style={{ width: '32px', height: '32px', color: '#fff', fontSize: '16px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>−</button>
-                        <span style={{ color: '#fff', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1rem', minWidth: '20px', textAlign: 'center' }}>{quantity}</span>
+                        <span style={{ color: '#fff', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1rem', minWidth: `${Math.max(20, String(quantity).length * 10)}px`, textAlign: 'center', padding: '0 4px' }}>{quantity}</span>
                         <button onClick={() => addItem(productId)} style={{ width: '32px', height: '32px', color: '#fff', fontSize: '16px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>+</button>
                       </div>
                     </div>
@@ -296,7 +314,7 @@ export default function CartPage() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => setStep('details')} style={{ background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff', border: 'none', cursor: 'pointer', padding: '16px 32px', borderRadius: '16px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 'clamp(16px, 4vw, 20px)', boxShadow: '0 8px 32px rgba(255,107,0,0.45)', display: 'flex', alignItems: 'center', gap: '12px', width: '100%', justifyContent: 'center' }}>
+              <button onClick={() => setStep(hasSavedDetails ? 'review' : 'details')} style={{ background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff', border: 'none', cursor: 'pointer', padding: '16px 32px', borderRadius: '16px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 'clamp(16px, 4vw, 20px)', boxShadow: '0 8px 32px rgba(255,107,0,0.45)', display: 'flex', alignItems: 'center', gap: '12px', width: '100%', justifyContent: 'center' }}>
                 {lang === 'hi' ? 'ऑर्डर पक्का करें →' : 'Confirm Order →'}
               </button>
             </div>
@@ -335,7 +353,7 @@ export default function CartPage() {
                 {cartProducts.map(({ productId, quantity, product }) => (
                   <div key={productId} className="notepad-line">
                     <span style={{ fontWeight: 700, fontSize: '13px', color: '#1a1a1a', flex: 1, paddingRight: '8px', lineHeight: 1.3 }}>{product.name}</span>
-                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#C2410C', whiteSpace: 'nowrap' }}>× {quantity}</span>
+                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#C2410C', whiteSpace: 'nowrap' }}>× {quantity} {product.unit}</span>
                   </div>
                 ))}
 
@@ -434,7 +452,7 @@ export default function CartPage() {
                 {cartProducts.map(({ productId, quantity, product }) => (
                   <div key={productId} className="notepad-line">
                     <span style={{ fontWeight: 700, fontSize: '13px', color: '#1a1a1a', flex: 1, paddingRight: '8px', lineHeight: 1.3 }}>{product.name}</span>
-                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#C2410C', whiteSpace: 'nowrap' }}>× {quantity}</span>
+                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#C2410C', whiteSpace: 'nowrap' }}>× {quantity} {product.unit}</span>
                   </div>
                 ))}
                 {hasPrice && (
@@ -485,9 +503,14 @@ export default function CartPage() {
 
       {/* Customer details */}
       <div style={{ background: 'rgba(255,240,230,0.95)', border: '2px solid #FFD4A0', borderRadius: '20px', padding: '24px', marginBottom: '28px' }}>
-        <p style={{ fontWeight: 800, fontSize: '16px', color: '#5C2D0F', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-          👤 Your Details
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <p style={{ fontWeight: 800, fontSize: '16px', color: '#5C2D0F', margin: 0, textTransform: 'uppercase', letterSpacing: '1px' }}>
+            👤 Your Details
+          </p>
+          <button onClick={() => setStep('details')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#FF6B00', fontSize: '14px', fontWeight: 700, padding: 0, textDecoration: 'underline' }}>
+            {lang === 'hi' ? 'बदलें' : 'Change'}
+          </button>
+        </div>
         {[
           { label: '🏪 Shop', value: details.shopName },
           { label: '👤 Name', value: details.contactName || '—' },
