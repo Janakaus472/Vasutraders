@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { useCart } from '@/context/CartContext'
 import { useLanguage } from '@/context/LanguageContext'
@@ -28,13 +27,11 @@ export default function Header() {
   const { itemCount } = useCart()
   const { lang, setLang, catLabel } = useLanguage()
   const pathname = usePathname()
-  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [productsOpen, setProductsOpen] = useState(false)
   const [expandedCat, setExpandedCat] = useState<string | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [loaded, setLoaded] = useState(false)
-  const isHome = pathname === '/'
   const isAdminPage = pathname.startsWith('/admin')
 
   // Fetch products when menu opens
@@ -115,47 +112,78 @@ export default function Header() {
           gap: '16px',
         }}>
           {/* Logo */}
-          {isHome ? (
-            <Link href="/catalog" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, textDecoration: 'none' }}>
-              <Image src="/logo.png" alt={BUSINESS_NAME} width={34} height={34} style={{ borderRadius: '6px', flexShrink: 0 }} />
-              <div style={{ lineHeight: 1.2 }}>
-                <div style={{ fontFamily: "'Mandali', sans-serif", fontSize: '0.95rem', color: '#fff', letterSpacing: '1px', fontWeight: 700 }}>{BUSINESS_NAME}</div>
-                <div style={{ color: '#FAC41A', fontSize: '8px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase' }}>Since 2005</div>
-              </div>
-            </Link>
-          ) : (
-            <button onClick={() => router.back()} style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <Image src="/logo.png" alt={BUSINESS_NAME} width={34} height={34} style={{ borderRadius: '6px', flexShrink: 0 }} />
-              <div style={{ lineHeight: 1.2 }}>
-                <div style={{ fontFamily: "'Mandali', sans-serif", fontSize: '0.95rem', color: '#fff', letterSpacing: '1px', fontWeight: 700 }}>{BUSINESS_NAME}</div>
-                <div style={{ color: '#FAC41A', fontSize: '8px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase' }}>Since 2005</div>
-              </div>
-            </button>
-          )}
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, textDecoration: 'none' }}>
+            <Image src="/logo.png" alt={BUSINESS_NAME} width={34} height={34} style={{ borderRadius: '6px', flexShrink: 0 }} />
+            <div style={{ lineHeight: 1.2 }}>
+              <div style={{ fontFamily: "'Mandali', sans-serif", fontSize: '0.95rem', color: '#fff', letterSpacing: '1px', fontWeight: 700 }}>{BUSINESS_NAME}</div>
+              <div style={{ color: '#FAC41A', fontSize: '8px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase' }}>Since 2005</div>
+            </div>
+          </Link>
 
-          {/* Mobile menu button — extreme right */}
-          <button
-            className="flex sm:hidden items-center justify-center"
-            onClick={() => { setMobileMenuOpen(!mobileMenuOpen); if (mobileMenuOpen) { setProductsOpen(false); setExpandedCat(null) } }}
-            style={{
-              background: 'rgba(255,255,255,0.1)',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '10px',
-              cursor: 'pointer',
-              minWidth: '44px',
-              minHeight: '44px',
-              marginLeft: 'auto',
-            }}
-          >
-            <svg style={{ width: '24px', height: '24px' }} viewBox="0 0 24 24">
-              {mobileMenuOpen ? (
-                <path d="M6 18L18 6M6 6l12 12" stroke="white" strokeWidth="2" fill="none"/>
-              ) : (
-                <path d="M4 6h16M4 12h16M4 18h16" stroke="white" strokeWidth="2" fill="none"/>
+          {/* Mobile: Cart icon + Hamburger */}
+          <div className="flex sm:hidden items-center" style={{ gap: '8px', marginLeft: 'auto' }}>
+            <Link
+              href="/cart"
+              style={{
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(255,255,255,0.1)',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '10px',
+                minWidth: '44px',
+                minHeight: '44px',
+                textDecoration: 'none',
+              }}
+            >
+              <svg style={{ width: '22px', height: '22px' }} fill="none" stroke="white" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              {itemCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '4px',
+                  right: '4px',
+                  background: '#FAC41A',
+                  color: '#7f1d1d',
+                  fontSize: '10px',
+                  fontWeight: 900,
+                  borderRadius: '50%',
+                  width: '18px',
+                  height: '18px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  animation: 'popIn 0.3s ease',
+                }}>
+                  {itemCount > 9 ? '9+' : itemCount}
+                </span>
               )}
-            </svg>
-          </button>
+            </Link>
+            <button
+              className="flex items-center justify-center"
+              onClick={() => { setMobileMenuOpen(!mobileMenuOpen); if (mobileMenuOpen) { setProductsOpen(false); setExpandedCat(null) } }}
+              style={{
+                background: 'rgba(255,255,255,0.1)',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '10px',
+                cursor: 'pointer',
+                minWidth: '44px',
+                minHeight: '44px',
+              }}
+            >
+              <svg style={{ width: '24px', height: '24px' }} viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path d="M6 18L18 6M6 6l12 12" stroke="white" strokeWidth="2" fill="none"/>
+                ) : (
+                  <path d="M4 6h16M4 12h16M4 18h16" stroke="white" strokeWidth="2" fill="none"/>
+                )}
+              </svg>
+            </button>
+          </div>
 
           {/* Desktop Nav */}
           <nav className="hidden sm:flex items-center justify-center" style={{ gap: '4px', flex: 1 }}>
