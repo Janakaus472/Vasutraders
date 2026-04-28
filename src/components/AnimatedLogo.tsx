@@ -156,22 +156,10 @@ export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
           filter: drop-shadow(0 18px 30px rgba(0,0,0,0.6));
         }
 
-        /* Ring layer — outer blue ring rotates */
-        .vt-logo-ring {
-          position: absolute;
-          inset: 0;
-          animation: vtSpin 18s linear infinite;
-          transform-origin: 50% 50%;
-          -webkit-mask: radial-gradient(circle at 50% 50%, transparent 0 36%, #000 37.5% 100%);
-          mask: radial-gradient(circle at 50% 50%, transparent 0 36%, #000 37.5% 100%);
-        }
-
-        /* Core layer — red center + VT stays still */
+        /* Core layer — full logo stays still */
         .vt-logo-core {
           position: absolute;
           inset: 0;
-          -webkit-mask: radial-gradient(circle at 50% 50%, #000 0 36%, transparent 37.5% 100%);
-          mask: radial-gradient(circle at 50% 50%, #000 0 36%, transparent 37.5% 100%);
         }
 
         /* Orbiting emblems */
@@ -235,11 +223,8 @@ export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
         </div>
         <div className="vt-orbit-ring"><div className="vt-dot" /></div>
 
-        {/* The logo — split into rotating ring + static core */}
+        {/* The logo — fully static, no rotation */}
         <div ref={wrapRef} className="vt-logo-box" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="vt-logo-ring">
-            <Image src="/logo.png" alt="" width={size} height={size} style={{ width: '100%', height: '100%', display: 'block' }} priority />
-          </div>
           <div className="vt-logo-core">
             <Image src="/logo.png" alt="Vasu Traders" width={size} height={size} style={{ width: '100%', height: '100%', display: 'block' }} priority />
           </div>
