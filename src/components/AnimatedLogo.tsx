@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 
 interface AnimatedLogoProps {
@@ -9,27 +9,12 @@ interface AnimatedLogoProps {
 
 export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
   const [animate, setAnimate] = useState(false)
-  const wrapRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const t = setTimeout(() => setAnimate(true), 100)
     return () => clearTimeout(t)
   }, [])
 
-  // Mouse parallax
-  useEffect(() => {
-    const hasFine = window.matchMedia('(pointer: fine)').matches
-    if (!hasFine) return
-
-    const handler = (e: MouseEvent) => {
-      if (!wrapRef.current) return
-      const x = (e.clientX / innerWidth - 0.5)
-      const y = (e.clientY / innerHeight - 0.5)
-      wrapRef.current.style.transform = `rotateY(${x * 10}deg) rotateX(${-y * 8}deg)`
-    }
-    document.addEventListener('mousemove', handler)
-    return () => document.removeEventListener('mousemove', handler)
-  }, [])
 
   return (
     <>
@@ -150,8 +135,7 @@ export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
           aspect-ratio: 1/1;
           display: grid;
           place-items: center;
-          animation: vtBob 4.2s ease-in-out infinite, vtTilt 9s ease-in-out infinite;
-          transform-style: preserve-3d;
+          animation: vtBob 4.2s ease-in-out infinite;
           will-change: transform;
           filter: drop-shadow(0 18px 30px rgba(0,0,0,0.6));
         }
@@ -224,7 +208,7 @@ export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
         <div className="vt-orbit-ring"><div className="vt-dot" /></div>
 
         {/* The logo — fully static, no rotation */}
-        <div ref={wrapRef} className="vt-logo-box" style={{ transformStyle: 'preserve-3d' }}>
+        <div className="vt-logo-box">
           <div className="vt-logo-core">
             <Image src="/logo.png" alt="Vasu Traders" width={size} height={size} style={{ width: '100%', height: '100%', display: 'block' }} priority />
           </div>
