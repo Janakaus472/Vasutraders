@@ -4,11 +4,16 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { CartItem } from '@/types/cart'
 import { CART_STORAGE_KEY } from '@/lib/constants'
 
+/** Two cart items are the same when both productId and variantId match */
+function sameItem(item: CartItem, productId: string, variantId?: string) {
+  return item.productId === productId && item.variantId === variantId
+}
+
 interface CartContextValue {
   items: CartItem[]
-  addItem: (productId: string) => void
-  removeItem: (productId: string) => void
-  updateQuantity: (productId: string, qty: number) => void
+  addItem: (productId: string, variantId?: string) => void
+  removeItem: (productId: string, variantId?: string) => void
+  updateQuantity: (productId: string, qty: number, variantId?: string) => void
   clearCart: () => void
   itemCount: number
 }
@@ -29,37 +34,45 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
   }, [items])
 
-  const addItem = (productId: string) => {
+  const addItem = (productId: string, variantId?: string) => {
     setItems((prev) => {
-      const existing = prev.find((i) => i.productId === productId)
+      const existing = prev.find((i) => sameItem(i, productId, variantId))
       if (existing) {
         return prev.map((i) =>
-          i.productId === productId ? { ...i, quantity: i.quantity + 1 } : i
+          sameItem(i, productId, variantId) ? { ...i, quantity: i.quantity + 1 } : i
         )
       }
-      return [...prev, { productId, quantity: 1 }]
+      const newItem: CartItem = { productId, quantity: 1 }
+      if (variantId) newItem.variantId = variantId
+      return [...prev, newItem]
     })
   }
 
-  const removeItem = (productId: string) => {
+  const removeItem = (productId: string, variantId?: string) => {
     setItems((prev) => {
-      const existing = prev.find((i) => i.productId === productId)
+      const existing = prev.find((i) => sameItem(i, productId, variantId))
       if (existing && existing.quantity > 1) {
         return prev.map((i) =>
-          i.productId === productId ? { ...i, quantity: i.quantity - 1 } : i
+          sameItem(i, productId, variantId) ? { ...i, quantity: i.quantity - 1 } : i
         )
       }
-      return prev.filter((i) => i.productId !== productId)
+      return prev.filter((i) => !sameItem(i, productId, variantId))
     })
   }
 
-  const updateQuantity = (productId: string, qty: number) => {
+  const updateQuantity = (productId: string, qty: number, variantId?: string) => {
     if (qty <= 0) {
-      setItems((prev) => prev.filter((i) => i.productId !== productId))
+      setItems((prev) => prev.filter((i) => !sameItem(i, productId, variantId)))
     } else {
-      setItems((prev) =>
-        prev.map((i) => (i.productId === productId ? { ...i, quantity: qty } : i))
-      )
+      setItems((prev) => {
+        const existing = prev.find((i) => sameItem(i, productId, variantId))
+        if (existing) {
+          return prev.map((i) => sameItem(i, productId, variantId) ? { ...i, quantity: qty } : i)
+        }
+        const newItem: CartItem = { productId, quantity: qty }
+        if (variantId) newItem.variantId = variantId
+        return [...prev, newItem]
+      })
     }
   }
 

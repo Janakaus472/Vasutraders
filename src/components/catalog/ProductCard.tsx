@@ -122,6 +122,16 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
               {product.category}
             </div>
           )}
+          {(product.bulkVariants?.length ?? 0) > 0 && (
+            <div style={{
+              position: 'absolute', bottom: '6px', right: '6px',
+              background: '#1d4ed8', fontSize: '8px', fontWeight: 800,
+              color: '#fff', padding: '3px 7px', borderRadius: '4px', zIndex: 5,
+              letterSpacing: '0.8px',
+            }}>
+              BULK
+            </div>
+          )}
         </div>
 
         {/* ── Content ── */}

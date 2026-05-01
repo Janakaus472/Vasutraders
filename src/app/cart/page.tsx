@@ -73,9 +73,13 @@ export default function CartPage() {
   const cartProducts = items
     .map((item) => {
       const product = products.find((p) => p.id === item.productId)
-      return product ? { ...item, product } : null
+      if (!product) return null
+      const variant = item.variantId
+        ? (product.bulkVariants || []).find(v => v.id === item.variantId)
+        : undefined
+      return { ...item, product, variant: variant ?? null }
     })
-    .filter(Boolean) as { productId: string; quantity: number; product: (typeof products)[0] }[]
+    .filter(Boolean) as { productId: string; quantity: number; variantId?: string; product: (typeof products)[0]; variant: import('@/types/product').BulkVariant | null }[]
 
   const handleConfirm = async () => {
     setLoading(true)
@@ -89,10 +93,12 @@ export default function CartPage() {
           contact_name: details.contactName,
           phone: details.phone,
           locality: details.locality,
-          items: cartProducts.map(({ quantity, product }) => ({
-            name: product.name,
+          items: cartProducts.map(({ quantity, product, variant }) => ({
+            name: variant
+              ? `${product.name} – ${variant.quantity} ${variant.unit}${variant.label ? ` (${variant.label})` : ''}`
+              : product.name,
             quantity,
-            unit: product.unit,
+            unit: variant ? variant.unit : product.unit,
           })),
         }),
       })
@@ -240,8 +246,10 @@ export default function CartPage() {
   // ─── STEP: CART ─────────────────────────────────────────────────
   if (step === 'cart') {
     const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-    const hasPrice = cartProducts.some(i => i.product.pricePerUnit > 0)
-    const total = cartProducts.reduce((s, i) => s + i.product.pricePerUnit * i.quantity, 0)
+    const getEffectivePrice = (i: typeof cartProducts[0]) =>
+      i.variant?.price !== null && i.variant?.price !== undefined ? i.variant.price : i.product.pricePerUnit
+    const hasPrice = cartProducts.some(i => getEffectivePrice(i) > 0)
+    const total = cartProducts.reduce((s, i) => s + getEffectivePrice(i) * i.quantity, 0)
 
     return (
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 14px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
@@ -279,37 +287,49 @@ export default function CartPage() {
                 <div style={{ textAlign: 'right' }}>{lang === 'hi' ? 'कुल' : 'Total'}</div>
               </div>
 
-              {cartProducts.map(({ productId, quantity, product }, idx) => (
-                <div key={productId} className="cart-row" style={{ borderBottom: idx < cartProducts.length - 1 ? '1px solid #FFF0E0' : 'none' }}>
+              {cartProducts.map(({ productId, variantId, quantity, product, variant }, idx) => {
+                const displayImage = variant?.imageUrl || product.imageUrl || '/placeholder-product.png'
+                const displayPrice = variant?.price !== null && variant?.price !== undefined
+                  ? variant.price
+                  : product.pricePerUnit
+                const displayUnit = variant ? variant.unit : product.unit
+                return (
+                <div key={`${productId}:${variantId || ''}`} className="cart-row" style={{ borderBottom: idx < cartProducts.length - 1 ? '1px solid #FFF0E0' : 'none' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
                     <div style={{ position: 'relative', width: '48px', height: '48px', borderRadius: '10px', overflow: 'hidden', background: '#FFF8F0', flexShrink: 0, border: '1px solid #FFE0C0' }}>
-                      <Image src={product.imageUrl || '/placeholder-product.png'} alt={product.name} fill style={{ objectFit: 'contain', padding: '4px' }} />
+                      <Image src={displayImage} alt={product.name} fill style={{ objectFit: 'contain', padding: '4px' }} />
                     </div>
                     <div style={{ minWidth: 0, flex: 1 }}>
                       <p className="cart-product-name">{product.name}</p>
-                      <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>per {product.unit}</p>
+                      {variant ? (
+                        <p style={{ color: '#B91C1C', fontSize: '12px', margin: 0, fontWeight: 700 }}>
+                          {variant.quantity} {variant.unit}{variant.label ? ` · ${variant.label}` : ''}
+                        </p>
+                      ) : (
+                        <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>per {displayUnit}</p>
+                      )}
                     </div>
                   </div>
                   <div className="cart-mobile-row-meta">
                     <div style={{ textAlign: 'center', flexShrink: 0 }}>
-                      {product.pricePerUnit > 0
-                        ? <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#374151' }}>₹{product.pricePerUnit.toFixed(0)}</span>
+                      {displayPrice > 0
+                        ? <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#374151' }}>₹{displayPrice.toFixed(0)}</span>
                         : <span style={{ color: '#FF6B00', fontSize: '11px', fontWeight: 700 }}>On Request</span>}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', background: '#FF6B00', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(255,107,0,0.3)' }}>
-                        <button onClick={() => removeItem(productId)} style={{ width: '32px', height: '32px', color: '#fff', fontSize: '16px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>−</button>
+                        <button onClick={() => removeItem(productId, variantId)} style={{ width: '32px', height: '32px', color: '#fff', fontSize: '16px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>−</button>
                         <span style={{ color: '#fff', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1rem', minWidth: `${Math.max(20, String(quantity).length * 10)}px`, textAlign: 'center', padding: '0 4px' }}>{quantity}</span>
-                        <button onClick={() => addItem(productId)} style={{ width: '32px', height: '32px', color: '#fff', fontSize: '16px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>+</button>
+                        <button onClick={() => addItem(productId, variantId)} style={{ width: '32px', height: '32px', color: '#fff', fontSize: '16px', fontWeight: 700, border: 'none', cursor: 'pointer', background: 'transparent' }}>+</button>
                       </div>
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      {product.pricePerUnit > 0
-                        ? <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#15803d' }}>₹{(product.pricePerUnit * quantity).toFixed(0)}</span>
+                      {displayPrice > 0
+                        ? <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#15803d' }}>₹{(displayPrice * quantity).toFixed(0)}</span>
                         : <span style={{ color: '#9ca3af' }}>—</span>}
                     </div>
                     <button
-                      onClick={() => updateQuantity(productId, 0)}
+                      onClick={() => updateQuantity(productId, 0, variantId)}
                       title="Remove item"
                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#fca5a5', padding: '4px', flexShrink: 0, lineHeight: 1, borderRadius: '6px', transition: 'color 0.15s' }}
                       onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
@@ -321,7 +341,8 @@ export default function CartPage() {
                     </button>
                   </div>
                 </div>
-              ))}
+                )
+              })}
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -361,10 +382,13 @@ export default function CartPage() {
 
               {/* Items */}
               <div style={{ padding: '8px 20px 8px 52px', position: 'relative', zIndex: 2 }}>
-                {cartProducts.map(({ productId, quantity, product }) => (
-                  <div key={productId} className="notepad-line">
-                    <span style={{ fontWeight: 700, fontSize: '13px', color: '#1a1a1a', flex: 1, paddingRight: '8px', lineHeight: 1.3 }}>{product.name}</span>
-                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#C2410C', whiteSpace: 'nowrap' }}>× {quantity} {product.unit}</span>
+                {cartProducts.map(({ productId, variantId, quantity, product, variant }) => (
+                  <div key={`${productId}:${variantId || ''}`} className="notepad-line">
+                    <div style={{ flex: 1, paddingRight: '8px' }}>
+                      <span style={{ fontWeight: 700, fontSize: '13px', color: '#1a1a1a', lineHeight: 1.3, display: 'block' }}>{product.name}</span>
+                      {variant && <span style={{ fontSize: '11px', color: '#B91C1C', fontWeight: 700 }}>{variant.quantity} {variant.unit}{variant.label ? ` · ${variant.label}` : ''}</span>}
+                    </div>
+                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#C2410C', whiteSpace: 'nowrap' }}>× {quantity}</span>
                   </div>
                 ))}
 
@@ -397,8 +421,10 @@ export default function CartPage() {
   // ─── STEP: DETAILS ──────────────────────────────────────────────
   if (step === 'details') {
     const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-    const hasPrice = cartProducts.some(i => i.product.pricePerUnit > 0)
-    const total = cartProducts.reduce((s, i) => s + i.product.pricePerUnit * i.quantity, 0)
+    const getEffectivePrice = (i: typeof cartProducts[0]) =>
+      i.variant?.price !== null && i.variant?.price !== undefined ? i.variant.price : i.product.pricePerUnit
+    const hasPrice = cartProducts.some(i => getEffectivePrice(i) > 0)
+    const total = cartProducts.reduce((s, i) => s + getEffectivePrice(i) * i.quantity, 0)
 
     return (
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 14px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
@@ -460,10 +486,13 @@ export default function CartPage() {
                 <div style={{ fontSize: '10px', color: '#FFB880', fontWeight: 600, marginTop: '2px' }}>ORDER SLIP · {today}</div>
               </div>
               <div style={{ padding: '8px 20px 8px 52px', position: 'relative', zIndex: 2 }}>
-                {cartProducts.map(({ productId, quantity, product }) => (
-                  <div key={productId} className="notepad-line">
-                    <span style={{ fontWeight: 700, fontSize: '13px', color: '#1a1a1a', flex: 1, paddingRight: '8px', lineHeight: 1.3 }}>{product.name}</span>
-                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#C2410C', whiteSpace: 'nowrap' }}>× {quantity} {product.unit}</span>
+                {cartProducts.map(({ productId, variantId, quantity, product, variant }) => (
+                  <div key={`${productId}:${variantId || ''}`} className="notepad-line">
+                    <div style={{ flex: 1, paddingRight: '8px' }}>
+                      <span style={{ fontWeight: 700, fontSize: '13px', color: '#1a1a1a', lineHeight: 1.3, display: 'block' }}>{product.name}</span>
+                      {variant && <span style={{ fontSize: '11px', color: '#B91C1C', fontWeight: 700 }}>{variant.quantity} {variant.unit}{variant.label ? ` · ${variant.label}` : ''}</span>}
+                    </div>
+                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#C2410C', whiteSpace: 'nowrap' }}>× {quantity}</span>
                   </div>
                 ))}
                 {hasPrice && (
@@ -504,10 +533,13 @@ export default function CartPage() {
         <p style={{ fontWeight: 800, fontSize: '16px', color: '#5C2D0F', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>
           🛒 Items
         </p>
-        {cartProducts.map(({ productId, quantity, product }) => (
-          <div key={productId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #FFE0C0', gap: '8px' }}>
-            <span style={{ fontWeight: 700, fontSize: '15px', color: '#1a1a1a', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{product.name}</span>
-            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#FF6B00', flexShrink: 0 }}>× {quantity} {product.unit}</span>
+        {cartProducts.map(({ productId, variantId, quantity, product, variant }) => (
+          <div key={`${productId}:${variantId || ''}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #FFE0C0', gap: '8px' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ fontWeight: 700, fontSize: '15px', color: '#1a1a1a', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{product.name}</span>
+              {variant && <span style={{ fontSize: '12px', color: '#B91C1C', fontWeight: 700 }}>{variant.quantity} {variant.unit}{variant.label ? ` · ${variant.label}` : ''}</span>}
+            </div>
+            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#FF6B00', flexShrink: 0 }}>× {quantity}</span>
           </div>
         ))}
       </div>

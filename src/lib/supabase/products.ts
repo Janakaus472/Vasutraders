@@ -1,5 +1,6 @@
 import { supabase, adminSupabase } from './client'
 import { Product } from '@/types/product'
+import { getBulkVariantsForProducts } from './bulk_variants'
 
 function rowToProduct(row: any): Product {
   return {
@@ -31,7 +32,11 @@ export async function getProducts(adminMode = false): Promise<Product[]> {
 
   const { data, error } = await query
   if (error) throw error
-  return (data || []).map(rowToProduct)
+  const products = (data || []).map(rowToProduct)
+
+  // Attach bulk variants in one batch query
+  const variantsMap = await getBulkVariantsForProducts(products.map(p => p.id))
+  return products.map(p => ({ ...p, bulkVariants: variantsMap.get(p.id) || [] }))
 }
 
 export async function getProduct(id: string): Promise<Product | null> {
@@ -42,7 +47,9 @@ export async function getProduct(id: string): Promise<Product | null> {
     .single()
 
   if (error || !data) return null
-  return rowToProduct(data)
+  const product = rowToProduct(data)
+  const variantsMap = await getBulkVariantsForProducts([id])
+  return { ...product, bulkVariants: variantsMap.get(id) || [] }
 }
 
 export async function addProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
