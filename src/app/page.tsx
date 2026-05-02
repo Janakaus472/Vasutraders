@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { BUSINESS_NAME, WHATSAPP_NUMBER } from '@/lib/constants'
 import { useLanguage } from '@/context/LanguageContext'
 import { getProducts } from '@/lib/supabase/products'
+import { getCategories } from '@/lib/supabase/categories'
 import AnimatedLogo from '@/components/AnimatedLogo'
 
 const CAT_ICONS: Record<string, { emoji: string; color: string; bg: string }> = {
@@ -30,16 +31,21 @@ export default function HomePage() {
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    getProducts(false).then(products => {
+    Promise.all([getProducts(false), getCategories()]).then(([products, dbCats]) => {
       const counts: Record<string, number> = {}
       products.forEach(p => { if (p.category) counts[p.category] = (counts[p.category] || 0) + 1 })
-      const cats = Object.entries(counts)
-        .sort((a, b) => b[1] - a[1])
-        .map(([name, count]) => ({
-          name,
-          count,
-          ...(CAT_ICONS[name] || DEFAULT_ICON),
-        }))
+      // Use admin display_order from categories table
+      const orderedNames = dbCats.map(c => c.name)
+      // Start with categories in admin order, then append any extras not in the table
+      const allCatNames = [
+        ...orderedNames.filter(n => counts[n]),
+        ...Object.keys(counts).filter(n => !orderedNames.includes(n)),
+      ]
+      const cats = allCatNames.map(name => ({
+        name,
+        count: counts[name] || 0,
+        ...(CAT_ICONS[name] || DEFAULT_ICON),
+      }))
       setCategories(cats)
       setTotalProducts(products.length)
       setLoaded(true)
@@ -103,7 +109,7 @@ export default function HomePage() {
             textTransform: 'uppercase',
             marginBottom: '20px',
           }}>
-            {lang === 'hi' ? 'इंदौर का भरोसेमंद थोक विक्रेता' : "INDORE'S TRUSTED WHOLESALER"}
+            {lang === 'hi' ? 'मध्य भारत का भरोसेमंद थोक विक्रेता' : "CENTRAL INDIA'S TRUSTED WHOLESALERS"}
           </div>
 
           <h1 style={{
@@ -186,6 +192,50 @@ export default function HomePage() {
           </div>
         ))}
       </div>
+
+      {/* ── ABOUT US ─────────────────────────────────────────── */}
+      <section style={{ background: '#fff', padding: 'clamp(36px, 5vw, 56px) 20px', borderBottom: '1px solid #f0f0f0' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{
+            fontSize: 'clamp(22px, 4vw, 32px)',
+            fontWeight: 800,
+            color: '#1a1a1a',
+            marginBottom: '8px',
+            fontFamily: "'Bebas Neue', sans-serif",
+            letterSpacing: '2px',
+          }}>
+            {lang === 'hi' ? 'हमारे बारे में' : 'About Vasu Traders'}
+          </h2>
+          <div style={{ width: '50px', height: '4px', background: '#DC2626', margin: '0 auto 20px', borderRadius: '2px' }} />
+          <p style={{ fontSize: '15px', color: '#4b5563', lineHeight: 1.8, marginBottom: '16px' }}>
+            {lang === 'hi'
+              ? 'वासु ट्रेडर्स इंदौर, मध्य प्रदेश में स्थित एक भरोसेमंद थोक विक्रेता है। हम पिछले 20 से अधिक वर्षों से मध्य भारत के व्यापारियों और दुकानदारों को उच्च गुणवत्ता के उत्पाद थोक दाम पर उपलब्ध करा रहे हैं।'
+              : 'Vasu Traders is a well-established wholesale supplier based in Indore, Madhya Pradesh, India. With over 20 years of experience, we have been serving retailers, shopkeepers, and businesses across Central India with a wide range of quality products at competitive wholesale prices.'}
+          </p>
+          <p style={{ fontSize: '15px', color: '#4b5563', lineHeight: 1.8, marginBottom: '24px' }}>
+            {lang === 'hi'
+              ? 'हमारे उत्पादों में ताश के पत्ते, पोकर चिप्स, पार्टी गुब्बारे, रबर बैंड, खेल सामग्री, टूथब्रश और बहुत कुछ शामिल है। हम इंदौर, उज्जैन, भोपाल और पूरे मध्य भारत में सप्लाई करते हैं।'
+              : 'Our product range includes playing cards, poker chips, party balloons, rubber bands, sports goods, toothbrushes, and much more. We supply to retailers and wholesalers in Indore, Ujjain, Bhopal, and across Madhya Pradesh and Central India.'}
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            {[
+              { icon: '📍', text: lang === 'hi' ? 'इंदौर, मध्य प्रदेश' : 'Indore, Madhya Pradesh' },
+              { icon: '🏪', text: lang === 'hi' ? '20+ वर्ष का अनुभव' : '20+ Years in Business' },
+              { icon: '🚚', text: lang === 'hi' ? 'पूरे भारत में डिलीवरी' : 'Pan India Supply' },
+            ].map(item => (
+              <span key={item.text} style={{
+                display: 'inline-flex', alignItems: 'center', gap: '6px',
+                background: '#FEF2F2', color: '#B91C1C',
+                fontSize: '13px', fontWeight: 700,
+                padding: '8px 16px', borderRadius: '20px',
+                border: '1px solid #FECACA',
+              }}>
+                {item.icon} {item.text}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ── CATEGORIES — clean grid cards ────────────────────── */}
       <section style={{ background: '#f9f9f9', padding: 'clamp(40px, 6vw, 64px) 20px' }}>

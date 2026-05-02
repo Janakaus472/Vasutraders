@@ -1,15 +1,16 @@
 export function getDescription(description: string | undefined, lang: 'en' | 'hi'): string {
   if (!description) return ''
-  
+
   try {
     const parsed = JSON.parse(description)
-    if (parsed.en && parsed.hi) {
-      return lang === 'hi' ? parsed.hi : parsed.en
+    if (parsed && (parsed.en || parsed.hi)) {
+      if (lang === 'hi') return parsed.hi || parsed.en || ''
+      return parsed.en || parsed.hi || ''
     }
   } catch {
     // Not JSON, return as-is
   }
-  
+
   return description
 }
 

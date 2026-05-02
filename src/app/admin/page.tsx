@@ -53,12 +53,12 @@ export default function AdminDashboard() {
               <div className="text-blue-100 text-xs">Edit all prices at once</div>
             </div>
           </Link>
-          <Link href="/admin/products"
+          <Link href="/admin/products/bulk-upload"
             className="flex items-center gap-3 p-4 rounded-xl bg-purple-500 text-white hover:bg-purple-600 transition-colors">
-            <span className="text-2xl">📋</span>
+            <span className="text-2xl">📤</span>
             <div>
-              <div className="font-bold">Manage Products</div>
-              <div className="text-purple-100 text-xs">{loading ? '…' : `${products.length} products`}</div>
+              <div className="font-bold">Bulk Upload</div>
+              <div className="text-purple-100 text-xs">Add many at once</div>
             </div>
           </Link>
         </div>

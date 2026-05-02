@@ -2,6 +2,7 @@
 
 import { adminLogout } from '@/hooks/useAdminGuard'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
@@ -14,6 +15,7 @@ const navItems = [
   { href: '/admin/categories', label: 'Categories', icon: '🏷️' },
   { href: '/admin/orders', label: 'Orders', icon: '🛒' },
   { href: '/admin/analysis', label: 'Analysis', icon: '📈' },
+  { href: '/admin/tracking', label: 'Tracking', icon: '📊' },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -115,14 +117,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           boxShadow: '0 20px 60px rgba(92,45,15,0.2), 0 0 0 1px rgba(194,105,26,0.15)',
         }}>
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: '64px', height: '64px',
-              background: 'linear-gradient(135deg, #FF6B00, #C2410C)',
-              borderRadius: '18px', boxShadow: '0 8px 24px rgba(255,107,0,0.35)',
-              marginBottom: '16px', fontFamily: "'Bebas Neue', sans-serif",
-              fontSize: '2rem', color: '#fff',
-            }}>V</div>
+            <Image
+              src="/logo.png"
+              alt="Vasu Traders"
+              width={80}
+              height={80}
+              style={{ borderRadius: '50%', boxShadow: '0 8px 24px rgba(255,107,0,0.35)', marginBottom: '16px' }}
+            />
             <h1 style={{
               fontFamily: "'Bebas Neue', sans-serif", fontSize: '2rem',
               color: '#5C2D0F', letterSpacing: '2px', margin: '0 0 4px',
@@ -179,7 +180,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className={`bg-[#1a3c5e] text-white flex flex-col transition-all duration-300 fixed h-full z-30
         ${sidebarOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full md:translate-x-0 md:w-20'}`}>
         <div className="p-4 flex items-center justify-between border-b border-white/10">
-          {sidebarOpen && <span className="font-bold text-lg">Vasu Traders</span>}
+          <div className="flex items-center gap-3">
+            <Image
+              src="/logo.png"
+              alt="VT"
+              width={36}
+              height={36}
+              style={{ borderRadius: '50%', flexShrink: 0 }}
+            />
+            {sidebarOpen && <span className="font-bold text-lg">Vasu Traders</span>}
+          </div>
           <button onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-white/70 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center">
             {sidebarOpen ? '✕' : '▶'}
@@ -214,7 +224,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="font-semibold text-gray-700 flex-1">Admin Panel</span>
+          <div className="flex items-center gap-2 flex-1">
+            <Image src="/logo.png" alt="VT" width={28} height={28} style={{ borderRadius: '50%' }} />
+            <span className="font-semibold text-gray-700">Admin Panel</span>
+          </div>
           <button onClick={handleLogout}
             className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">

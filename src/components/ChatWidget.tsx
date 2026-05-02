@@ -7,7 +7,7 @@ interface Message {
   content: string
 }
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '61410706812'
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919425073114'
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false)

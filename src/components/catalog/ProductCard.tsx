@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { Product } from '@/types/product'
 import { useLanguage } from '@/context/LanguageContext'
 import { getDescription } from '@/lib/i18n'
@@ -21,8 +22,10 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, cartQuantity, onAdd, onRemove, onSetQuantity, onOpen, index = 0, hideCategory = false }: ProductCardProps) {
   const { t, lang } = useLanguage()
+  const router = useRouter()
   const isInCart = cartQuantity > 0
   const imgBg = CATEGORY_BG[product.category] || 'linear-gradient(135deg,#f8f7f4,#efefed)'
+  const goToProduct = () => router.push(`/catalog/${product.id}`)
 
   return (
     <div style={{ position: 'relative' }}>
@@ -77,7 +80,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
         {/* ── Image ── */}
         <div
           className="product-card-img"
-          onClick={onOpen}
+          onClick={goToProduct}
           style={{ background: imgBg }}
         >
           {product.imageUrl ? (
@@ -136,7 +139,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
 
         {/* ── Content ── */}
         <div className="product-card-body">
-          <div onClick={onOpen}>
+          <div onClick={goToProduct} style={{ cursor: 'pointer' }}>
             <p style={{
               fontWeight: 800, color: '#1a1a1a', fontSize: 'clamp(13px, 3vw, 15px)', lineHeight: 1.3,
               display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
