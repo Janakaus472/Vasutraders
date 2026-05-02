@@ -28,6 +28,9 @@ function ProductsContent() {
   const [editNameVal, setEditNameVal] = useState('')
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [savingId, setSavingId] = useState<string | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkActing, setBulkActing] = useState(false)
   const priceInputRef = useRef<HTMLInputElement>(null)
   const nameInputRef = useRef<HTMLInputElement>(null)
 
@@ -71,9 +74,15 @@ function ProductsContent() {
     const val = parseFloat(editPriceVal)
     if (isNaN(val) || val < 0) { setEditingPriceId(null); return }
     setSavingId(id)
-    await adminPatch({ id, priceOnly: true, price: val })
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, pricePerUnit: val } : p))
-    setBulkPrices(prev => ({ ...prev, [id]: String(val) }))
+    setSaveError(null)
+    try {
+      const res = await adminPatch({ id, priceOnly: true, price: val })
+      if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || `HTTP ${res.status}`) }
+      setProducts(prev => prev.map(p => p.id === id ? { ...p, pricePerUnit: val } : p))
+      setBulkPrices(prev => ({ ...prev, [id]: String(val) }))
+    } catch (e: any) {
+      setSaveError(`Failed to save price: ${e.message}`)
+    }
     setEditingPriceId(null)
     setSavingId(null)
   }
@@ -83,8 +92,14 @@ function ProductsContent() {
     const name = editNameVal.trim()
     if (!name) { setEditingNameId(null); return }
     setSavingId(id)
-    await adminPatch({ id, name })
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, name } : p))
+    setSaveError(null)
+    try {
+      const res = await adminPatch({ id, name })
+      if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || `HTTP ${res.status}`) }
+      setProducts(prev => prev.map(p => p.id === id ? { ...p, name } : p))
+    } catch (e: any) {
+      setSaveError(`Failed to save name: ${e.message}`)
+    }
     setEditingNameId(null)
     setSavingId(null)
   }
@@ -92,15 +107,27 @@ function ProductsContent() {
   // Toggle status
   const toggleStatus = async (product: Product) => {
     const inStock = !product.inStock
-    await adminPatch({ id: product.id, inStock })
-    setProducts(prev => prev.map(p => p.id === product.id ? { ...p, inStock } : p))
+    setSaveError(null)
+    try {
+      const res = await adminPatch({ id: product.id, inStock })
+      if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || `HTTP ${res.status}`) }
+      setProducts(prev => prev.map(p => p.id === product.id ? { ...p, inStock } : p))
+    } catch (e: any) {
+      setSaveError(`Failed to update status: ${e.message}`)
+    }
   }
 
   // Delete
   const handleDelete = async (id: string) => {
     setSavingId(id)
-    await fetch(`/api/admin/products?id=${id}`, { method: 'DELETE' })
-    setProducts(prev => prev.filter(p => p.id !== id))
+    setSaveError(null)
+    try {
+      const res = await fetch(`/api/admin/products?id=${id}`, { method: 'DELETE' })
+      if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || `HTTP ${res.status}`) }
+      setProducts(prev => prev.filter(p => p.id !== id))
+    } catch (e: any) {
+      setSaveError(`Failed to delete: ${e.message}`)
+    }
     setConfirmDeleteId(null)
     setSavingId(null)
   }
@@ -108,37 +135,96 @@ function ProductsContent() {
   // Duplicate
   const handleDuplicate = async (product: Product) => {
     setSavingId(product.id)
-    const res = await fetch(`/api/admin/products?action=duplicate&id=${product.id}`, { method: 'POST' })
-    const newProduct = await res.json()
-    setProducts(prev => [...prev, newProduct])
-    setBulkPrices(prev => ({ ...prev, [newProduct.id]: String(newProduct.pricePerUnit || '') }))
+    setSaveError(null)
+    try {
+      const res = await fetch(`/api/admin/products?action=duplicate&id=${product.id}`, { method: 'POST' })
+      const newProduct = await res.json()
+      if (!res.ok) throw new Error(newProduct.error || `HTTP ${res.status}`)
+      setProducts(prev => [...prev, newProduct])
+      setBulkPrices(prev => ({ ...prev, [newProduct.id]: String(newProduct.pricePerUnit || '') }))
+    } catch (e: any) {
+      setSaveError(`Failed to duplicate: ${e.message}`)
+    }
     setSavingId(null)
+  }
+
+  // Selection helpers
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id); else next.add(id)
+      return next
+    })
+  }
+  const selectAllFiltered = () => {
+    setSelectedIds(new Set(filtered.map(p => p.id)))
+  }
+  const clearSelection = () => setSelectedIds(new Set())
+
+  // Bulk actions on selected products
+  const bulkAction = async (action: 'delete' | 'out_of_stock' | 'available') => {
+    if (selectedIds.size === 0) return
+    const ids = Array.from(selectedIds)
+    setBulkActing(true)
+    setSaveError(null)
+    try {
+      const res = await fetch('/api/admin/products?action=bulk_action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, action }),
+      })
+      if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || `HTTP ${res.status}`) }
+      if (action === 'delete') {
+        setProducts(prev => prev.filter(p => !selectedIds.has(p.id)))
+      } else {
+        const inStock = action === 'available'
+        setProducts(prev => prev.map(p => selectedIds.has(p.id) ? { ...p, inStock } : p))
+      }
+      setSelectedIds(new Set())
+    } catch (e: any) {
+      setSaveError(`Bulk action failed: ${e.message}`)
+    }
+    setBulkActing(false)
   }
 
   // Bulk save
   const saveBulkPrices = async () => {
     setSavingBulk(true)
+    setSaveError(null)
     const updates = Object.entries(bulkPrices)
       .map(([id, val]) => ({ id, price: parseFloat(val) }))
       .filter(u => !isNaN(u.price) && u.price >= 0)
-    await fetch('/api/admin/products?action=bulk', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updates),
-    })
-    setProducts(prev => prev.map(p => {
-      const u = updates.find(u => u.id === p.id)
-      return u ? { ...p, pricePerUnit: u.price } : p
-    }))
+    try {
+      const res = await fetch('/api/admin/products?action=bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      })
+      if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || `HTTP ${res.status}`) }
+      setProducts(prev => prev.map(p => {
+        const u = updates.find(u => u.id === p.id)
+        return u ? { ...p, pricePerUnit: u.price } : p
+      }))
+      setBulkSaved(true)
+      setTimeout(() => setBulkSaved(false), 2000)
+    } catch (e: any) {
+      setSaveError(`Failed to save prices: ${e.message}`)
+    }
     setSavingBulk(false)
-    setBulkSaved(true)
-    setTimeout(() => setBulkSaved(false), 2000)
   }
 
   const active = products.filter(p => p.inStock).length
 
   return (
     <div className="space-y-4">
+      {/* Error banner */}
+      {saveError && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center justify-between gap-3">
+          <span className="text-red-700 text-sm font-medium">⚠️ {saveError}</span>
+          <button onClick={() => setSaveError(null)} className="text-red-400 hover:text-red-600 text-lg leading-none">✕</button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -152,6 +238,10 @@ function ProductsContent() {
           >
             💰 {bulkMode ? 'Exit Bulk Edit' : 'Bulk Price Edit'}
           </button>
+          <Link href="/admin/products/bulk-upload"
+            className="bg-purple-500 hover:bg-purple-600 text-white font-semibold px-4 py-2 rounded-xl text-sm flex items-center gap-1">
+            📤 Bulk Upload
+          </Link>
           <Link href="/admin/products/new"
             className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-xl text-sm flex items-center gap-1">
             ➕ Add Product
@@ -199,6 +289,39 @@ function ProductsContent() {
 
       <div className="text-xs text-gray-400">{filtered.length} product{filtered.length !== 1 ? 's' : ''} shown</div>
 
+      {/* Bulk selection bar */}
+      {selectedIds.size > 0 && (
+        <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="text-orange-700 text-sm font-semibold">{selectedIds.size} selected</span>
+            <button onClick={clearSelection} className="text-xs text-gray-500 hover:text-gray-700 underline">Clear</button>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => bulkAction('available')}
+              disabled={bulkActing}
+              className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-green-500 hover:bg-green-600 text-white disabled:opacity-50"
+            >
+              {bulkActing ? '...' : 'Mark Available'}
+            </button>
+            <button
+              onClick={() => bulkAction('out_of_stock')}
+              disabled={bulkActing}
+              className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-yellow-500 hover:bg-yellow-600 text-white disabled:opacity-50"
+            >
+              {bulkActing ? '...' : 'Mark Out of Stock'}
+            </button>
+            <button
+              onClick={() => { if (confirm(`Delete ${selectedIds.size} products? This cannot be undone.`)) bulkAction('delete') }}
+              disabled={bulkActing}
+              className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-red-500 hover:bg-red-600 text-white disabled:opacity-50"
+            >
+              {bulkActing ? '...' : `Delete (${selectedIds.size})`}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Loading */}
       {loading && <div className="text-center py-16 text-gray-400">Loading products…</div>}
 
@@ -219,6 +342,14 @@ function ProductsContent() {
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
+                  <th className="px-3 py-3 w-8">
+                    <input
+                      type="checkbox"
+                      checked={filtered.length > 0 && filtered.every(p => selectedIds.has(p.id))}
+                      onChange={e => e.target.checked ? selectAllFiltered() : clearSelection()}
+                      className="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 cursor-pointer"
+                    />
+                  </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase w-8"></th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Name</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Category</th>
@@ -230,7 +361,16 @@ function ProductsContent() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {filtered.map(p => (
-                  <tr key={p.id} className={`hover:bg-gray-50/60 ${!p.inStock ? 'opacity-50' : ''}`}>
+                  <tr key={p.id} className={`hover:bg-gray-50/60 ${!p.inStock ? 'opacity-50' : ''} ${selectedIds.has(p.id) ? 'bg-orange-50/40' : ''}`}>
+                    {/* Checkbox */}
+                    <td className="px-3 py-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(p.id)}
+                        onChange={() => toggleSelect(p.id)}
+                        className="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 cursor-pointer"
+                      />
+                    </td>
                     {/* Image */}
                     <td className="px-4 py-2">
                       {p.imageUrl
@@ -346,8 +486,14 @@ function ProductsContent() {
           {/* Mobile Cards */}
           <div className="md:hidden space-y-3">
             {filtered.map(p => (
-              <div key={p.id} className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-4 ${!p.inStock ? 'opacity-60' : ''}`}>
+              <div key={p.id} className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-4 ${!p.inStock ? 'opacity-60' : ''} ${selectedIds.has(p.id) ? 'ring-2 ring-orange-300 bg-orange-50/30' : ''}`}>
                 <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(p.id)}
+                    onChange={() => toggleSelect(p.id)}
+                    className="w-4 h-4 mt-1 rounded border-gray-300 text-orange-500 focus:ring-orange-400 cursor-pointer flex-shrink-0"
+                  />
                   {p.imageUrl
                     ? <img src={p.imageUrl} alt="" className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
                     : <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-2xl flex-shrink-0">📦</div>

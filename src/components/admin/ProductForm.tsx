@@ -48,6 +48,21 @@ export default function ProductForm({ product }: Props) {
   const [minQty, setMinQty] = useState(product?.minOrderQty ? String(product.minOrderQty) : '1')
   const [imageUrl, setImageUrl] = useState(product?.imageUrl || '')
   const [inStock, setInStock] = useState(product?.inStock ?? true)
+  const [galleryImages, setGalleryImages] = useState<string[]>(product?.galleryImages || [])
+  const [galleryUploading, setGalleryUploading] = useState(false)
+  const galleryFileRef = useRef<HTMLInputElement>(null)
+
+  // Description — parse bilingual JSON or plain text
+  const [descEn, setDescEn] = useState(() => {
+    const d = product?.description
+    if (!d) return ''
+    try { const p = JSON.parse(d); return p.en || '' } catch { return d }
+  })
+  const [descHi, setDescHi] = useState(() => {
+    const d = product?.description
+    if (!d) return ''
+    try { const p = JSON.parse(d); return p.hi || '' } catch { return '' }
+  })
 
   // Inline create states
   const [creatingCat, setCreatingCat] = useState(false)
@@ -171,15 +186,41 @@ export default function ProductForm({ product }: Props) {
     setUploading(false)
   }
 
+  const handleGalleryAdd = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (!files.length) return
+    e.target.value = ''
+    setGalleryUploading(true)
+    try {
+      const uploaded: string[] = []
+      for (const file of files) {
+        const formData = new FormData()
+        formData.append('file', file)
+        const res = await fetch('/api/admin/upload', { method: 'POST', body: formData })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error)
+        uploaded.push(data.url)
+      }
+      setGalleryImages(prev => [...prev, ...uploaded])
+    } catch (err: any) {
+      setError('Gallery upload failed: ' + (err.message || 'unknown'))
+    }
+    setGalleryUploading(false)
+  }
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!name.trim()) { setError('Product name is required'); return }
     setSaving(true); setError('')
     try {
+      const descValue = descEn.trim() || descHi.trim()
+        ? JSON.stringify({ en: descEn.trim(), hi: descHi.trim() })
+        : ''
       const data = {
         name: name.trim(),
-        description: product?.description || '',
+        description: descValue,
         imageUrl,
+        galleryImages,
         unit: unit as Product['unit'],
         pricePerUnit: price ? parseFloat(price) : 0,
         minOrderQty: parseInt(minQty) || 1,
@@ -260,11 +301,12 @@ export default function ProductForm({ product }: Props) {
       }
       if (v.id) {
         // Update existing
-        await fetch('/api/admin/bulk-variants', {
+        const res = await fetch('/api/admin/bulk-variants', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: v.id, ...payload }),
         })
+        if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || `HTTP ${res.status}`) }
         updateVariant(idx, { saving: false, open: false })
       } else {
         // Create new
@@ -362,6 +404,83 @@ export default function ProductForm({ product }: Props) {
           className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-orange-400"
           style={{ fontSize: '16px' }}
           autoFocus={!isEdit}
+        />
+      </div>
+
+      {/* Gallery Images */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Additional Images
+          <span className="ml-1 text-xs font-normal text-gray-400">— shown as gallery on product page</span>
+        </label>
+        <div className="flex flex-wrap gap-2 mb-2">
+          {galleryImages.map((url, idx) => (
+            <div key={idx} style={{ position: 'relative', width: '72px', height: '72px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+              <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <button
+                type="button"
+                onClick={() => setGalleryImages(prev => prev.filter((_, i) => i !== idx))}
+                style={{
+                  position: 'absolute', top: '2px', right: '2px',
+                  background: 'rgba(0,0,0,0.55)', color: '#fff',
+                  border: 'none', borderRadius: '50%',
+                  width: '20px', height: '20px', fontSize: '11px',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: 800,
+                }}
+              >✕</button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => galleryFileRef.current?.click()}
+            disabled={galleryUploading}
+            style={{
+              width: '72px', height: '72px', borderRadius: '10px',
+              border: '2px dashed #d1d5db', background: '#f9fafb',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', fontSize: '22px', gap: '2px',
+              color: galleryUploading ? '#9ca3af' : '#6b7280',
+            }}
+          >
+            {galleryUploading ? <span style={{ fontSize: '11px', fontWeight: 600 }}>…</span> : <>+<span style={{ fontSize: '9px', fontWeight: 700 }}>ADD</span></>}
+          </button>
+          <input
+            ref={galleryFileRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleGalleryAdd}
+            className="hidden"
+          />
+        </div>
+      </div>
+
+      {/* Description */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
+          SEO Description (English)
+          <span className="ml-1 text-xs font-normal text-gray-400">— shown on product page &amp; Google</span>
+        </label>
+        <textarea
+          value={descEn}
+          onChange={e => setDescEn(e.target.value)}
+          placeholder="e.g. Premium quality playing cards for wholesale. Ideal for game shops, events, and bulk orders."
+          rows={3}
+          className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-orange-400 text-sm resize-none"
+          style={{ fontSize: '16px' }}
+        />
+        <label className="block text-sm font-semibold text-gray-700 mb-1 mt-3">
+          SEO Description (Hindi)
+          <span className="ml-1 text-xs font-normal text-gray-400">— optional</span>
+        </label>
+        <textarea
+          value={descHi}
+          onChange={e => setDescHi(e.target.value)}
+          placeholder="e.g. थोक के लिए उच्च गुणवत्ता वाले ताश के पत्ते।"
+          rows={2}
+          className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-orange-400 text-sm resize-none"
+          style={{ fontSize: '16px' }}
         />
       </div>
 
@@ -526,9 +645,11 @@ export default function ProductForm({ product }: Props) {
 
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-gray-800 truncate">
-                          {v.quantity ? `${v.quantity} ${v.unit}` : 'New variant'}
-                          {v.label ? ` · ${v.label}` : ''}
+                          {v.label || (v.quantity ? `${v.quantity} ${v.unit}` : 'New variant')}
                         </p>
+                        {v.label && v.quantity && (
+                          <p className="text-xs text-gray-400">{v.quantity} {v.unit}</p>
+                        )}
                         {v.price && <p className="text-xs text-orange-600 font-semibold">₹{v.price}</p>}
                         {!v.id && <span className="text-xs text-amber-500 font-semibold">Unsaved</span>}
                       </div>
@@ -632,12 +753,12 @@ export default function ProductForm({ product }: Props) {
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-semibold text-gray-600 mb-1">Label (optional)</label>
+                            <label className="block text-xs font-semibold text-gray-600 mb-1">Variant Name</label>
                             <input
                               type="text"
                               value={v.label}
                               onChange={e => updateVariant(idx, { label: e.target.value })}
-                              placeholder="e.g. Best Value"
+                              placeholder="e.g. Small Box, Bulk Pack"
                               className="w-full border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:border-orange-400 text-sm"
                               style={{ fontSize: '16px' }}
                             />

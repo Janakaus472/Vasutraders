@@ -48,7 +48,7 @@ export default function AdminLoginPage() {
         setPassword('')
         return
       }
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ expires: Date.now() + SESSION_TTL }))
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ expires: Date.now() + SESSION_TTL, u: username, p: password }))
       router.replace('/admin')
     } catch {
       setError('Connection error. Try again.')
