@@ -39,8 +39,10 @@ export default function ProductPageInteractive({ product }: { product: Product }
   const activeQty = selectedVariantId ? (variantCartItem?.quantity || 0) : (baseCartItem?.quantity || 0)
 
   // Reactive details based on selected variant
+  // If variant has a label, show it as the full name (e.g. "6 Dozen Wholesale Pack")
+  // otherwise fall back to "Product Name — qty unit"
   const displayName = selectedVariant
-    ? `${product.name} — ${selectedVariant.label || `${selectedVariant.quantity} ${selectedVariant.unit}`}`
+    ? (selectedVariant.label || `${product.name} — ${selectedVariant.quantity} ${selectedVariant.unit}`)
     : product.name
   const displayPrice = selectedVariant
     ? (selectedVariant.price ?? null)
