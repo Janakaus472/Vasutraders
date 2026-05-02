@@ -627,165 +627,125 @@ export default function ProductForm({ product }: Props) {
                 )}
 
                 {variants.map((v, idx) => (
-                  <div key={idx} className="border border-gray-200 rounded-2xl overflow-hidden">
+                  <div key={idx} className="border border-gray-200 rounded-2xl bg-white p-3 flex gap-3">
 
-                    {/* Variant header */}
-                    <div
-                      className="flex items-center gap-3 px-4 py-3 bg-gray-50 cursor-pointer select-none"
-                      onClick={() => updateVariant(idx, { open: !v.open })}
-                    >
-                      {/* Thumbnail */}
-                      <div className="w-10 h-10 rounded-xl overflow-hidden border border-gray-200 bg-white flex-shrink-0">
+                    {/* Image — left column, click to upload */}
+                    <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+                      <div
+                        onClick={() => variantFileRefs.current[idx]?.click()}
+                        className="relative w-20 h-20 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:border-orange-400 hover:bg-orange-50 transition-colors overflow-hidden"
+                        title="Click to upload image"
+                      >
                         {(v.localPreview || v.imageUrl) ? (
-                          <img src={v.localPreview || v.imageUrl} alt="" className="w-full h-full object-cover" />
+                          <>
+                            <img src={v.localPreview || v.imageUrl} alt="" className="w-full h-full object-cover" />
+                            {v.uploading && (
+                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                <span className="text-white text-xs animate-pulse">⏳</span>
+                              </div>
+                            )}
+                          </>
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-lg">📦</div>
+                          <div className="flex flex-col items-center gap-1 text-gray-300">
+                            <span className="text-2xl">{v.uploading ? '⏳' : '📷'}</span>
+                            <span className="text-[9px] font-bold uppercase tracking-wide">Image</span>
+                          </div>
                         )}
                       </div>
-
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-gray-800 truncate">
-                          {v.label || (v.quantity ? `${v.quantity} ${v.unit}` : 'New variant')}
-                        </p>
-                        {v.label && v.quantity && (
-                          <p className="text-xs text-gray-400">{v.quantity} {v.unit}</p>
-                        )}
-                        {v.price && <p className="text-xs text-orange-600 font-semibold">₹{v.price}</p>}
-                        {!v.id && <span className="text-xs text-amber-500 font-semibold">Unsaved</span>}
-                      </div>
-
-                      {/* Reorder */}
+                      <input
+                        ref={el => { variantFileRefs.current[idx] = el }}
+                        type="file" accept="image/*"
+                        onChange={e => handleVariantImagePick(e, idx)}
+                        className="hidden"
+                      />
+                      {/* Reorder buttons */}
                       <div className="flex gap-1">
-                        <button type="button" onClick={e => { e.stopPropagation(); moveVariant(idx, -1) }}
+                        <button type="button" onClick={() => moveVariant(idx, -1)}
                           disabled={idx === 0}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-200 disabled:opacity-30 text-xs">
-                          ▲
-                        </button>
-                        <button type="button" onClick={e => { e.stopPropagation(); moveVariant(idx, 1) }}
+                          className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 disabled:opacity-20 text-xs">▲</button>
+                        <button type="button" onClick={() => moveVariant(idx, 1)}
                           disabled={idx === variants.length - 1}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-200 disabled:opacity-30 text-xs">
-                          ▼
-                        </button>
+                          className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 disabled:opacity-20 text-xs">▼</button>
                       </div>
-
-                      <span className="text-gray-400 text-xs">{v.open ? '▲' : '▼'}</span>
                     </div>
 
-                    {/* Variant body */}
-                    {v.open && (
-                      <div className="px-4 py-4 space-y-4 bg-white">
+                    {/* Fields — right column */}
+                    <div className="flex-1 min-w-0 flex flex-col gap-2">
 
-                        {/* Image upload */}
+                      {/* Row 1: Qty + Unit */}
+                      <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="block text-xs font-semibold text-gray-600 mb-2">
-                            Bulk Pack Image <span className="text-red-400">*</span>
-                          </label>
-                          <div className="flex items-center gap-3">
-                            <div
-                              onClick={() => variantFileRefs.current[idx]?.click()}
-                              className="relative w-16 h-16 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:border-orange-400 hover:bg-orange-50 transition-colors overflow-hidden flex-shrink-0"
-                            >
-                              {(v.localPreview || v.imageUrl) ? (
-                                <>
-                                  <img src={v.localPreview || v.imageUrl} alt="" className="w-full h-full object-cover" />
-                                  {v.uploading && (
-                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                      <span className="text-white text-xs animate-pulse">⏳</span>
-                                    </div>
-                                  )}
-                                </>
-                              ) : (
-                                <span className="text-2xl">{v.uploading ? '⏳' : '📷'}</span>
-                              )}
-                            </div>
-                            <button type="button" onClick={() => variantFileRefs.current[idx]?.click()}
-                              className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-medium text-gray-700 transition-colors">
-                              {v.uploading ? 'Uploading…' : (v.imageUrl || v.localPreview) ? 'Change' : 'Upload'}
-                            </button>
-                            <input
-                              ref={el => { variantFileRefs.current[idx] = el }}
-                              type="file" accept="image/*"
-                              onChange={e => handleVariantImagePick(e, idx)}
-                              className="hidden"
-                            />
-                          </div>
+                          <label className="block text-[10px] font-semibold text-gray-500 mb-0.5 uppercase tracking-wide">Qty *</label>
+                          <input
+                            type="number" min="1"
+                            value={v.quantity}
+                            onChange={e => updateVariant(idx, { quantity: e.target.value })}
+                            placeholder="e.g. 30"
+                            className="w-full border border-gray-200 rounded-lg px-2.5 py-2 outline-none focus:border-orange-400 text-sm font-semibold"
+                            style={{ fontSize: '16px' }}
+                          />
                         </div>
-
-                        {/* Qty + Unit */}
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-600 mb-1">
-                              Quantity <span className="text-red-400">*</span>
-                            </label>
-                            <input
-                              type="number" min="1"
-                              value={v.quantity}
-                              onChange={e => updateVariant(idx, { quantity: e.target.value })}
-                              placeholder="e.g. 30"
-                              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:border-orange-400 text-sm"
-                              style={{ fontSize: '16px' }}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-600 mb-1">Unit</label>
-                            <select
-                              value={v.unit}
-                              onChange={e => updateVariant(idx, { unit: e.target.value })}
-                              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:border-orange-400 bg-white text-sm"
-                              style={{ fontSize: '16px' }}
-                            >
-                              {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
-                            </select>
-                          </div>
-                        </div>
-
-                        {/* Price + Label */}
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-600 mb-1">Price ₹ (optional)</label>
-                            <input
-                              type="number" min="0" step="0.01"
-                              value={v.price}
-                              onChange={e => updateVariant(idx, { price: e.target.value })}
-                              placeholder="Leave blank"
-                              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:border-orange-400 text-sm"
-                              style={{ fontSize: '16px' }}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-600 mb-1">Variant Name</label>
-                            <input
-                              type="text"
-                              value={v.label}
-                              onChange={e => updateVariant(idx, { label: e.target.value })}
-                              placeholder="e.g. Small Box, Bulk Pack"
-                              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:border-orange-400 text-sm"
-                              style={{ fontSize: '16px' }}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Save / Delete */}
-                        <div className="flex gap-2 pt-1">
-                          <button
-                            type="button"
-                            onClick={() => handleSaveVariant(idx)}
-                            disabled={v.saving || v.uploading}
-                            className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-200 text-white font-bold py-2.5 rounded-xl text-sm transition-colors"
+                        <div>
+                          <label className="block text-[10px] font-semibold text-gray-500 mb-0.5 uppercase tracking-wide">Unit</label>
+                          <select
+                            value={v.unit}
+                            onChange={e => updateVariant(idx, { unit: e.target.value })}
+                            className="w-full border border-gray-200 rounded-lg px-2.5 py-2 outline-none focus:border-orange-400 bg-white text-sm"
+                            style={{ fontSize: '16px' }}
                           >
-                            {v.saving ? 'Saving…' : v.id ? 'Update' : 'Save Variant'}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteVariant(idx)}
-                            disabled={v.deleting}
-                            className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-500 font-bold rounded-xl text-sm transition-colors border border-red-100"
-                          >
-                            {v.deleting ? '…' : 'Delete'}
-                          </button>
+                            {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+                          </select>
                         </div>
                       </div>
-                    )}
+
+                      {/* Row 2: Price + Label */}
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-semibold text-gray-500 mb-0.5 uppercase tracking-wide">Price ₹</label>
+                          <input
+                            type="number" min="0" step="0.01"
+                            value={v.price}
+                            onChange={e => updateVariant(idx, { price: e.target.value })}
+                            placeholder="Optional"
+                            className="w-full border border-gray-200 rounded-lg px-2.5 py-2 outline-none focus:border-orange-400 text-sm"
+                            style={{ fontSize: '16px' }}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-semibold text-gray-500 mb-0.5 uppercase tracking-wide">Name</label>
+                          <input
+                            type="text"
+                            value={v.label}
+                            onChange={e => updateVariant(idx, { label: e.target.value })}
+                            placeholder="e.g. Bulk Pack"
+                            className="w-full border border-gray-200 rounded-lg px-2.5 py-2 outline-none focus:border-orange-400 text-sm"
+                            style={{ fontSize: '16px' }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Row 3: Save + Delete */}
+                      <div className="flex gap-2 mt-auto pt-0.5">
+                        {!v.id && <span className="text-[10px] text-amber-500 font-bold self-center">Unsaved</span>}
+                        <button
+                          type="button"
+                          onClick={() => handleSaveVariant(idx)}
+                          disabled={v.saving || v.uploading}
+                          className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-200 text-white font-bold py-2 rounded-lg text-xs transition-colors"
+                        >
+                          {v.saving ? 'Saving…' : v.id ? 'Update' : 'Save'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteVariant(idx)}
+                          disabled={v.deleting}
+                          className="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-500 font-bold rounded-lg text-xs transition-colors border border-red-100"
+                        >
+                          {v.deleting ? '…' : 'Delete'}
+                        </button>
+                      </div>
+                    </div>
+
                   </div>
                 ))}
 
