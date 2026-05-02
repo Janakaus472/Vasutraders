@@ -7,6 +7,14 @@ import { CategoryWithSubs } from '@/lib/supabase/categories'
 import { UNITS } from '@/lib/categories'
 
 const CREATE_NEW = '__create_new__'
+const CUSTOM_UNITS_KEY = 'vt_custom_units'
+
+function loadCustomUnits(): string[] {
+  try { return JSON.parse(localStorage.getItem(CUSTOM_UNITS_KEY) || '[]') } catch { return [] }
+}
+function saveCustomUnits(units: string[]) {
+  try { localStorage.setItem(CUSTOM_UNITS_KEY, JSON.stringify(units)) } catch {}
+}
 
 interface Props { product?: Product }
 
@@ -77,6 +85,21 @@ export default function ProductForm({ product }: Props) {
   const [error, setError] = useState('')
   const [localPreview, setLocalPreview] = useState('')
 
+  // Custom units
+  const [customUnits, setCustomUnits] = useState<string[]>([])
+  useEffect(() => { setCustomUnits(loadCustomUnits()) }, [])
+  const allUnits = [...UNITS, ...customUnits.filter(u => !UNITS.includes(u as typeof UNITS[number]))]
+
+  // Inline unit creation (product)
+  const [creatingUnit, setCreatingUnit] = useState(false)
+  const [newUnitName, setNewUnitName] = useState('')
+  const newUnitInputRef = useRef<HTMLInputElement>(null)
+
+  // Inline unit creation (variant — tracks which variant idx is creating)
+  const [creatingVariantUnit, setCreatingVariantUnit] = useState<number | null>(null)
+  const [newVariantUnitName, setNewVariantUnitName] = useState('')
+  const newVariantUnitInputRef = useRef<HTMLInputElement>(null)
+
   // ─── Bulk variants ─────────────────────────────────────────────────────────
   const [bulkEnabled, setBulkEnabled] = useState(
     (product?.bulkVariants?.length ?? 0) > 0
@@ -113,9 +136,20 @@ export default function ProductForm({ product }: Props) {
 
   useEffect(() => { if (creatingCat && newCatInputRef.current) newCatInputRef.current.focus() }, [creatingCat])
   useEffect(() => { if (creatingSub && newSubInputRef.current) newSubInputRef.current.focus() }, [creatingSub])
+  useEffect(() => { if (creatingUnit && newUnitInputRef.current) newUnitInputRef.current.focus() }, [creatingUnit])
+  useEffect(() => { if (creatingVariantUnit !== null && newVariantUnitInputRef.current) newVariantUnitInputRef.current.focus() }, [creatingVariantUnit])
 
   const selectedCatObj = categories.find(c => c.name === category)
   const subcategories = selectedCatObj?.subcategories || []
+
+  const confirmNewUnit = (name: string, onSet: (u: string) => void) => {
+    const trimmed = name.trim()
+    if (!trimmed) return
+    const updated = customUnits.includes(trimmed) ? customUnits : [...customUnits, trimmed]
+    setCustomUnits(updated)
+    saveCustomUnits(updated)
+    onSet(trimmed)
+  }
 
   const handleCategoryChange = (val: string) => {
     if (val === CREATE_NEW) { setCreatingCat(true); setNewCatName('') }
@@ -546,11 +580,37 @@ export default function ProductForm({ product }: Props) {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1">Unit *</label>
-          <select value={unit} onChange={e => setUnit(e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-3 py-3 outline-none focus:border-orange-400 bg-white"
-            style={{ fontSize: '16px' }}>
-            {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
-          </select>
+          {creatingUnit ? (
+            <div className="flex gap-2">
+              <input
+                ref={newUnitInputRef}
+                value={newUnitName}
+                onChange={e => setNewUnitName(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') { e.preventDefault(); confirmNewUnit(newUnitName, u => { setUnit(u); setCreatingUnit(false); setNewUnitName('') }) }
+                  if (e.key === 'Escape') setCreatingUnit(false)
+                }}
+                placeholder="e.g. Can, Tin, Bag…"
+                className="flex-1 border border-orange-300 rounded-xl px-3 py-3 outline-none focus:border-orange-500"
+                style={{ fontSize: '16px' }}
+              />
+              <button type="button"
+                onClick={() => { confirmNewUnit(newUnitName, u => { setUnit(u); setCreatingUnit(false); setNewUnitName('') }) }}
+                disabled={!newUnitName.trim()}
+                className="px-3 py-3 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-200 text-white font-bold rounded-xl text-sm transition-colors">
+                ✓
+              </button>
+              <button type="button" onClick={() => setCreatingUnit(false)}
+                className="px-3 py-3 border border-gray-200 rounded-xl text-gray-500 hover:bg-gray-50 text-sm">✕</button>
+            </div>
+          ) : (
+            <select value={unit} onChange={e => e.target.value === CREATE_NEW ? setCreatingUnit(true) : setUnit(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-3 py-3 outline-none focus:border-orange-400 bg-white"
+              style={{ fontSize: '16px' }}>
+              {allUnits.map(u => <option key={u} value={u}>{u}</option>)}
+              <option value={CREATE_NEW}>➕ Create new unit…</option>
+            </select>
+          )}
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1">Price (₹)</label>
@@ -687,14 +747,40 @@ export default function ProductForm({ product }: Props) {
                         </div>
                         <div>
                           <label className="block text-[10px] font-semibold text-gray-500 mb-0.5 uppercase tracking-wide">Unit</label>
-                          <select
-                            value={v.unit}
-                            onChange={e => updateVariant(idx, { unit: e.target.value })}
-                            className="w-full border border-gray-200 rounded-lg px-2.5 py-2 outline-none focus:border-orange-400 bg-white text-sm"
-                            style={{ fontSize: '16px' }}
-                          >
-                            {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
-                          </select>
+                          {creatingVariantUnit === idx ? (
+                            <div className="flex gap-1">
+                              <input
+                                ref={newVariantUnitInputRef}
+                                value={newVariantUnitName}
+                                onChange={e => setNewVariantUnitName(e.target.value)}
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter') { e.preventDefault(); confirmNewUnit(newVariantUnitName, u => { updateVariant(idx, { unit: u }); setCreatingVariantUnit(null); setNewVariantUnitName('') }) }
+                                  if (e.key === 'Escape') setCreatingVariantUnit(null)
+                                }}
+                                placeholder="e.g. Can"
+                                className="flex-1 min-w-0 border border-orange-300 rounded-lg px-2 py-2 outline-none focus:border-orange-500 text-sm"
+                                style={{ fontSize: '16px' }}
+                              />
+                              <button type="button"
+                                onClick={() => { confirmNewUnit(newVariantUnitName, u => { updateVariant(idx, { unit: u }); setCreatingVariantUnit(null); setNewVariantUnitName('') }) }}
+                                disabled={!newVariantUnitName.trim()}
+                                className="px-2 py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-200 text-white font-bold rounded-lg text-xs transition-colors">
+                                ✓
+                              </button>
+                              <button type="button" onClick={() => setCreatingVariantUnit(null)}
+                                className="px-2 py-2 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 text-xs">✕</button>
+                            </div>
+                          ) : (
+                            <select
+                              value={v.unit}
+                              onChange={e => e.target.value === CREATE_NEW ? (setCreatingVariantUnit(idx), setNewVariantUnitName('')) : updateVariant(idx, { unit: e.target.value })}
+                              className="w-full border border-gray-200 rounded-lg px-2.5 py-2 outline-none focus:border-orange-400 bg-white text-sm"
+                              style={{ fontSize: '16px' }}
+                            >
+                              {allUnits.map(u => <option key={u} value={u}>{u}</option>)}
+                              <option value={CREATE_NEW}>➕ New unit…</option>
+                            </select>
+                          )}
                         </div>
                       </div>
 
