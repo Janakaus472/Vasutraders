@@ -1,0 +1,265 @@
+'use client'
+
+import Link from 'next/link'
+import { BUSINESS_NAME, WHATSAPP_NUMBER } from '@/lib/constants'
+import { useLanguage } from '@/context/LanguageContext'
+import AnimatedLogo from '@/components/AnimatedLogo'
+
+const CAT_ICONS: Record<string, { emoji: string; color: string; bg: string }> = {
+  'Playing Cards':        { emoji: '🃏', color: '#DC2626', bg: '#FEF2F2' },
+  'Party Balloons':       { emoji: '🎈', color: '#DC2626', bg: '#FEF2F2' },
+  'Kanche & Glass Balls': { emoji: '🔮', color: '#DC2626', bg: '#FEF2F2' },
+  'Sports & Games':       { emoji: '🏏', color: '#DC2626', bg: '#FEF2F2' },
+  'Rubber Bands':         { emoji: '🔁', color: '#DC2626', bg: '#FEF2F2' },
+  'Tapes':                { emoji: '📦', color: '#DC2626', bg: '#FEF2F2' },
+  'Poker Chips':          { emoji: '🎰', color: '#DC2626', bg: '#FEF2F2' },
+  'Toothbrushes':         { emoji: '🪥', color: '#DC2626', bg: '#FEF2F2' },
+  'Boric Acid':           { emoji: '⚗️', color: '#DC2626', bg: '#FEF2F2' },
+  'General Goods':        { emoji: '🛍️', color: '#DC2626', bg: '#FEF2F2' },
+}
+const DEFAULT_ICON = { emoji: '📦', color: '#DC2626', bg: '#FEF2F2' }
+
+interface Props {
+  categories: { name: string; count: number }[]
+  totalProducts: number
+}
+
+export default function HomePageClient({ categories, totalProducts }: Props) {
+  const { t, catLabel, lang } = useLanguage()
+  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hello Vasu Traders! I would like to enquire about wholesale products.')}`
+
+  const catsWithIcons = categories.map(c => ({
+    ...c,
+    ...(CAT_ICONS[c.name] || DEFAULT_ICON),
+  }))
+
+  return (
+    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", overflowX: 'hidden', width: '100%' }}>
+      <style>{`
+        .cat-card {
+          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .cat-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 24px rgba(127,29,29,0.15);
+          border-color: #DC2626 !important;
+        }
+        .cat-card:active { transform: scale(0.97); }
+        .feature-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
+      `}</style>
+
+      {/* ── HERO ── */}
+      <section style={{
+        background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 40%, #B91C1C 100%)',
+        padding: '56px 20px 64px',
+        textAlign: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.02) 40px, rgba(255,255,255,0.02) 80px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: '700px', margin: '0 auto' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <AnimatedLogo size={200} />
+          </div>
+          <div style={{ display: 'inline-block', background: '#FAC41A', color: '#7f1d1d', fontSize: '11px', fontWeight: 800, padding: '6px 20px', borderRadius: '4px', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '20px' }}>
+            {lang === 'hi' ? 'मध्य भारत का भरोसेमंद थोक विक्रेता' : "CENTRAL INDIA'S TRUSTED WHOLESALERS"}
+          </div>
+          <h1 style={{ fontSize: 'clamp(36px, 8vw, 64px)', fontWeight: 800, color: '#fff', lineHeight: 1.05, marginBottom: '16px', letterSpacing: '0.02em', fontFamily: "'Mandali', sans-serif" }}>
+            {BUSINESS_NAME}
+          </h1>
+          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: 'clamp(15px, 3.5vw, 18px)', fontWeight: 500, lineHeight: 1.6, marginBottom: '32px', maxWidth: '500px', margin: '0 auto 32px' }}>
+            {lang === 'hi'
+              ? 'ताश, गुब्बारे, खेल सामग्री और बहुत कुछ — थोक दाम पर'
+              : 'Playing cards, balloons, sports goods & more — at wholesale prices'}
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href="/catalog" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#FAC41A', color: '#7f1d1d', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '1px', transition: 'all 0.15s' }}>
+              {t.homeCta}
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            </Link>
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 700, fontSize: '15px', textDecoration: 'none', border: '2px solid rgba(255,255,255,0.3)', transition: 'all 0.15s' }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+              {t.whatsappUs}
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── STATS BAR ── */}
+      <div style={{ background: '#fff', borderBottom: '3px solid #DC2626', padding: '18px 20px', display: 'flex', justifyContent: 'center', gap: 'clamp(32px, 8vw, 80px)', flexWrap: 'wrap' }}>
+        {[
+          { value: `${totalProducts}+`, label: lang === 'hi' ? 'उत्पाद' : 'Products' },
+          { value: `${catsWithIcons.length}`, label: lang === 'hi' ? 'श्रेणियाँ' : 'Categories' },
+          { value: '20+', label: lang === 'hi' ? 'साल का अनुभव' : 'Years' },
+        ].map(s => (
+          <div key={s.label} style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '32px', fontWeight: 800, color: '#B91C1C', lineHeight: 1, fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '1px' }}>{s.value}</div>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: '#6b7280', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '2px' }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── ABOUT ── */}
+      <section style={{ background: '#fff', padding: 'clamp(36px, 5vw, 56px) 20px', borderBottom: '1px solid #f0f0f0' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 800, color: '#1a1a1a', marginBottom: '8px', fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '2px' }}>
+            {lang === 'hi' ? 'हमारे बारे में' : 'About Vasu Traders'}
+          </h2>
+          <div style={{ width: '50px', height: '4px', background: '#DC2626', margin: '0 auto 20px', borderRadius: '2px' }} />
+          <p style={{ fontSize: '15px', color: '#4b5563', lineHeight: 1.8, marginBottom: '16px' }}>
+            {lang === 'hi'
+              ? 'वासु ट्रेडर्स इंदौर, मध्य प्रदेश में स्थित एक भरोसेमंद थोक विक्रेता है। हम पिछले 20 से अधिक वर्षों से मध्य भारत के व्यापारियों और दुकानदारों को उच्च गुणवत्ता के उत्पाद थोक दाम पर उपलब्ध करा रहे हैं।'
+              : 'Vasu Traders is a well-established wholesale supplier based in Indore, Madhya Pradesh, India. With over 20 years of experience, we have been serving retailers, shopkeepers, and businesses across Central India with a wide range of quality products at competitive wholesale prices.'}
+          </p>
+          <p style={{ fontSize: '15px', color: '#4b5563', lineHeight: 1.8, marginBottom: '24px' }}>
+            {lang === 'hi'
+              ? 'हमारे उत्पादों में ताश के पत्ते, पोकर चिप्स, पार्टी गुब्बारे, रबर बैंड, खेल सामग्री, टूथब्रश और बहुत कुछ शामिल है।'
+              : 'Our product range includes playing cards, poker chips, party balloons, rubber bands, sports goods, toothbrushes, and much more. We supply to retailers and wholesalers in Indore, Ujjain, Bhopal, and across Madhya Pradesh and Central India.'}
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            {[
+              { icon: '📍', text: lang === 'hi' ? 'इंदौर, मध्य प्रदेश' : 'Indore, Madhya Pradesh' },
+              { icon: '🏪', text: lang === 'hi' ? '20+ वर्ष का अनुभव' : '20+ Years in Business' },
+              { icon: '🚚', text: lang === 'hi' ? 'पूरे भारत में डिलीवरी' : 'Pan India Supply' },
+            ].map(item => (
+              <span key={item.text} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#FEF2F2', color: '#B91C1C', fontSize: '13px', fontWeight: 700, padding: '8px 16px', borderRadius: '20px', border: '1px solid #FECACA' }}>
+                {item.icon} {item.text}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CATEGORIES ── */}
+      <section style={{ background: '#f9f9f9', padding: 'clamp(40px, 6vw, 64px) 20px' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(28px, 4vw, 44px)' }}>
+            <h2 style={{ fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 800, color: '#1a1a1a', marginBottom: '8px', fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '2px' }}>
+              {lang === 'hi' ? 'श्रेणी के अनुसार खरीदें' : 'Shop by Category'}
+            </h2>
+            <div style={{ width: '60px', height: '4px', background: '#DC2626', margin: '0 auto 12px', borderRadius: '2px' }} />
+            <p style={{ fontSize: '15px', color: '#6b7280' }}>
+              {lang === 'hi' ? 'जो चाहिए वो चुनें, सीधे ब्राउज़ करें' : 'Tap a category to browse products'}
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 45%), 1fr))', gap: 'clamp(12px, 2vw, 20px)' }}>
+            {catsWithIcons.map(cat => (
+              <Link key={cat.name} href={`/catalog?category=${encodeURIComponent(cat.name)}`} className="cat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '12px', padding: 'clamp(24px, 4vw, 36px) 16px', textDecoration: 'none', border: '2px solid #f0f0f0', textAlign: 'center', minHeight: '200px' }}>
+                <div style={{ fontSize: '60px', lineHeight: 1, marginBottom: '14px' }}>{cat.emoji}</div>
+                <div style={{ fontWeight: 800, fontSize: '16px', color: '#1a1a1a', lineHeight: 1.3, marginBottom: '6px' }}>{catLabel(cat.name)}</div>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#DC2626', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  {cat.count} {lang === 'hi' ? 'उत्पाद' : 'products'}
+                </div>
+              </Link>
+            ))}
+            <Link href="/catalog" className="cat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#B91C1C', borderRadius: '12px', padding: 'clamp(24px, 4vw, 36px) 16px', textDecoration: 'none', textAlign: 'center', minHeight: '200px', border: '2px solid #B91C1C' }}>
+              <div style={{ marginBottom: '14px', color: '#FAC41A' }}>
+                <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+              </div>
+              <div style={{ fontWeight: 800, fontSize: '16px', color: '#fff', lineHeight: 1.3 }}>
+                {lang === 'hi' ? 'सभी उत्पाद देखें' : 'View All Products'}
+              </div>
+              <div style={{ fontSize: '12px', fontWeight: 700, color: '#FAC41A', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                {totalProducts} {lang === 'hi' ? 'उत्पाद' : 'total'}
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── WHY US ── */}
+      <section style={{ background: '#fff', padding: 'clamp(40px, 6vw, 64px) 20px', borderTop: '1px solid #f0f0f0' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(28px, 4vw, 44px)' }}>
+            <h2 style={{ fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 800, color: '#1a1a1a', marginBottom: '8px', fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '2px' }}>
+              {lang === 'hi' ? 'हमें क्यों चुनें' : 'Why Vasu Traders?'}
+            </h2>
+            <div style={{ width: '60px', height: '4px', background: '#DC2626', margin: '0 auto', borderRadius: '2px' }} />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
+            {[
+              { icon: '✅', title: lang === 'hi' ? 'असली उत्पाद' : 'Genuine Products', desc: lang === 'hi' ? 'सिर्फ ब्रांडेड और गुणवत्ता वाले सामान' : 'Only authentic, quality-tested goods' },
+              { icon: '💰', title: lang === 'hi' ? 'थोक दाम' : 'Wholesale Prices', desc: lang === 'hi' ? 'बड़े ऑर्डर पर सबसे अच्छे दाम' : 'Best rates for bulk orders' },
+              { icon: '🚚', title: lang === 'hi' ? 'पूरे भारत में डिलीवरी' : 'Pan India Delivery', desc: lang === 'hi' ? 'पूरे भारत में भरोसेमंद शिपिंग' : 'Reliable shipping across India' },
+            ].map(f => (
+              <div key={f.title} className="feature-card" style={{ padding: '28px 24px', background: '#FEF2F2', borderRadius: '12px', border: '1px solid #FECACA', textAlign: 'center' }}>
+                <div style={{ fontSize: '36px', marginBottom: '14px' }}>{f.icon}</div>
+                <div style={{ fontWeight: 800, fontSize: '16px', color: '#1a1a1a', marginBottom: '8px' }}>{f.title}</div>
+                <div style={{ fontSize: '14px', color: '#6b7280', lineHeight: 1.5 }}>{f.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA BANNER ── */}
+      <section style={{ background: 'linear-gradient(135deg, #7f1d1d, #991b1b)', padding: '56px 20px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(255,255,255,0.02) 40px, rgba(255,255,255,0.02) 80px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <h2 style={{ fontSize: 'clamp(24px, 5vw, 40px)', fontWeight: 800, color: '#fff', marginBottom: '12px', fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '2px' }}>
+            {lang === 'hi' ? 'ऑर्डर देने के लिए तैयार?' : 'Ready to Order?'}
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '16px', marginBottom: '32px', fontWeight: 500 }}>
+            {t.readyDesc}
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href="/catalog" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#FAC41A', color: '#7f1d1d', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              {lang === 'hi' ? 'कैटलॉग देखें' : 'Browse Catalog'}
+            </Link>
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none' }}>
+              {t.whatsappUs}
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ background: '#7f1d1d', padding: '40px 20px 24px' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '32px', marginBottom: '32px' }}>
+          <div>
+            <h4 style={{ color: '#FAC41A', fontSize: '13px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
+              {lang === 'hi' ? 'श्रेणियाँ' : 'Categories'}
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {catsWithIcons.slice(0, 5).map(cat => (
+                <Link key={cat.name} href={`/catalog?category=${encodeURIComponent(cat.name)}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+                  {catLabel(cat.name)}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h4 style={{ color: '#FAC41A', fontSize: '13px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
+              {lang === 'hi' ? 'जानकारी' : 'Information'}
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <Link href="/catalog" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+                {lang === 'hi' ? 'सभी उत्पाद' : 'All Products'}
+              </Link>
+              <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+                {lang === 'hi' ? 'संपर्क करें' : 'Contact Us'}
+              </a>
+            </div>
+          </div>
+          <div>
+            <h4 style={{ color: '#FAC41A', fontSize: '13px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
+              {lang === 'hi' ? 'संपर्क' : 'Get in Touch'}
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+                WhatsApp
+              </a>
+              <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Indore, Madhya Pradesh</span>
+            </div>
+          </div>
+        </div>
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px', textAlign: 'center' }}>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>© 2025 {BUSINESS_NAME} · All Rights Reserved</p>
+        </div>
+      </footer>
+    </div>
+  )
+}
