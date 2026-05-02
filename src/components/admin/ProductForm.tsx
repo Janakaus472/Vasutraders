@@ -712,12 +712,12 @@ export default function ProductForm({ product }: Props) {
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-semibold text-gray-500 mb-0.5 uppercase tracking-wide">Name</label>
+                          <label className="block text-[10px] font-semibold text-gray-500 mb-0.5 uppercase tracking-wide">Display Name</label>
                           <input
                             type="text"
                             value={v.label}
                             onChange={e => updateVariant(idx, { label: e.target.value })}
-                            placeholder="e.g. Bulk Pack"
+                            placeholder="Full name shown to customer"
                             className="w-full border border-gray-200 rounded-lg px-2.5 py-2 outline-none focus:border-orange-400 text-sm"
                             style={{ fontSize: '16px' }}
                           />
