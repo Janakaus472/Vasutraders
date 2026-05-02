@@ -110,11 +110,17 @@ export default async function ProductPage({ params }: Props) {
       )
     : product.pricePerUnit
 
-  // Related products: same subcategory first, then same category, max 6
-  const related = [
+  // Related products: same subcategory → same category → any other product, always fill up to 6
+  const seen = new Set<string>()
+  const related: typeof allProducts = []
+  for (const p of [
     ...allProducts.filter(p => p.id !== product.id && p.subcategory && p.subcategory === product.subcategory),
-    ...allProducts.filter(p => p.id !== product.id && p.category === product.category && p.subcategory !== product.subcategory),
-  ].slice(0, 6)
+    ...allProducts.filter(p => p.id !== product.id && p.category === product.category && (!p.subcategory || p.subcategory !== product.subcategory)),
+    ...allProducts.filter(p => p.id !== product.id && p.category !== product.category),
+  ]) {
+    if (!seen.has(p.id)) { seen.add(p.id); related.push(p) }
+    if (related.length === 6) break
+  }
 
   const productSchema = {
     '@context': 'https://schema.org',
