@@ -3,11 +3,16 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 let _client: SupabaseClient | null = null
 let _adminClient: SupabaseClient | null = null
 
+// Custom fetch that bypasses Next.js data cache so product/variant reads are always fresh
+const noStoreFetch: typeof fetch = (url, options) =>
+  fetch(url, { ...options, cache: 'no-store' })
+
 export function getSupabase(): SupabaseClient {
   if (!_client) {
     _client = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { global: { fetch: noStoreFetch } }
     )
   }
   return _client
@@ -22,7 +27,8 @@ export function getAdminSupabase(): SupabaseClient {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     _adminClient = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      serviceKey
+      serviceKey,
+      { global: { fetch: noStoreFetch } }
     )
   }
   return _adminClient
