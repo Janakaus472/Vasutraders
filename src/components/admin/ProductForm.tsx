@@ -201,7 +201,11 @@ export default function ProductForm({ product }: Props) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         })
-        if (!res.ok) throw new Error((await res.json()).error)
+        const created = await res.json()
+        if (!res.ok) throw new Error(created.error)
+        // Redirect to edit page so admin can add bulk variants immediately
+        router.push(`/admin/products/${created.id}`)
+        return
       }
       router.push('/admin/products')
     } catch (err: any) {
@@ -493,7 +497,7 @@ export default function ProductForm({ product }: Props) {
 
             {!isEdit && (
               <p className="text-xs text-amber-600 bg-amber-50 px-4 py-3 rounded-xl border border-amber-100">
-                Save the product first, then come back to add bulk variants.
+                Save the product first — you&apos;ll be taken directly to the edit page to add bulk variants.
               </p>
             )}
 
