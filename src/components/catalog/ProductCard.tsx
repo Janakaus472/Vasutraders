@@ -171,7 +171,25 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
                 </>
               )}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+              {cartQuantity > 0 && (
+                <button
+                  onClick={e => { e.stopPropagation(); onSetQuantity ? onSetQuantity(0) : Array.from({ length: cartQuantity }).forEach(() => onRemove()) }}
+                  title="Remove from cart"
+                  style={{
+                    width: '28px', height: '28px', borderRadius: '6px',
+                    background: '#FEF2F2', border: '1px solid #FECACA',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', flexShrink: 0, transition: 'background 0.15s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
+                  onMouseLeave={e => (e.currentTarget.style.background = '#FEF2F2')}
+                >
+                  <svg width="13" height="13" fill="none" stroke="#DC2626" viewBox="0 0 24 24" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              )}
               <AddToCartButton quantity={cartQuantity} onAdd={onAdd} onRemove={onRemove} onSetQuantity={onSetQuantity} disabled={!product.inStock} />
             </div>
           </div>

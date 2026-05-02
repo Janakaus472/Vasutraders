@@ -158,7 +158,7 @@ export default function Header() {
                   justifyContent: 'center',
                   animation: 'popIn 0.3s ease',
                 }}>
-                  {itemCount > 9 ? '9+' : itemCount}
+                  {itemCount}
                 </span>
               )}
             </Link>
@@ -208,7 +208,7 @@ export default function Header() {
               Cart
               {itemCount > 0 && (
                 <span style={{ background: '#7f1d1d', color: '#FAC41A', fontSize: '10px', fontWeight: 900, borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'popIn 0.3s ease' }}>
-                  {itemCount > 9 ? '9+' : itemCount}
+                  {itemCount}
                 </span>
               )}
             </Link>
@@ -393,7 +393,7 @@ export default function Header() {
               {lang === 'hi' ? 'मेरा ऑर्डर' : 'My Order'}
               {itemCount > 0 && (
                 <span style={{ background: '#FAC41A', color: '#7f1d1d', fontSize: '11px', fontWeight: 900, borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {itemCount > 9 ? '9+' : itemCount}
+                  {itemCount}
                 </span>
               )}
             </Link>
