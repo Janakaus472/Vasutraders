@@ -192,52 +192,124 @@ export default function CartPage() {
 
   // ─── SUCCESS ────────────────────────────────────────────────────
   if (step === 'success') {
+    // Unique categories from catalog for "keep shopping" grid
+    const categories = Array.from(new Set(products.map(p => p.category).filter(Boolean)))
+
     return (
       <div style={{
-        maxWidth: '560px', margin: '0 auto', padding: '40px 16px',
-        textAlign: 'center', fontFamily: "'Plus Jakarta Sans', sans-serif",
+        maxWidth: '640px', margin: '0 auto', padding: '40px 16px 48px',
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
       }}>
-        <div style={{ fontSize: '6rem', marginBottom: '16px' }}>✅</div>
-        <h1 style={{
-          fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.5rem, 8vw, 4rem)',
-          color: '#15803d', letterSpacing: '1px', marginBottom: '8px',
-        }}>
-          Order Placed!
-        </h1>
-        <div style={{
-          background: 'rgba(255,240,230,0.95)', border: '2px solid #FFD4A0',
-          borderRadius: '20px', padding: '28px 24px', margin: '24px 0',
-        }}>
-          <p style={{ fontSize: '15px', color: '#8B4513', marginBottom: '8px', fontWeight: 600 }}>
-            Order Number
-          </p>
-          <p style={{
-            fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.5rem',
-            color: '#C2410C', letterSpacing: '3px', margin: '0 0 16px',
+        <style>{`
+          .cat-card { transition: transform 0.15s, box-shadow 0.15s; }
+          .cat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(92,45,15,0.18) !important; }
+          .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+          @media (min-width: 480px) { .cat-grid { grid-template-columns: repeat(3, 1fr); } }
+        `}</style>
+
+        {/* Confirmation block */}
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '6rem', marginBottom: '16px' }}>✅</div>
+          <h1 style={{
+            fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.5rem, 8vw, 4rem)',
+            color: '#15803d', letterSpacing: '1px', marginBottom: '8px',
           }}>
-            {orderNumber}
-          </p>
-          <p style={{ fontSize: '18px', color: '#5C2D0F', fontWeight: 700, lineHeight: 1.6 }}>
-            Thank you for placing an order with us!<br />
-            We will confirm it shortly on WhatsApp.
-          </p>
+            Order Placed!
+          </h1>
+          <div style={{
+            background: 'rgba(255,240,230,0.95)', border: '2px solid #FFD4A0',
+            borderRadius: '20px', padding: '28px 24px', margin: '24px 0',
+          }}>
+            <p style={{ fontSize: '15px', color: '#8B4513', marginBottom: '8px', fontWeight: 600 }}>
+              Order Number
+            </p>
+            <p style={{
+              fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.5rem',
+              color: '#C2410C', letterSpacing: '3px', margin: '0 0 16px',
+            }}>
+              {orderNumber}
+            </p>
+            <p style={{ fontSize: '18px', color: '#5C2D0F', fontWeight: 700, lineHeight: 1.6 }}>
+              Thank you for placing an order with us!<br />
+              We will confirm it shortly on WhatsApp.
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a href={`tel:${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''}`} style={{
+              background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff',
+              fontWeight: 800, padding: '16px 32px', borderRadius: '14px',
+              fontSize: '18px', textDecoration: 'none',
+              boxShadow: '0 8px 24px rgba(255,107,0,0.4)',
+            }}>
+              📞 Call Us
+            </a>
+            <Link href="/" style={{
+              background: 'rgba(92,45,15,0.1)', color: '#5C2D0F',
+              fontWeight: 700, padding: '16px 32px', borderRadius: '14px',
+              fontSize: '18px', textDecoration: 'none', border: '2px solid #FFD4A0',
+            }}>
+              🏠 Home
+            </Link>
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a href={`tel:${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''}`} style={{
-            background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff',
-            fontWeight: 800, padding: '16px 32px', borderRadius: '14px',
-            fontSize: '18px', textDecoration: 'none',
-            boxShadow: '0 8px 24px rgba(255,107,0,0.4)',
+
+        {/* ── Keep Shopping ── */}
+        <div style={{ marginTop: '48px' }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #FFF8F0, #FFF0E0)',
+            border: '2px solid #FFD4A0', borderRadius: '20px', padding: '28px 24px',
           }}>
-            📞 Call Us
-          </a>
-          <Link href="/" style={{
-            background: 'rgba(92,45,15,0.1)', color: '#5C2D0F',
-            fontWeight: 700, padding: '16px 32px', borderRadius: '14px',
-            fontSize: '18px', textDecoration: 'none', border: '2px solid #FFD4A0',
-          }}>
-            🏠 Home
-          </Link>
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <p style={{ fontSize: '1.8rem', marginBottom: '8px' }}>🛍️</p>
+              <h2 style={{
+                fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.6rem, 5vw, 2.2rem)',
+                color: '#5C2D0F', letterSpacing: '1px', margin: '0 0 6px',
+              }}>
+                Want to Add More Products?
+              </h2>
+              <p style={{ color: '#8B4513', fontSize: '14px', fontWeight: 600, margin: 0 }}>
+                Browse our full catalog and place another order anytime
+              </p>
+            </div>
+
+            {/* Category grid */}
+            {categories.length > 0 && (
+              <div className="cat-grid" style={{ marginBottom: '16px' }}>
+                {categories.map(cat => (
+                  <Link
+                    key={cat}
+                    href={`/catalog?category=${encodeURIComponent(cat)}`}
+                    className="cat-card"
+                    style={{
+                      display: 'block', textDecoration: 'none',
+                      background: '#fff', border: '1.5px solid #FFD4A0',
+                      borderRadius: '14px', padding: '14px 12px',
+                      textAlign: 'center',
+                      boxShadow: '0 2px 8px rgba(92,45,15,0.08)',
+                    }}
+                  >
+                    <p style={{
+                      fontWeight: 800, fontSize: '13px', color: '#5C2D0F',
+                      margin: 0, lineHeight: 1.3,
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>
+                      {cat}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            <Link href="/catalog" style={{
+              display: 'block', textAlign: 'center',
+              background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff',
+              fontWeight: 800, padding: '16px', borderRadius: '14px',
+              fontSize: '17px', textDecoration: 'none',
+              boxShadow: '0 6px 20px rgba(255,107,0,0.4)',
+            }}>
+              📦 Browse All Products →
+            </Link>
+          </div>
         </div>
       </div>
     )
@@ -344,6 +416,20 @@ export default function CartPage() {
                 )
               })}
             </div>
+
+            {/* Add more products nudge */}
+            <Link href="/catalog" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              marginBottom: '16px', padding: '12px 16px',
+              background: '#FFF8F0', border: '1.5px dashed #FFB880',
+              borderRadius: '14px', textDecoration: 'none',
+              color: '#C2410C', fontWeight: 700, fontSize: '14px',
+              transition: 'background 0.15s',
+            }}>
+              <span style={{ fontSize: '18px' }}>➕</span>
+              {lang === 'hi' ? 'और उत्पाद जोड़ें' : 'Add more products'}
+              <span style={{ color: '#FF6B00' }}>→</span>
+            </Link>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={() => setStep(hasSavedDetails ? 'review' : 'details')} style={{ background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff', border: 'none', cursor: 'pointer', padding: '16px 32px', borderRadius: '16px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 'clamp(16px, 4vw, 20px)', boxShadow: '0 8px 32px rgba(255,107,0,0.45)', display: 'flex', alignItems: 'center', gap: '12px', width: '100%', justifyContent: 'center' }}>
