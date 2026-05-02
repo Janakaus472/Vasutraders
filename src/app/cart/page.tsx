@@ -81,6 +81,12 @@ export default function CartPage() {
     })
     .filter(Boolean) as { productId: string; quantity: number; variantId?: string; product: (typeof products)[0]; variant: import('@/types/product').BulkVariant | null }[]
 
+  // Same logic as the product page: label = full standalone name, else "Product — qty unit"
+  const getDisplayName = (product: (typeof products)[0], variant: import('@/types/product').BulkVariant | null) =>
+    variant
+      ? (variant.label || `${product.name} — ${variant.quantity} ${variant.unit}`)
+      : product.name
+
   const handleConfirm = async () => {
     setLoading(true)
     setError('')
@@ -94,9 +100,7 @@ export default function CartPage() {
           phone: details.phone,
           locality: details.locality,
           items: cartProducts.map(({ quantity, product, variant }) => ({
-            name: variant
-              ? `${product.name} – ${variant.quantity} ${variant.unit}${variant.label ? ` (${variant.label})` : ''}`
-              : product.name,
+            name: getDisplayName(product, variant),
             quantity,
             unit: variant ? variant.unit : product.unit,
           })),
@@ -372,14 +376,8 @@ export default function CartPage() {
                       <Image src={displayImage} alt={product.name} fill style={{ objectFit: 'contain', padding: '4px' }} />
                     </div>
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      <p className="cart-product-name">{product.name}</p>
-                      {variant ? (
-                        <p style={{ color: '#B91C1C', fontSize: '12px', margin: 0, fontWeight: 700 }}>
-                          {variant.quantity} {variant.unit}{variant.label ? ` · ${variant.label}` : ''}
-                        </p>
-                      ) : (
-                        <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>per {displayUnit}</p>
-                      )}
+                      <p className="cart-product-name">{getDisplayName(product, variant)}</p>
+                      <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>per {displayUnit}</p>
                     </div>
                   </div>
                   <div className="cart-mobile-row-meta">
@@ -471,8 +469,7 @@ export default function CartPage() {
                 {cartProducts.map(({ productId, variantId, quantity, product, variant }) => (
                   <div key={`${productId}:${variantId || ''}`} className="notepad-line">
                     <div style={{ flex: 1, paddingRight: '8px' }}>
-                      <span style={{ fontWeight: 700, fontSize: '13px', color: '#1a1a1a', lineHeight: 1.3, display: 'block' }}>{product.name}</span>
-                      {variant && <span style={{ fontSize: '11px', color: '#B91C1C', fontWeight: 700 }}>{variant.quantity} {variant.unit}{variant.label ? ` · ${variant.label}` : ''}</span>}
+                      <span style={{ fontWeight: 700, fontSize: '13px', color: '#1a1a1a', lineHeight: 1.3, display: 'block' }}>{getDisplayName(product, variant)}</span>
                     </div>
                     <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#C2410C', whiteSpace: 'nowrap' }}>× {quantity}</span>
                   </div>
@@ -575,8 +572,7 @@ export default function CartPage() {
                 {cartProducts.map(({ productId, variantId, quantity, product, variant }) => (
                   <div key={`${productId}:${variantId || ''}`} className="notepad-line">
                     <div style={{ flex: 1, paddingRight: '8px' }}>
-                      <span style={{ fontWeight: 700, fontSize: '13px', color: '#1a1a1a', lineHeight: 1.3, display: 'block' }}>{product.name}</span>
-                      {variant && <span style={{ fontSize: '11px', color: '#B91C1C', fontWeight: 700 }}>{variant.quantity} {variant.unit}{variant.label ? ` · ${variant.label}` : ''}</span>}
+                      <span style={{ fontWeight: 700, fontSize: '13px', color: '#1a1a1a', lineHeight: 1.3, display: 'block' }}>{getDisplayName(product, variant)}</span>
                     </div>
                     <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#C2410C', whiteSpace: 'nowrap' }}>× {quantity}</span>
                   </div>
@@ -622,8 +618,7 @@ export default function CartPage() {
         {cartProducts.map(({ productId, variantId, quantity, product, variant }) => (
           <div key={`${productId}:${variantId || ''}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #FFE0C0', gap: '8px' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ fontWeight: 700, fontSize: '15px', color: '#1a1a1a', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{product.name}</span>
-              {variant && <span style={{ fontSize: '12px', color: '#B91C1C', fontWeight: 700 }}>{variant.quantity} {variant.unit}{variant.label ? ` · ${variant.label}` : ''}</span>}
+              <span style={{ fontWeight: 700, fontSize: '15px', color: '#1a1a1a', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{getDisplayName(product, variant)}</span>
             </div>
             <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#FF6B00', flexShrink: 0 }}>× {quantity}</span>
           </div>
