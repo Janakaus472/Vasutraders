@@ -10,18 +10,7 @@ import ProductGrid from '@/components/catalog/ProductGrid'
 import ProductModal from '@/components/catalog/ProductModal'
 import Link from 'next/link'
 
-const CATEGORY_EMOJIS: Record<string, string> = {
-  'All': '🏪',
-  'Playing Cards': '🃏',
-  'Party Balloons': '🎈',
-  'Kanche & Glass Balls': '🔮',
-  'Sports & Games': '⚽',
-  'Rubber Bands': '🔗',
-  'Spurs': '⚙️',
-  'Poker Chips': '🎰',
-  'Toothbrushes': '🪥',
-  'Burnt Balls': '⚫',
-}
+const DEFAULT_EMOJI = '📦'
 
 function CatalogContent() {
   const { items, addItem, removeItem, updateQuantity } = useCart()
@@ -33,6 +22,7 @@ function CatalogContent() {
   const [search, setSearch] = useState('')
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [orderedCats, setOrderedCats] = useState<string[]>([])
+  const [catEmojis, setCatEmojis] = useState<Record<string, string>>({})
   const [catSubMap, setCatSubMap] = useState<Record<string, string[]>>({})
   const [catsLoaded, setCatsLoaded] = useState(false)
 
@@ -58,22 +48,31 @@ function CatalogContent() {
     syncUrl(activeCategory, sub)
   }
 
-  // Fetch category order from API (with subcategories)
+  // Fetch category order+emojis from home-layout, subcategories from categories API
   useEffect(() => {
-    fetch('/api/admin/categories')
-      .then(r => r.json())
-      .then((data: { name: string; subcategories?: { name: string }[] }[]) => {
-        if (Array.isArray(data)) {
-          setOrderedCats(data.map(c => c.name))
-          const subMap: Record<string, string[]> = {}
-          data.forEach(c => {
-            if (c.subcategories) subMap[c.name] = c.subcategories.map(s => s.name)
-          })
-          setCatSubMap(subMap)
-        }
-        setCatsLoaded(true)
-      })
-      .catch(() => setCatsLoaded(true))
+    Promise.all([
+      fetch('/api/admin/home-layout').then(r => r.json()).catch(() => []),
+      fetch('/api/admin/categories').then(r => r.json()).catch(() => []),
+    ]).then(([layout, cats]) => {
+      // Order + emojis from home layout
+      if (Array.isArray(layout) && layout.length > 0) {
+        setOrderedCats(layout.filter((l: any) => l.visible !== false).map((l: any) => l.name))
+        const emojiMap: Record<string, string> = {}
+        layout.forEach((l: any) => { emojiMap[l.name] = l.emoji || DEFAULT_EMOJI })
+        setCatEmojis(emojiMap)
+      } else if (Array.isArray(cats)) {
+        setOrderedCats(cats.map((c: any) => c.name))
+      }
+      // Subcategories from categories API
+      if (Array.isArray(cats)) {
+        const subMap: Record<string, string[]> = {}
+        cats.forEach((c: any) => {
+          if (c.subcategories) subMap[c.name] = c.subcategories.map((s: any) => s.name)
+        })
+        setCatSubMap(subMap)
+      }
+      setCatsLoaded(true)
+    })
   }, [])
 
   const categories = useMemo(() => {
@@ -220,7 +219,7 @@ function CatalogContent() {
                   letterSpacing: '0.3px',
                 }}
               >
-                {CATEGORY_EMOJIS[cat] || '📦'} {catLabel(cat)}
+                {catEmojis[cat] || DEFAULT_EMOJI} {catLabel(cat)}
               </button>
             ))}
           </div>
@@ -301,7 +300,7 @@ function CatalogContent() {
                     }}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: 0 }}>
-                      <span style={{ fontSize: '15px', flexShrink: 0 }}>{CATEGORY_EMOJIS[cat] || '📦'}</span>
+                      <span style={{ fontSize: '15px', flexShrink: 0 }}>{catEmojis[cat] || DEFAULT_EMOJI}</span>
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{catLabel(cat)}</span>
                     </span>
                     <span style={{
@@ -450,7 +449,7 @@ function CatalogContent() {
                     background: '#FEF2F2',
                     borderRadius: '12px',
                   }}>
-                    {CATEGORY_EMOJIS[cat] || '📦'}
+                    {catEmojis[cat] || DEFAULT_EMOJI}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
