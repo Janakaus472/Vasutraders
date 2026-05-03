@@ -149,25 +149,31 @@ export default function HomeLayoutPage() {
           <h1 className="text-xl font-bold text-gray-800">Home Layout</h1>
           <p className="text-gray-400 text-sm mt-0.5">Hold the ⠿ handle to drag &amp; reorder · 👁️ to show/hide · click emoji to change</p>
         </div>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-200 text-white font-bold rounded-xl transition-colors text-sm shadow-sm"
-        >
-          {saving ? '⏳ Saving...' : saved ? '✅ Saved!' : '💾 Save Changes'}
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-200 text-white font-bold rounded-xl transition-colors text-sm shadow-sm"
+          >
+            {saving ? '⏳ Saving...' : saved ? '✅ Saved!' : '💾 Save Changes'}
+          </button>
+          {saved && (
+            <span style={{ fontSize: '11px', color: '#15803d', fontWeight: 600 }}>
+              ✓ Live on vasutraders.com
+            </span>
+          )}
+        </div>
       </div>
 
       {dbMissing && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6">
-          <p className="font-bold text-amber-700 mb-2">⚠️ One-time setup required</p>
-          <p className="text-sm text-amber-600 mb-3">Run this SQL in your Supabase dashboard (SQL Editor):</p>
-          <pre className="bg-amber-100 rounded-xl p-3 text-xs text-amber-900 overflow-x-auto select-all">{`CREATE TABLE IF NOT EXISTS settings (
+        <div style={{ background: '#fef3c7', border: '2px solid #f59e0b', borderRadius: '16px', padding: '20px', marginBottom: '24px' }}>
+          <p style={{ fontWeight: 800, color: '#92400e', marginBottom: '8px', fontSize: '15px' }}>⚠️ One-time Supabase setup needed</p>
+          <p style={{ fontSize: '13px', color: '#78350f', marginBottom: '12px' }}>Open your <strong>Supabase dashboard → SQL Editor</strong> and run this query, then refresh:</p>
+          <pre style={{ background: '#fde68a', borderRadius: '10px', padding: '12px', fontSize: '12px', color: '#451a03', overflowX: 'auto', cursor: 'text', userSelect: 'all' }}>{`CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value JSONB NOT NULL DEFAULT 'null'::jsonb,
   updated_at TIMESTAMPTZ DEFAULT now()
 );`}</pre>
-          <p className="text-xs text-amber-500 mt-2">After running that SQL, refresh this page.</p>
         </div>
       )}
 

@@ -1,8 +1,8 @@
-import { adminSupabase, supabase } from './client'
+import { adminSupabase } from './client'
 
 export async function getSetting<T>(key: string, fallback: T): Promise<T> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await adminSupabase
       .from('settings')
       .select('value')
       .eq('key', key)
