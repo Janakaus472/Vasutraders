@@ -5,33 +5,50 @@ import { BUSINESS_NAME, WHATSAPP_NUMBER } from '@/lib/constants'
 import { useLanguage } from '@/context/LanguageContext'
 import AnimatedLogo from '@/components/AnimatedLogo'
 
-const CAT_ICONS: Record<string, { emoji: string; color: string; bg: string }> = {
-  'Playing Cards':        { emoji: '🃏', color: '#DC2626', bg: '#FEF2F2' },
-  'Party Balloons':       { emoji: '🎈', color: '#DC2626', bg: '#FEF2F2' },
-  'Kanche & Glass Balls': { emoji: '🔮', color: '#DC2626', bg: '#FEF2F2' },
-  'Sports & Games':       { emoji: '🏏', color: '#DC2626', bg: '#FEF2F2' },
-  'Rubber Bands':         { emoji: '🔁', color: '#DC2626', bg: '#FEF2F2' },
-  'Tapes':                { emoji: '📦', color: '#DC2626', bg: '#FEF2F2' },
-  'Poker Chips':          { emoji: '🎰', color: '#DC2626', bg: '#FEF2F2' },
-  'Toothbrushes':         { emoji: '🪥', color: '#DC2626', bg: '#FEF2F2' },
-  'Boric Acid':           { emoji: '⚗️', color: '#DC2626', bg: '#FEF2F2' },
-  'General Goods':        { emoji: '🛍️', color: '#DC2626', bg: '#FEF2F2' },
+const DEFAULT_EMOJIS: Record<string, string> = {
+  'Playing Cards':        '🃏',
+  'Party Balloons':       '🎈',
+  'Kanche & Glass Balls': '🔮',
+  'Sports & Games':       '🏏',
+  'Rubber Bands':         '🔁',
+  'Tapes':                '📦',
+  'Poker Chips':          '🎰',
+  'Toothbrushes':         '🪥',
+  'Boric Acid':           '⚗️',
+  'General Goods':        '🛍️',
 }
-const DEFAULT_ICON = { emoji: '📦', color: '#DC2626', bg: '#FEF2F2' }
+
+interface HomeCategoryLayout {
+  name: string
+  emoji: string
+  visible: boolean
+}
 
 interface Props {
   categories: { name: string; count: number }[]
   totalProducts: number
+  layout?: HomeCategoryLayout[]
 }
 
-export default function HomePageClient({ categories, totalProducts }: Props) {
+export default function HomePageClient({ categories, totalProducts, layout }: Props) {
   const { t, catLabel, lang } = useLanguage()
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hello Vasu Traders! I would like to enquire about wholesale products.')}`
 
-  const catsWithIcons = categories.map(c => ({
-    ...c,
-    ...(CAT_ICONS[c.name] || DEFAULT_ICON),
-  }))
+  // Build ordered, filtered category list from layout config (if available)
+  const catsWithIcons = (() => {
+    if (layout && layout.length > 0) {
+      const countMap = new Map(categories.map(c => [c.name, c.count]))
+      return layout
+        .filter(l => l.visible && countMap.has(l.name))
+        .map(l => ({ name: l.name, count: countMap.get(l.name) || 0, emoji: l.emoji, color: '#DC2626', bg: '#FEF2F2' }))
+    }
+    return categories.map(c => ({
+      ...c,
+      emoji: DEFAULT_EMOJIS[c.name] || '📦',
+      color: '#DC2626',
+      bg: '#FEF2F2',
+    }))
+  })()
 
   return (
     <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", overflowX: 'hidden', width: '100%' }}>
