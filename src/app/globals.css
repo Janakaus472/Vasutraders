@@ -16,7 +16,8 @@
 }
 
 body {
-  background: transparent;   /* canvas provides the bg */
+  background: linear-gradient(135deg, #FFF8F0 0%, #FFECD2 30%, #FFE4CC 60%, #FFF0E6 100%);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: 'Plus Jakarta Sans', Arial, sans-serif;
 }
@@ -259,6 +260,9 @@ input, textarea, select {
 }
 
 /* Prevent horizontal scroll on ALL devices */
+html {
+  overflow-x: hidden;
+}
 body {
   overflow-x: hidden;
   width: 100%;

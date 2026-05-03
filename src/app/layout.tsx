@@ -7,7 +7,6 @@ import Header from "@/components/layout/Header";
 import BottomNav from "@/components/layout/BottomNav";
 import ChatWidget from "@/components/ChatWidget";
 import PageViewTracker from "@/components/PageViewTracker";
-import BackgroundEffect from "@/components/BackgroundEffect";
 import CursorGlow from "@/components/CursorGlow";
 
 const geist = Geist({ subsets: ["latin"] });
@@ -181,10 +180,9 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${geist.className} min-h-screen`} style={{ background: 'transparent' }}>
+      <body className={`${geist.className} min-h-screen`}>
         <LanguageProvider>
           <CartProvider>
-            <BackgroundEffect />
             <CursorGlow />
             <Header />
             <main className="min-h-[calc(100vh-4rem)]" style={{ position: 'relative', zIndex: 1 }}>{children}</main>
