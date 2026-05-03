@@ -6,6 +6,7 @@ interface HomeCategoryItem {
   name: string
   emoji: string
   visible: boolean
+  imageUrl?: string
 }
 
 type PreviewMode = 'mobile' | 'desktop'
@@ -22,6 +23,9 @@ export default function HomeLayoutPage() {
   const [editingEmoji, setEditingEmoji] = useState<string | null>(null)
   const [emojiInput, setEmojiInput] = useState('')
   const [dbMissing, setDbMissing] = useState(false)
+  const [uploadingFor, setUploadingFor] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const uploadTargetRef = useRef<string | null>(null)
 
   // Pointer-based DnD (works on mouse + touch)
   const [dragIndex, setDragIndex] = useState<number | null>(null)
@@ -125,6 +129,34 @@ export default function HomeLayoutPage() {
     setEditingEmoji(null)
   }
 
+  const openThumbnailPicker = (name: string) => {
+    uploadTargetRef.current = name
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    const name = uploadTargetRef.current
+    if (!file || !name) return
+    e.target.value = ''
+
+    setUploadingFor(name)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const res = await fetch('/api/admin/upload', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setItems(prev => prev.map(i => i.name === name ? { ...i, imageUrl: data.url } : i))
+    } catch (e: any) {
+      setError(e.message)
+    }
+    setUploadingFor(null)
+  }
+
+  const removeThumbnail = (name: string) =>
+    setItems(prev => prev.map(i => i.name === name ? { ...i, imageUrl: undefined } : i))
+
   const visibleItems = items.filter(i => i.visible)
   const isDragging = dragIndex !== null
 
@@ -138,6 +170,14 @@ export default function HomeLayoutPage() {
 
   return (
     <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", userSelect: isDragging ? 'none' : 'auto' }}>
+      {/* Hidden file input for thumbnail upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/jpg,image/png,image/webp"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
       <style>{`
         @media (min-width: 1100px) { .hl-grid { grid-template-columns: 1fr 420px !important; } }
         .drag-handle { cursor: grab; touch-action: none; }
@@ -240,30 +280,75 @@ export default function HomeLayoutPage() {
                         {index + 1}
                       </span>
 
-                      {/* Emoji */}
-                      {editingEmoji === item.name ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                          <input
-                            autoFocus
-                            value={emojiInput}
-                            onChange={e => setEmojiInput(e.target.value)}
-                            onKeyDown={e => {
-                              if (e.key === 'Enter') applyEmoji(item.name, emojiInput)
-                              if (e.key === 'Escape') setEditingEmoji(null)
-                            }}
-                            style={{ width: '52px', fontSize: '22px', textAlign: 'center', padding: '4px', border: '2px solid #f97316', borderRadius: '8px', outline: 'none' }}
-                          />
-                          <button onClick={() => applyEmoji(item.name, emojiInput)} style={{ fontSize: '11px', background: '#f97316', color: '#fff', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontWeight: 700 }}>OK</button>
-                          <button onClick={() => setEditingEmoji(null)} style={{ fontSize: '11px', color: '#9ca3af', border: 'none', background: 'none', cursor: 'pointer' }}>✕</button>
-                        </div>
-                      ) : (
+                      {/* Thumbnail */}
+                      <div style={{ flexShrink: 0, position: 'relative' }}>
                         <button
-                          onClick={() => { setEditingEmoji(item.name); setEmojiInput(item.emoji) }}
-                          title="Click to change emoji"
-                          style={{ fontSize: '26px', background: '#f9fafb', border: '1.5px solid #e5e7eb', borderRadius: '10px', padding: '3px 8px', cursor: 'pointer', lineHeight: 1.2, flexShrink: 0 }}
+                          onClick={() => openThumbnailPicker(item.name)}
+                          title="Click to upload category thumbnail"
+                          style={{
+                            width: '52px', height: '52px', borderRadius: '10px', overflow: 'hidden',
+                            border: '2px dashed #e5e7eb', background: '#f9fafb',
+                            cursor: 'pointer', padding: 0, position: 'relative', display: 'flex',
+                            alignItems: 'center', justifyContent: 'center',
+                          }}
                         >
-                          {item.emoji}
+                          {uploadingFor === item.name ? (
+                            <span style={{ fontSize: '18px', animation: 'spin 1s linear infinite' }}>⏳</span>
+                          ) : item.imageUrl ? (
+                            <img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            <span style={{ fontSize: '26px', lineHeight: 1 }}>{item.emoji}</span>
+                          )}
+                          {/* Camera overlay on hover */}
+                          <div style={{
+                            position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            opacity: 0, transition: 'opacity 0.15s',
+                            borderRadius: '8px',
+                          }}
+                            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                            onMouseLeave={e => (e.currentTarget.style.opacity = '0')}
+                          >
+                            <span style={{ fontSize: '18px' }}>📷</span>
+                          </div>
                         </button>
+                        {item.imageUrl && (
+                          <button
+                            onClick={() => removeThumbnail(item.name)}
+                            title="Remove thumbnail"
+                            style={{ position: 'absolute', top: '-6px', right: '-6px', width: '18px', height: '18px', borderRadius: '50%', background: '#ef4444', color: '#fff', border: '2px solid #fff', fontSize: '9px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, lineHeight: 1 }}
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Emoji (only shown when no image) */}
+                      {!item.imageUrl && (
+                        editingEmoji === item.name ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                            <input
+                              autoFocus
+                              value={emojiInput}
+                              onChange={e => setEmojiInput(e.target.value)}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') applyEmoji(item.name, emojiInput)
+                                if (e.key === 'Escape') setEditingEmoji(null)
+                              }}
+                              style={{ width: '52px', fontSize: '22px', textAlign: 'center', padding: '4px', border: '2px solid #f97316', borderRadius: '8px', outline: 'none' }}
+                            />
+                            <button onClick={() => applyEmoji(item.name, emojiInput)} style={{ fontSize: '11px', background: '#f97316', color: '#fff', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontWeight: 700 }}>OK</button>
+                            <button onClick={() => setEditingEmoji(null)} style={{ fontSize: '11px', color: '#9ca3af', border: 'none', background: 'none', cursor: 'pointer' }}>✕</button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => { setEditingEmoji(item.name); setEmojiInput(item.emoji) }}
+                            title="Click to change emoji (used as fallback if no image)"
+                            style={{ fontSize: '20px', background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1, flexShrink: 0, padding: '2px', opacity: 0.5 }}
+                          >
+                            {item.emoji}
+                          </button>
+                        )
                       )}
 
                       {/* Name */}
@@ -350,10 +435,13 @@ export default function HomeLayoutPage() {
                   {visibleItems.map(item => (
                     <div key={item.name} style={{
                       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                      background: '#fff', borderRadius: '10px', padding: '14px 8px',
+                      background: '#fff', borderRadius: '10px', padding: '10px 8px',
                       border: '1.5px solid #f0f0f0', textAlign: 'center', minHeight: '80px',
                     }}>
-                      <div style={{ fontSize: '26px', lineHeight: 1, marginBottom: '6px' }}>{item.emoji}</div>
+                      {item.imageUrl
+                        ? <img src={item.imageUrl} alt={item.name} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover', marginBottom: '6px' }} />
+                        : <div style={{ fontSize: '26px', lineHeight: 1, marginBottom: '6px' }}>{item.emoji}</div>
+                      }
                       <div style={{ fontWeight: 700, fontSize: '10px', color: '#1a1a1a', lineHeight: 1.2 }}>{item.name}</div>
                     </div>
                   ))}
@@ -375,10 +463,15 @@ export default function HomeLayoutPage() {
             </div>
           </div>
 
-          <div className="mt-3 px-1 space-y-1" style={{ fontSize: '12px', color: '#9ca3af' }}>
-            <div>⠿ Hold the dots handle to drag and reorder</div>
+          <div className="mt-3 px-1 space-y-1.5" style={{ fontSize: '12px', color: '#9ca3af' }}>
+            <div>⠿ Hold the dots to drag and reorder</div>
+            <div>📷 Click the thumbnail to upload a category image</div>
+            <div>😀 Click the emoji to change it (used if no image)</div>
             <div>👁️ / 🙈 Toggle visibility on home page</div>
-            <div>😀 Click emoji to change the icon</div>
+            <div style={{ marginTop: '8px', padding: '10px 12px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', color: '#15803d', lineHeight: 1.6 }}>
+              <strong>Recommended thumbnail size:</strong><br />
+              400 × 400 px · Square · JPG or PNG or WebP · under 500 KB
+            </div>
           </div>
         </div>
 

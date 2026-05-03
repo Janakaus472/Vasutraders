@@ -23,6 +23,7 @@ function CatalogContent() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [orderedCats, setOrderedCats] = useState<string[]>([])
   const [catEmojis, setCatEmojis] = useState<Record<string, string>>({})
+  const [catImages, setCatImages] = useState<Record<string, string>>({})
   const [catSubMap, setCatSubMap] = useState<Record<string, string[]>>({})
   const [catsLoaded, setCatsLoaded] = useState(false)
 
@@ -58,8 +59,13 @@ function CatalogContent() {
       if (Array.isArray(layout) && layout.length > 0) {
         setOrderedCats(layout.filter((l: any) => l.visible !== false).map((l: any) => l.name))
         const emojiMap: Record<string, string> = {}
-        layout.forEach((l: any) => { emojiMap[l.name] = l.emoji || DEFAULT_EMOJI })
+        const imageMap: Record<string, string> = {}
+        layout.forEach((l: any) => {
+          emojiMap[l.name] = l.emoji || DEFAULT_EMOJI
+          if (l.imageUrl) imageMap[l.name] = l.imageUrl
+        })
         setCatEmojis(emojiMap)
+        setCatImages(imageMap)
       } else if (Array.isArray(cats)) {
         setOrderedCats(cats.map((c: any) => c.name))
       }
@@ -300,7 +306,10 @@ function CatalogContent() {
                     }}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: 0 }}>
-                      <span style={{ fontSize: '15px', flexShrink: 0 }}>{catEmojis[cat] || DEFAULT_EMOJI}</span>
+                      {catImages[cat]
+                        ? <img src={catImages[cat]} alt={cat} style={{ width: '22px', height: '22px', borderRadius: '5px', objectFit: 'cover', flexShrink: 0 }} />
+                        : <span style={{ fontSize: '15px', flexShrink: 0 }}>{catEmojis[cat] || DEFAULT_EMOJI}</span>
+                      }
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{catLabel(cat)}</span>
                     </span>
                     <span style={{
@@ -438,18 +447,14 @@ function CatalogContent() {
                   }}
                 >
                   <div style={{
-                    fontSize: '44px',
-                    lineHeight: 1,
-                    flexShrink: 0,
-                    width: '64px',
-                    height: '64px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: '#FEF2F2',
-                    borderRadius: '12px',
+                    flexShrink: 0, width: '64px', height: '64px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: '#FEF2F2', borderRadius: '12px', overflow: 'hidden',
                   }}>
-                    {catEmojis[cat] || DEFAULT_EMOJI}
+                    {catImages[cat]
+                      ? <img src={catImages[cat]} alt={cat} style={{ width: '64px', height: '64px', objectFit: 'cover' }} />
+                      : <span style={{ fontSize: '44px', lineHeight: 1 }}>{catEmojis[cat] || DEFAULT_EMOJI}</span>
+                    }
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{

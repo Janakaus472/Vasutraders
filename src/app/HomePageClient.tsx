@@ -22,6 +22,7 @@ interface HomeCategoryLayout {
   name: string
   emoji: string
   visible: boolean
+  imageUrl?: string
 }
 
 interface Props {
@@ -40,7 +41,7 @@ export default function HomePageClient({ categories, totalProducts, layout }: Pr
       const countMap = new Map(categories.map(c => [c.name, c.count]))
       return layout
         .filter(l => l.visible && countMap.has(l.name))
-        .map(l => ({ name: l.name, count: countMap.get(l.name) || 0, emoji: l.emoji, color: '#DC2626', bg: '#FEF2F2' }))
+        .map(l => ({ name: l.name, count: countMap.get(l.name) || 0, emoji: l.emoji, imageUrl: l.imageUrl, color: '#DC2626', bg: '#FEF2F2' }))
     }
     return categories.map(c => ({
       ...c,
@@ -164,7 +165,10 @@ export default function HomePageClient({ categories, totalProducts, layout }: Pr
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 45%), 1fr))', gap: 'clamp(12px, 2vw, 20px)' }}>
             {catsWithIcons.map(cat => (
               <Link key={cat.name} href={`/catalog?category=${encodeURIComponent(cat.name)}`} className="cat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '12px', padding: 'clamp(24px, 4vw, 36px) 16px', textDecoration: 'none', border: '2px solid #f0f0f0', textAlign: 'center', minHeight: '200px' }}>
-                <div style={{ fontSize: '60px', lineHeight: 1, marginBottom: '14px' }}>{cat.emoji}</div>
+                {(cat as any).imageUrl
+                  ? <img src={(cat as any).imageUrl} alt={cat.name} style={{ width: '80px', height: '80px', borderRadius: '14px', objectFit: 'cover', marginBottom: '14px' }} />
+                  : <div style={{ fontSize: '60px', lineHeight: 1, marginBottom: '14px' }}>{cat.emoji}</div>
+                }
                 <div style={{ fontWeight: 800, fontSize: '16px', color: '#1a1a1a', lineHeight: 1.3, marginBottom: '6px' }}>{catLabel(cat.name)}</div>
                 <div style={{ fontSize: '12px', fontWeight: 700, color: '#DC2626', textTransform: 'uppercase', letterSpacing: '1px' }}>
                   {cat.count} {lang === 'hi' ? 'उत्पाद' : 'products'}

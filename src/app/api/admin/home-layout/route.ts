@@ -7,6 +7,7 @@ export interface HomeCategoryItem {
   name: string
   emoji: string
   visible: boolean
+  imageUrl?: string
 }
 
 const DEFAULT_EMOJIS: Record<string, string> = {
