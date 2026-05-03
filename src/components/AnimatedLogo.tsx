@@ -60,8 +60,7 @@ export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
           position: absolute;
           inset: -8%;
           border-radius: 50%;
-          background: radial-gradient(closest-side, rgba(228,58,42,0.55), rgba(42,75,160,0.25) 55%, transparent 70%);
-          filter: blur(18px);
+          background: radial-gradient(closest-side, rgba(228,58,42,0.4), rgba(42,75,160,0.18) 55%, transparent 70%);
           animation: vtHalo 3.6s ease-in-out infinite;
           z-index: 0;
         }
@@ -137,7 +136,6 @@ export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
           place-items: center;
           animation: vtBob 4.2s ease-in-out infinite;
           will-change: transform;
-          filter: drop-shadow(0 18px 30px rgba(0,0,0,0.6));
         }
 
         /* Core layer — full logo stays still */
