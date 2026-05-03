@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { BUSINESS_NAME, WHATSAPP_NUMBER } from '@/lib/constants'
 import { useLanguage } from '@/context/LanguageContext'
 import AnimatedLogo from '@/components/AnimatedLogo'
+import { toSlug } from '@/lib/categorySlug'
 
 const DEFAULT_EMOJIS: Record<string, string> = {
   'Playing Cards':        '🃏',
@@ -164,7 +165,7 @@ export default function HomePageClient({ categories, totalProducts, layout }: Pr
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 45%), 1fr))', gap: 'clamp(12px, 2vw, 20px)' }}>
             {catsWithIcons.map(cat => (
-              <Link key={cat.name} href={`/catalog?category=${encodeURIComponent(cat.name)}`} className="cat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '12px', padding: 'clamp(24px, 4vw, 36px) 16px', textDecoration: 'none', border: '2px solid #f0f0f0', textAlign: 'center', minHeight: '200px' }}>
+              <Link key={cat.name} href={`/catalog/c/${toSlug(cat.name)}`} className="cat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '12px', padding: 'clamp(24px, 4vw, 36px) 16px', textDecoration: 'none', border: '2px solid #f0f0f0', textAlign: 'center', minHeight: '200px' }}>
                 {(cat as any).imageUrl
                   ? <img src={(cat as any).imageUrl} alt={cat.name} style={{ width: '80px', height: '80px', borderRadius: '14px', objectFit: 'cover', marginBottom: '14px' }} />
                   : <div style={{ fontSize: '60px', lineHeight: 1, marginBottom: '14px' }}>{cat.emoji}</div>
@@ -245,7 +246,7 @@ export default function HomePageClient({ categories, totalProducts, layout }: Pr
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {catsWithIcons.map(cat => (
-                <Link key={cat.name} href={`/catalog?category=${encodeURIComponent(cat.name)}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+                <Link key={cat.name} href={`/catalog/c/${toSlug(cat.name)}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
                   {catLabel(cat.name)}
                 </Link>
               ))}

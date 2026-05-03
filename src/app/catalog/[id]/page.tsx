@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { getProduct, getProducts } from '@/lib/supabase/products'
 import { getDescription } from '@/lib/i18n'
 import { CATEGORY_BG } from '@/components/catalog/marketplaceConfig'
+import { toSlug } from '@/lib/categorySlug'
 import ProductPageInteractive from './ProductPageInteractive'
 import { Product } from '@/types/product'
 
@@ -147,7 +148,8 @@ export default async function ProductPage({ params }: Props) {
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.vasutraders.com' },
       { '@type': 'ListItem', position: 2, name: 'Catalog', item: 'https://www.vasutraders.com/catalog' },
-      { '@type': 'ListItem', position: 3, name: product.name, item: `https://www.vasutraders.com/catalog/${product.id}` },
+      ...(product.category ? [{ '@type': 'ListItem', position: 3, name: product.category, item: `https://www.vasutraders.com/catalog/c/${toSlug(product.category)}` }] : []),
+      { '@type': 'ListItem', position: product.category ? 4 : 3, name: product.name, item: `https://www.vasutraders.com/catalog/${product.id}` },
     ],
   }
 
@@ -183,7 +185,7 @@ export default async function ProductPage({ params }: Props) {
           {product.category && (
             <>
               <span>/</span>
-              <Link href={`/catalog?category=${encodeURIComponent(product.category)}`} style={{ color: '#B91C1C', textDecoration: 'none', fontWeight: 600 }}>
+              <Link href={`/catalog/c/${toSlug(product.category)}`} style={{ color: '#B91C1C', textDecoration: 'none', fontWeight: 600 }}>
                 {product.category}
               </Link>
             </>

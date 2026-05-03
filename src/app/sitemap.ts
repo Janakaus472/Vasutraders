@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { getProducts } from '@/lib/supabase/products'
 import { getCategories } from '@/lib/supabase/categories'
+import { toSlug } from '@/lib/categorySlug'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.vasutraders.com'
@@ -20,19 +21,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
 
     for (const cat of categories) {
-      const encoded = encodeURIComponent(cat.name)
+      const catSlug = toSlug(cat.name)
       categoryEntries.push({
-        url: `${baseUrl}/catalog?category=${encoded}`,
+        url: `${baseUrl}/catalog/c/${catSlug}`,
         lastModified: now,
         changeFrequency: 'weekly' as const,
-        priority: 0.7,
+        priority: 0.8,
       })
       for (const sub of cat.subcategories) {
         categoryEntries.push({
-          url: `${baseUrl}/catalog?category=${encoded}&subcategory=${encodeURIComponent(sub.name)}`,
+          url: `${baseUrl}/catalog/c/${catSlug}/${toSlug(sub.name)}`,
           lastModified: now,
           changeFrequency: 'weekly' as const,
-          priority: 0.6,
+          priority: 0.7,
         })
       }
     }
