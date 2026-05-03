@@ -177,6 +177,7 @@ export default function ChatWidget() {
             gap: '10px',
             maxHeight: 'min(320px, 50vh)',
             background: '#f9f9f9',
+            overscrollBehavior: 'contain',
           }}>
             {messages.map((msg, i) => (
               <div
