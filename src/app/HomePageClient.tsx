@@ -244,7 +244,7 @@ export default function HomePageClient({ categories, totalProducts, layout }: Pr
               {lang === 'hi' ? 'श्रेणियाँ' : 'Categories'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {catsWithIcons.slice(0, 5).map(cat => (
+              {catsWithIcons.map(cat => (
                 <Link key={cat.name} href={`/catalog?category=${encodeURIComponent(cat.name)}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
                   {catLabel(cat.name)}
                 </Link>
@@ -278,7 +278,7 @@ export default function HomePageClient({ categories, totalProducts, layout }: Pr
           </div>
         </div>
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px', textAlign: 'center' }}>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>© 2025 {BUSINESS_NAME} · All Rights Reserved</p>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>© {new Date().getFullYear()} {BUSINESS_NAME} · All Rights Reserved</p>
         </div>
       </footer>
     </div>

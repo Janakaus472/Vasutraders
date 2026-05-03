@@ -37,6 +37,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Vasu Traders' }],
   creator: 'Vasu Traders',
+  verification: {
+    google: '6d8f0336690c3c79',
+  },
   robots: {
     index: true,
     follow: true,
@@ -138,6 +141,14 @@ export default function RootLayout({
                     availableLanguage: ['English', 'Hindi'],
                   },
                   hasMap: 'https://maps.google.com/?q=Indore,Madhya+Pradesh,India',
+                  openingHoursSpecification: [
+                    {
+                      '@type': 'OpeningHoursSpecification',
+                      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                      opens: '09:00',
+                      closes: '20:00',
+                    },
+                  ],
                   founder: {
                     '@type': 'Person',
                     name: 'Vasu Traders Owner',

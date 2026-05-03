@@ -3,7 +3,7 @@ import { getCategories, CategoryWithSubs } from '@/lib/supabase/categories'
 import { getSetting } from '@/lib/supabase/settings'
 import HomePageClient from './HomePageClient'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 export default async function HomePage() {
   const [products, dbCats, layout] = await Promise.all([

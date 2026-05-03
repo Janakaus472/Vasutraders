@@ -41,7 +41,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const products = await getProducts(false).catch(() => [])
+  return products.map(p => ({ id: p.id }))
+}
 
 function RelatedProductCard({ product }: { product: Product }) {
   const imgBg = CATEGORY_BG[product.category] || 'linear-gradient(135deg,#f8f7f4,#efefed)'
