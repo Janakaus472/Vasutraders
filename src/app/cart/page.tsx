@@ -53,7 +53,11 @@ export default function CartPage() {
   })
   const [hasSavedDetails, setHasSavedDetails] = useState(false)
   const [waVerified, setWaVerified] = useState(false)
-  const [waCode] = useState(() => String(Math.floor(1000 + Math.random() * 9000)))
+  const [otpSent, setOtpSent] = useState(false)
+  const [otpValue, setOtpValue] = useState('')
+  const [otpLoading, setOtpLoading] = useState(false)
+  const [otpError, setOtpError] = useState('')
+  const [resendTimer, setResendTimer] = useState(0)
 
   useEffect(() => {
     try {
@@ -67,6 +71,12 @@ export default function CartPage() {
       }
     } catch {}
   }, [])
+  useEffect(() => {
+    if (resendTimer <= 0) return
+    const t = setTimeout(() => setResendTimer(n => n - 1), 1000)
+    return () => clearTimeout(t)
+  }, [resendTimer])
+
   const [orderNumber, setOrderNumber] = useState('')
   const [successItems, setSuccessItems] = useState<{ name: string; quantity: number; unit: string }[]>([])
   const [loading, setLoading] = useState(false)
@@ -165,7 +175,47 @@ export default function CartPage() {
   const isDetailsValid =
     details.shopName.trim() &&
     validPhone &&
+    waVerified &&
     details.locality.trim()
+
+  const sendOtp = async () => {
+    setOtpLoading(true)
+    setOtpError('')
+    try {
+      const res = await fetch('/api/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: details.phone }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to send OTP')
+      setOtpSent(true)
+      setResendTimer(30)
+    } catch (e: unknown) {
+      setOtpError(e instanceof Error ? e.message : 'Failed to send OTP')
+    } finally {
+      setOtpLoading(false)
+    }
+  }
+
+  const verifyOtpCode = async () => {
+    setOtpLoading(true)
+    setOtpError('')
+    try {
+      const res = await fetch('/api/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: details.phone, code: otpValue }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Invalid OTP')
+      setWaVerified(true)
+    } catch (e: unknown) {
+      setOtpError(e instanceof Error ? e.message : 'Invalid OTP')
+    } finally {
+      setOtpLoading(false)
+    }
+  }
 
   // ─── EMPTY CART ────────────────────────────────────────────────
   if (items.length === 0 && step !== 'success') {
@@ -335,12 +385,14 @@ export default function CartPage() {
           .notepad-line { border-bottom: 1.5px solid #d4e4f7; padding: 10px 0 10px 12px; display: flex; justify-content: space-between; align-items: center; }
           .cart-grid { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
           @media (min-width: 1024px) { .cart-grid { grid-template-columns: 1fr 340px; gap: 32px; } }
+          .cart-notepad { display: none; }
+          @media (min-width: 1024px) { .cart-notepad { display: block; } }
           .cart-table-header { display: none; }
           @media (min-width: 640px) { .cart-table-header { display: grid; } }
           .cart-row { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; }
-          @media (min-width: 640px) { .cart-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 16px; align-items: center; padding: 16px 24px; } }
+          @media (min-width: 640px) { .cart-row { display: grid; grid-template-columns: 1fr auto auto auto auto; gap: 12px; align-items: center; padding: 16px 24px; } }
           .cart-product-name { font-weight: 700; color: #1a1a1a; font-size: 15px; margin: 0 0 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-          .cart-mobile-row-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: nowrap; width: 100%; }
+          .cart-mobile-row-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; width: 100%; min-width: 0; overflow: hidden; }
           @media (min-width: 640px) { .cart-mobile-row-meta { display: contents; } }
         `}</style>
 
@@ -358,11 +410,12 @@ export default function CartPage() {
             </div>
 
             <div style={{ background: '#fff', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(92,45,15,0.10)', marginBottom: '24px' }}>
-              <div className="cart-table-header" style={{ gridTemplateColumns: '1fr auto auto auto', gap: '16px', padding: '14px 24px', background: '#5C2D0F', color: '#FFD4A0', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>
+              <div className="cart-table-header" style={{ gridTemplateColumns: '1fr auto auto auto auto', gap: '12px', padding: '14px 24px', background: '#5C2D0F', color: '#FFD4A0', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 <div>{lang === 'hi' ? 'उत्पाद' : 'Product'}</div>
                 <div style={{ textAlign: 'center' }}>{lang === 'hi' ? 'कीमत' : 'Price'}</div>
                 <div style={{ textAlign: 'center' }}>{lang === 'hi' ? 'मात्रा' : 'Qty'}</div>
                 <div style={{ textAlign: 'right' }}>{lang === 'hi' ? 'कुल' : 'Total'}</div>
+                <div />
               </div>
 
               {cartProducts.map(({ productId, variantId, quantity, product, variant }, idx) => {
@@ -541,7 +594,13 @@ export default function CartPage() {
               </div>
               <div>
                 <label style={LABEL_STYLE}>📱 Mobile Number *</label>
-                <input type="tel" inputMode="numeric" pattern="[0-9]*" maxLength={10} value={details.phone} onChange={e => { setDetails(d => ({ ...d, phone: e.target.value.replace(/\D/g, '') })); setWaVerified(false) }} placeholder="10-digit number" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" maxLength={10} value={details.phone} onChange={e => {
+                    setDetails(d => ({ ...d, phone: e.target.value.replace(/\D/g, '') }))
+                    setWaVerified(false)
+                    setOtpSent(false)
+                    setOtpValue('')
+                    setOtpError('')
+                  }} placeholder="10-digit number" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
                 {details.phone && !validPhone && (
                   <p style={{ color: '#ef4444', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>Enter a valid Indian mobile number (starts with 6-9)</p>
                 )}
@@ -550,23 +609,53 @@ export default function CartPage() {
                     {waVerified ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: '#dcfce7', border: '2px solid #86efac', borderRadius: '12px' }}>
                         <span style={{ fontSize: '18px' }}>✅</span>
-                        <span style={{ fontWeight: 700, color: '#15803d', fontSize: '15px' }}>WhatsApp Verified</span>
+                        <span style={{ fontWeight: 700, color: '#15803d', fontSize: '15px' }}>Phone Verified</span>
                       </div>
-                    ) : (
+                    ) : !otpSent ? (
                       <button
                         type="button"
-                        onClick={() => {
-                          const msg = `Hi! My Vasu Traders order verification code is: *${waCode}*`
-                          window.open(`https://wa.me/91${details.phone}?text=${encodeURIComponent(msg)}`, '_blank')
-                          setWaVerified(true)
-                        }}
-                        style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 20px', background: '#25D366', border: 'none', borderRadius: '12px', cursor: 'pointer', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', boxShadow: '0 4px 14px rgba(37,211,102,0.4)', width: '100%', justifyContent: 'center' }}
+                        onClick={sendOtp}
+                        disabled={otpLoading}
+                        style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 20px', background: otpLoading ? '#e5e7eb' : '#25D366', border: 'none', borderRadius: '12px', cursor: otpLoading ? 'not-allowed' : 'pointer', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: '15px', color: otpLoading ? '#9ca3af' : '#fff', boxShadow: otpLoading ? 'none' : '0 4px 14px rgba(37,211,102,0.4)', width: '100%', justifyContent: 'center' }}
                       >
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="white" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                        </svg>
-                        Verify on WhatsApp
+                        {otpLoading ? '⏳ Sending...' : '📲 Send OTP on WhatsApp'}
                       </button>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <p style={{ fontSize: '14px', color: '#15803d', fontWeight: 600, margin: 0 }}>
+                          OTP sent to +91 {details.phone} via WhatsApp
+                        </p>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={6}
+                            value={otpValue}
+                            onChange={e => { setOtpValue(e.target.value.replace(/\D/g, '')); setOtpError('') }}
+                            placeholder="Enter 6-digit OTP"
+                            style={{ ...FIELD_STYLE, flex: 1, letterSpacing: '4px', fontSize: '20px', textAlign: 'center' }}
+                          />
+                          <button
+                            type="button"
+                            onClick={verifyOtpCode}
+                            disabled={otpValue.length !== 6 || otpLoading}
+                            style={{ padding: '12px 20px', background: otpValue.length === 6 && !otpLoading ? '#FF6B00' : '#e5e7eb', border: 'none', borderRadius: '16px', cursor: otpValue.length === 6 && !otpLoading ? 'pointer' : 'not-allowed', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: '15px', color: otpValue.length === 6 && !otpLoading ? '#fff' : '#9ca3af', whiteSpace: 'nowrap' }}
+                          >
+                            {otpLoading ? '...' : 'Verify'}
+                          </button>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={sendOtp}
+                          disabled={resendTimer > 0 || otpLoading}
+                          style={{ background: 'none', border: 'none', cursor: resendTimer > 0 ? 'default' : 'pointer', color: resendTimer > 0 ? '#9ca3af' : '#FF6B00', fontSize: '13px', fontWeight: 700, padding: 0, textAlign: 'left' }}
+                        >
+                          {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
+                        </button>
+                      </div>
+                    )}
+                    {otpError && (
+                      <p style={{ color: '#ef4444', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>{otpError}</p>
                     )}
                   </div>
                 )}
