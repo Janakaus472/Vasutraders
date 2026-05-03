@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCategories } from '@/lib/supabase/categories'
 import { getSetting, setSetting } from '@/lib/supabase/settings'
+import { adminSupabase } from '@/lib/supabase/client'
 
 export interface HomeCategoryItem {
   name: string
@@ -25,28 +26,39 @@ function isAdmin(req: NextRequest) {
   return req.cookies.get('vt_admin')?.value === '1'
 }
 
-// GET — returns merged layout (saved config + current DB categories)
+// GET — returns merged layout using the same category source as the home page
 export async function GET() {
   try {
-    const [cats, saved] = await Promise.all([
+    const [cats, productsRes, saved] = await Promise.all([
       getCategories(),
+      adminSupabase.from('products').select('category').eq('in_stock', true),
       getSetting<HomeCategoryItem[]>('home_layout', []),
     ])
 
-    const mainCats = cats.filter(c => !c.parent_id)
-    const savedMap = new Map(saved.map(s => [s.name, s]))
+    // Build full ordered category name list (same logic as home page)
+    const counts: Record<string, number> = {}
+    for (const row of productsRes.data || []) {
+      if (row.category) counts[row.category] = (counts[row.category] || 0) + 1
+    }
+    const orderedNames = cats.map(c => c.name)
+    const allCatNames = [
+      ...orderedNames.filter(n => counts[n]),
+      ...Object.keys(counts).filter(n => !orderedNames.includes(n)),
+    ]
 
-    // Merge: saved items first (preserving their order), then new categories appended
+    const savedMap = new Map(saved.map(s => [s.name, s]))
     const savedNames = saved.map(s => s.name)
-    const newCats = mainCats.filter(c => !savedMap.has(c.name))
+    const newCatNames = allCatNames.filter(n => !savedMap.has(n))
 
     const merged: HomeCategoryItem[] = [
+      // saved items that still exist in the product catalog
       ...savedNames
-        .filter(n => mainCats.some(c => c.name === n))
+        .filter(n => allCatNames.includes(n))
         .map(n => savedMap.get(n)!),
-      ...newCats.map(c => ({
-        name: c.name,
-        emoji: DEFAULT_EMOJIS[c.name] || '📦',
+      // newly discovered categories not yet in saved layout
+      ...newCatNames.map(name => ({
+        name,
+        emoji: DEFAULT_EMOJIS[name] || '📦',
         visible: true,
       })),
     ]
