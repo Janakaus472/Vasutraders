@@ -17,7 +17,6 @@
 
 body {
   background: linear-gradient(135deg, #FFF8F0 0%, #FFECD2 30%, #FFE4CC 60%, #FFF0E6 100%);
-  background-attachment: fixed;
   color: var(--foreground);
   font-family: 'Plus Jakarta Sans', Arial, sans-serif;
 }
