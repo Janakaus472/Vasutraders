@@ -259,9 +259,6 @@ input, textarea, select {
 }
 
 /* Prevent horizontal scroll on ALL devices */
-html {
-  overflow-x: hidden;
-}
 body {
   overflow-x: hidden;
   width: 100%;
