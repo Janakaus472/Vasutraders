@@ -10,7 +10,7 @@ interface HomeCategoryItem {
 
 type PreviewMode = 'mobile' | 'desktop'
 
-const EMOJI_SUGGESTIONS = ['📦','🃏','🎈','🔮','🏏','🔁','🎰','🪥','⚗️','🛍️','🧴','🧹','🪣','🧲','🔧','🎯','🎪','🎭','🛒','🏷️','🎁','💊','🧸','🪆','🖊️','📏','✂️','🪡','🧶','🍭','🥤','🧃','🌿','🪴','💡']
+const EMOJI_SUGGESTIONS = ['📦','🃏','🎈','🔮','🏏','🔁','🎰','🪥','⚗️','🛍️','🧴','🧹','🪣','🧲','🔧','🎯','🎪','🎭','🛒','🏷️','🎁','💊','🧸','🪆','🖊️','📏','✂️','🧶','🍭','🥤','🧃','🌿','🪴','💡']
 
 export default function HomeLayoutPage() {
   const [items, setItems] = useState<HomeCategoryItem[]>([])
@@ -23,9 +23,12 @@ export default function HomeLayoutPage() {
   const [emojiInput, setEmojiInput] = useState('')
   const [dbMissing, setDbMissing] = useState(false)
 
-  // DnD state
-  const dragIndex = useRef<number | null>(null)
-  const [dragOver, setDragOver] = useState<number | null>(null)
+  // Pointer-based DnD (works on mouse + touch)
+  const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [dropIndex, setDropIndex] = useState<number | null>(null)
+  const dragIdx = useRef<number | null>(null)
+  const dropIdx = useRef<number | null>(null)
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
     fetch('/api/admin/home-layout')
@@ -42,10 +45,59 @@ export default function HomeLayoutPage() {
       .finally(() => setLoading(false))
   }, [])
 
+  // Attach window pointermove/pointerup while dragging
+  useEffect(() => {
+    if (dragIndex === null) return
+
+    const onMove = (e: PointerEvent) => {
+      const y = e.clientY
+      let newDrop = dragIdx.current ?? 0
+      for (let i = 0; i < itemRefs.current.length; i++) {
+        const el = itemRefs.current[i]
+        if (!el) continue
+        const rect = el.getBoundingClientRect()
+        if (y < rect.top + rect.height / 2) { newDrop = i; break }
+        newDrop = i
+      }
+      dropIdx.current = newDrop
+      setDropIndex(newDrop)
+    }
+
+    const onUp = () => {
+      const from = dragIdx.current
+      const to = dropIdx.current
+      if (from !== null && to !== null && from !== to) {
+        setItems(prev => {
+          const updated = [...prev]
+          const [moved] = updated.splice(from, 1)
+          updated.splice(to, 0, moved)
+          return updated
+        })
+      }
+      dragIdx.current = null
+      dropIdx.current = null
+      setDragIndex(null)
+      setDropIndex(null)
+    }
+
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+    return () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+    }
+  }, [dragIndex])
+
+  const startDrag = (e: React.PointerEvent, index: number) => {
+    e.preventDefault()
+    dragIdx.current = index
+    dropIdx.current = index
+    setDragIndex(index)
+    setDropIndex(index)
+  }
+
   const handleSave = async () => {
-    setSaving(true)
-    setSaved(false)
-    setError('')
+    setSaving(true); setSaved(false); setError('')
     try {
       const res = await fetch('/api/admin/home-layout', {
         method: 'PUT',
@@ -60,20 +112,12 @@ export default function HomeLayoutPage() {
         setSaved(true)
         setTimeout(() => setSaved(false), 3000)
       }
-    } catch (e: any) {
-      setError(e.message)
-    }
+    } catch (e: any) { setError(e.message) }
     setSaving(false)
   }
 
-  const toggleVisible = (name: string) => {
+  const toggleVisible = (name: string) =>
     setItems(prev => prev.map(i => i.name === name ? { ...i, visible: !i.visible } : i))
-  }
-
-  const openEmojiEdit = (name: string, current: string) => {
-    setEditingEmoji(name)
-    setEmojiInput(current)
-  }
 
   const applyEmoji = (name: string, emoji: string) => {
     if (!emoji.trim()) return
@@ -81,34 +125,8 @@ export default function HomeLayoutPage() {
     setEditingEmoji(null)
   }
 
-  // ── Drag handlers ──
-  const onDragStart = (index: number) => {
-    dragIndex.current = index
-  }
-
-  const onDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault()
-    setDragOver(index)
-  }
-
-  const onDrop = (e: React.DragEvent, dropIndex: number) => {
-    e.preventDefault()
-    const from = dragIndex.current
-    if (from === null || from === dropIndex) { setDragOver(null); return }
-    const updated = [...items]
-    const [moved] = updated.splice(from, 1)
-    updated.splice(dropIndex, 0, moved)
-    setItems(updated)
-    dragIndex.current = null
-    setDragOver(null)
-  }
-
-  const onDragEnd = () => {
-    dragIndex.current = null
-    setDragOver(null)
-  }
-
   const visibleItems = items.filter(i => i.visible)
+  const isDragging = dragIndex !== null
 
   if (loading) {
     return (
@@ -119,11 +137,17 @@ export default function HomeLayoutPage() {
   }
 
   return (
-    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", userSelect: isDragging ? 'none' : 'auto' }}>
+      <style>{`
+        @media (min-width: 1100px) { .hl-grid { grid-template-columns: 1fr 420px !important; } }
+        .drag-handle { cursor: grab; touch-action: none; }
+        .drag-handle:active { cursor: grabbing; }
+      `}</style>
+
       <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
         <div>
           <h1 className="text-xl font-bold text-gray-800">Home Layout</h1>
-          <p className="text-gray-400 text-sm mt-0.5">Drag categories to reorder · toggle eye to show/hide · click emoji to change it</p>
+          <p className="text-gray-400 text-sm mt-0.5">Hold the ⠿ handle to drag &amp; reorder · 👁️ to show/hide · click emoji to change</p>
         </div>
         <button
           onClick={handleSave}
@@ -137,7 +161,7 @@ export default function HomeLayoutPage() {
       {dbMissing && (
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6">
           <p className="font-bold text-amber-700 mb-2">⚠️ One-time setup required</p>
-          <p className="text-sm text-amber-600 mb-3">Run this SQL in your Supabase dashboard (SQL Editor) to create the settings table:</p>
+          <p className="text-sm text-amber-600 mb-3">Run this SQL in your Supabase dashboard (SQL Editor):</p>
           <pre className="bg-amber-100 rounded-xl p-3 text-xs text-amber-900 overflow-x-auto select-all">{`CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value JSONB NOT NULL DEFAULT 'null'::jsonb,
@@ -150,68 +174,67 @@ export default function HomeLayoutPage() {
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-600 text-sm flex items-center justify-between mb-4">
           <span>{error}</span>
-          <button onClick={() => setError('')} className="text-red-400 hover:text-red-600">✕</button>
+          <button onClick={() => setError('')} className="text-red-400 hover:text-red-600 ml-4">✕</button>
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
-        <style>{`
-          @media (min-width: 1100px) { .hl-grid { grid-template-columns: 1fr 420px !important; } }
-          .drag-item { cursor: grab; transition: opacity 0.15s, transform 0.15s; }
-          .drag-item:active { cursor: grabbing; }
-          .drag-item.dragging { opacity: 0.4; }
-          .drag-item.drag-target { transform: translateY(-2px); box-shadow: 0 0 0 2px #f97316, 0 4px 16px rgba(249,115,22,0.2); }
-        `}</style>
+      <div className="hl-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
 
-        <div className="hl-grid" style={{ display: 'grid', gap: '24px' }}>
+        {/* ── LEFT: Drag list ── */}
+        <div>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+              <span className="text-sm font-bold text-gray-600">Categories ({items.length})</span>
+              <span className="text-xs text-gray-400">{visibleItems.length} visible on home</span>
+            </div>
 
-          {/* ── LEFT: Drag list ── */}
-          <div>
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
-                <span className="text-sm font-bold text-gray-600">Categories ({items.length})</span>
-                <span className="text-xs text-gray-400">{visibleItems.length} visible on home</span>
+            {items.length === 0 ? (
+              <div className="py-12 text-center text-gray-400">
+                <div className="text-4xl mb-2">🏷️</div>
+                <p>No categories found</p>
               </div>
+            ) : (
+              <div>
+                {items.map((item, index) => {
+                  const isBeingDragged = dragIndex === index
+                  const isDropTarget = dropIndex === index && dragIndex !== null && dragIndex !== index
+                  const insertAbove = isDropTarget && dropIndex! < dragIndex!
+                  const insertBelow = isDropTarget && dropIndex! > dragIndex!
 
-              {items.length === 0 ? (
-                <div className="py-12 text-center text-gray-400">
-                  <div className="text-4xl mb-2">🏷️</div>
-                  <p>No categories found</p>
-                </div>
-              ) : (
-                <div>
-                  {items.map((item, index) => (
+                  return (
                     <div
                       key={item.name}
-                      className={`drag-item ${dragOver === index ? 'drag-target' : ''}`}
-                      draggable
-                      onDragStart={() => onDragStart(index)}
-                      onDragOver={e => onDragOver(e, index)}
-                      onDrop={e => onDrop(e, index)}
-                      onDragEnd={onDragEnd}
+                      ref={el => { itemRefs.current[index] = el }}
                       style={{
                         display: 'flex', alignItems: 'center', gap: '12px',
-                        padding: '12px 16px',
+                        padding: '11px 16px',
                         borderBottom: index < items.length - 1 ? '1px solid #f5f5f5' : 'none',
-                        background: dragOver === index ? '#fff7ed' : item.visible ? '#fff' : '#fafafa',
-                        opacity: item.visible ? 1 : 0.55,
+                        background: isBeingDragged ? '#fff7ed' : '#fff',
+                        opacity: isBeingDragged ? 0.45 : item.visible ? 1 : 0.5,
+                        borderTop: insertAbove ? '2px solid #f97316' : '2px solid transparent',
+                        borderBottomColor: insertBelow ? '#f97316' : (index < items.length - 1 ? '#f5f5f5' : 'transparent'),
+                        transition: 'border-color 0.1s',
                       }}
                     >
                       {/* Drag handle */}
-                      <div style={{ color: '#d1d5db', cursor: 'grab', flexShrink: 0, padding: '4px' }}>
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                          <circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/>
-                          <circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/>
-                          <circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/>
+                      <div
+                        className="drag-handle"
+                        onPointerDown={e => startDrag(e, index)}
+                        style={{ color: '#c4c4c4', flexShrink: 0, padding: '4px 6px', borderRadius: '6px' }}
+                      >
+                        <svg width="14" height="20" fill="currentColor" viewBox="0 0 14 20">
+                          <circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/>
+                          <circle cx="4" cy="10" r="2"/><circle cx="10" cy="10" r="2"/>
+                          <circle cx="4" cy="16" r="2"/><circle cx="10" cy="16" r="2"/>
                         </svg>
                       </div>
 
-                      {/* Position badge */}
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#d1d5db', width: '18px', textAlign: 'center', flexShrink: 0 }}>
+                      {/* Position number */}
+                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#d1d5db', width: '16px', textAlign: 'center', flexShrink: 0 }}>
                         {index + 1}
                       </span>
 
-                      {/* Emoji button */}
+                      {/* Emoji */}
                       {editingEmoji === item.name ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                           <input
@@ -225,12 +248,13 @@ export default function HomeLayoutPage() {
                             style={{ width: '52px', fontSize: '22px', textAlign: 'center', padding: '4px', border: '2px solid #f97316', borderRadius: '8px', outline: 'none' }}
                           />
                           <button onClick={() => applyEmoji(item.name, emojiInput)} style={{ fontSize: '11px', background: '#f97316', color: '#fff', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontWeight: 700 }}>OK</button>
+                          <button onClick={() => setEditingEmoji(null)} style={{ fontSize: '11px', color: '#9ca3af', border: 'none', background: 'none', cursor: 'pointer' }}>✕</button>
                         </div>
                       ) : (
                         <button
-                          onClick={() => openEmojiEdit(item.name, item.emoji)}
+                          onClick={() => { setEditingEmoji(item.name); setEmojiInput(item.emoji) }}
                           title="Click to change emoji"
-                          style={{ fontSize: '28px', background: '#f9fafb', border: '1.5px solid #e5e7eb', borderRadius: '10px', padding: '4px 8px', cursor: 'pointer', lineHeight: 1, flexShrink: 0 }}
+                          style={{ fontSize: '26px', background: '#f9fafb', border: '1.5px solid #e5e7eb', borderRadius: '10px', padding: '3px 8px', cursor: 'pointer', lineHeight: 1.2, flexShrink: 0 }}
                         >
                           {item.emoji}
                         </button>
@@ -248,139 +272,110 @@ export default function HomeLayoutPage() {
                         style={{
                           flexShrink: 0,
                           background: item.visible ? '#dcfce7' : '#f3f4f6',
-                          border: 'none',
-                          borderRadius: '8px',
-                          padding: '6px 10px',
-                          cursor: 'pointer',
-                          fontSize: '16px',
-                          transition: 'background 0.15s',
+                          border: 'none', borderRadius: '8px',
+                          padding: '6px 10px', cursor: 'pointer', fontSize: '15px',
                         }}
                       >
-                        {item.visible ? '👁️' : '🚫'}
+                        {item.visible ? '👁️' : '🙈'}
                       </button>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Emoji suggestions */}
-            {editingEmoji && (
-              <div className="bg-white rounded-2xl border border-orange-200 shadow-sm p-4 mt-3">
-                <p className="text-xs font-bold text-gray-500 mb-2">Quick pick:</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                  {EMOJI_SUGGESTIONS.map(e => (
-                    <button
-                      key={e}
-                      onClick={() => applyEmoji(editingEmoji, e)}
-                      style={{ fontSize: '22px', padding: '4px', background: 'none', border: '1.5px solid transparent', borderRadius: '8px', cursor: 'pointer' }}
-                      onMouseEnter={ev => (ev.currentTarget.style.borderColor = '#f97316')}
-                      onMouseLeave={ev => (ev.currentTarget.style.borderColor = 'transparent')}
-                    >
-                      {e}
-                    </button>
-                  ))}
-                </div>
+                  )
+                })}
               </div>
             )}
           </div>
 
-          {/* ── RIGHT: Preview ── */}
-          <div style={{ position: 'sticky', top: '80px' }}>
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-              {/* Preview tab toggle */}
-              <div style={{ display: 'flex', borderBottom: '1px solid #f0f0f0' }}>
-                {(['mobile', 'desktop'] as PreviewMode[]).map(m => (
+          {/* Emoji quick-pick panel */}
+          {editingEmoji && (
+            <div className="bg-white rounded-2xl border border-orange-200 shadow-sm p-4 mt-3">
+              <p className="text-xs font-bold text-gray-500 mb-2">Quick pick:</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                {EMOJI_SUGGESTIONS.map(e => (
                   <button
-                    key={m}
-                    onClick={() => setPreviewMode(m)}
-                    style={{
-                      flex: 1, padding: '10px', fontSize: '13px', fontWeight: 700,
-                      border: 'none', cursor: 'pointer',
-                      background: previewMode === m ? '#fff7ed' : '#fff',
-                      color: previewMode === m ? '#f97316' : '#9ca3af',
-                      borderBottom: previewMode === m ? '2px solid #f97316' : '2px solid transparent',
-                      transition: 'all 0.15s',
-                    }}
+                    key={e}
+                    onClick={() => applyEmoji(editingEmoji, e)}
+                    style={{ fontSize: '22px', padding: '4px 6px', background: 'none', border: '1.5px solid transparent', borderRadius: '8px', cursor: 'pointer' }}
+                    onMouseEnter={ev => (ev.currentTarget.style.borderColor = '#f97316')}
+                    onMouseLeave={ev => (ev.currentTarget.style.borderColor = 'transparent')}
                   >
-                    {m === 'mobile' ? '📱 Mobile' : '🖥️ Desktop'}
+                    {e}
                   </button>
                 ))}
               </div>
+            </div>
+          )}
+        </div>
 
-              {/* Preview frame */}
-              <div style={{ padding: '16px', background: '#f9f9f9', minHeight: '300px' }}>
-                <div style={{
-                  background: '#f9f9f9',
-                  borderRadius: '8px',
-                  padding: '20px 12px',
-                  ...(previewMode === 'desktop' ? { maxWidth: '100%' } : { maxWidth: '360px', margin: '0 auto' }),
-                }}>
-                  {/* Section header */}
-                  <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#1a1a1a', letterSpacing: '1px', fontFamily: 'serif' }}>
-                      Shop by Category
-                    </div>
-                    <div style={{ width: '32px', height: '3px', background: '#DC2626', margin: '6px auto 4px', borderRadius: '2px' }} />
-                    <div style={{ fontSize: '10px', color: '#9ca3af' }}>Tap a category to browse products</div>
-                  </div>
+        {/* ── RIGHT: Live preview ── */}
+        <div style={{ position: 'sticky', top: '80px' }}>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div style={{ display: 'flex', borderBottom: '1px solid #f0f0f0' }}>
+              {(['mobile', 'desktop'] as PreviewMode[]).map(m => (
+                <button
+                  key={m}
+                  onClick={() => setPreviewMode(m)}
+                  style={{
+                    flex: 1, padding: '10px', fontSize: '13px', fontWeight: 700,
+                    border: 'none', cursor: 'pointer',
+                    background: previewMode === m ? '#fff7ed' : '#fff',
+                    color: previewMode === m ? '#f97316' : '#9ca3af',
+                    borderBottom: previewMode === m ? '2px solid #f97316' : '2px solid transparent',
+                  }}
+                >
+                  {m === 'mobile' ? '📱 Mobile' : '🖥️ Desktop'}
+                </button>
+              ))}
+            </div>
 
-                  {/* Category grid */}
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: previewMode === 'desktop'
-                      ? 'repeat(auto-fill, minmax(100px, 1fr))'
-                      : 'repeat(2, 1fr)',
-                    gap: '8px',
-                  }}>
-                    {visibleItems.map(item => (
-                      <div
-                        key={item.name}
-                        style={{
-                          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                          background: '#fff', borderRadius: '10px', padding: previewMode === 'desktop' ? '16px 8px' : '14px 8px',
-                          border: '1.5px solid #f0f0f0', textAlign: 'center',
-                          minHeight: previewMode === 'desktop' ? '90px' : '80px',
-                        }}
-                      >
-                        <div style={{ fontSize: previewMode === 'desktop' ? '28px' : '24px', lineHeight: 1, marginBottom: '6px' }}>
-                          {item.emoji}
-                        </div>
-                        <div style={{ fontWeight: 700, fontSize: previewMode === 'desktop' ? '11px' : '10px', color: '#1a1a1a', lineHeight: 1.2 }}>
-                          {item.name}
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* View All tile */}
-                    <div style={{
-                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                      background: '#B91C1C', borderRadius: '10px', padding: '14px 8px',
-                      border: '1.5px solid #B91C1C', textAlign: 'center',
-                      minHeight: previewMode === 'desktop' ? '90px' : '80px',
-                    }}>
-                      <div style={{ fontSize: '20px', lineHeight: 1, marginBottom: '6px', color: '#FAC41A' }}>≡</div>
-                      <div style={{ fontWeight: 700, fontSize: '10px', color: '#fff', lineHeight: 1.2 }}>View All</div>
-                    </div>
-                  </div>
-
-                  {visibleItems.length === 0 && (
-                    <div style={{ textAlign: 'center', color: '#9ca3af', fontSize: '12px', padding: '16px' }}>
-                      No categories visible — toggle the eye on the left
-                    </div>
-                  )}
+            <div style={{ padding: '16px', background: '#f9f9f9', minHeight: '300px' }}>
+              <div style={{
+                padding: '20px 12px',
+                ...(previewMode === 'desktop' ? {} : { maxWidth: '320px', margin: '0 auto' }),
+              }}>
+                <div style={{ textAlign: 'center', marginBottom: '14px' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: '#1a1a1a', letterSpacing: '1px' }}>Shop by Category</div>
+                  <div style={{ width: '32px', height: '3px', background: '#DC2626', margin: '5px auto', borderRadius: '2px' }} />
                 </div>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: previewMode === 'desktop' ? 'repeat(auto-fill, minmax(90px, 1fr))' : 'repeat(2, 1fr)',
+                  gap: '8px',
+                }}>
+                  {visibleItems.map(item => (
+                    <div key={item.name} style={{
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                      background: '#fff', borderRadius: '10px', padding: '14px 8px',
+                      border: '1.5px solid #f0f0f0', textAlign: 'center', minHeight: '80px',
+                    }}>
+                      <div style={{ fontSize: '26px', lineHeight: 1, marginBottom: '6px' }}>{item.emoji}</div>
+                      <div style={{ fontWeight: 700, fontSize: '10px', color: '#1a1a1a', lineHeight: 1.2 }}>{item.name}</div>
+                    </div>
+                  ))}
+                  <div style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    background: '#B91C1C', borderRadius: '10px', padding: '14px 8px',
+                    border: '1.5px solid #B91C1C', textAlign: 'center', minHeight: '80px',
+                  }}>
+                    <div style={{ fontSize: '20px', color: '#FAC41A', marginBottom: '4px' }}>☰</div>
+                    <div style={{ fontWeight: 700, fontSize: '10px', color: '#fff' }}>View All</div>
+                  </div>
+                </div>
+                {visibleItems.length === 0 && (
+                  <div style={{ textAlign: 'center', color: '#9ca3af', fontSize: '12px', padding: '16px' }}>
+                    No categories visible
+                  </div>
+                )}
               </div>
             </div>
+          </div>
 
-            {/* Legend */}
-            <div className="mt-3 text-xs text-gray-400 space-y-1 px-1">
-              <div className="flex items-center gap-2"><span>⠿</span> Drag the handle to reorder</div>
-              <div className="flex items-center gap-2"><span>😀</span> Click emoji to change it</div>
-              <div className="flex items-center gap-2"><span>👁️</span> Toggle to show/hide on home page</div>
-            </div>
+          <div className="mt-3 px-1 space-y-1" style={{ fontSize: '12px', color: '#9ca3af' }}>
+            <div>⠿ Hold the dots handle to drag and reorder</div>
+            <div>👁️ / 🙈 Toggle visibility on home page</div>
+            <div>😀 Click emoji to change the icon</div>
           </div>
         </div>
+
       </div>
     </div>
   )
