@@ -26,7 +26,8 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
   const variants = product.bulkVariants || []
 
   // null = base product selected, string = variant id selected
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
+  // Default to first variant when variants exist so base pill isn't accidentally added
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(variants.length > 0 ? variants[0].id : null)
   const selectedVariant = variants.find(v => v.id === selectedVariantId) ?? null
 
   // Cart quantity for the currently selected variant (or base product)
