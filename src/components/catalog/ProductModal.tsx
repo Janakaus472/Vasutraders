@@ -160,7 +160,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           .modal-panel {
             flex-direction: column;
             border-radius: 14px 14px 0 0;
-            max-height: 95dvh;
+            max-height: 92dvh;
             margin: 0;
             margin-top: auto;
             width: 100%;
@@ -169,14 +169,19 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           }
           .modal-left-panel {
             width: 100%;
-            padding: 16px 16px 8px;
+            padding: 12px 16px 6px;
           }
           .modal-image-container {
-            height: 28vh;
+            height: 18vh;
           }
           .modal-right-panel {
-            padding: 12px 16px 20px;
-            gap: 10px;
+            padding: 8px 14px 16px;
+            gap: 8px;
+          }
+          .bulk-card {
+            min-width: 72px;
+            padding: 8px 6px;
+            gap: 4px;
           }
         }
       `}</style>
@@ -254,7 +259,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           <div>
             <h2 style={{
               fontFamily: "'Bebas Neue', sans-serif",
-              fontSize: 'clamp(1.6rem, 3vw, 2.4rem)',
+              fontSize: 'clamp(1.3rem, 5vw, 2.4rem)',
               color: '#1a1a1a', lineHeight: 1.1, letterSpacing: '1px',
             }}>
               {product.name}
@@ -379,33 +384,52 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           </div>
 
           {/* Cart controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <div style={{ transform: 'scale(1.15)', transformOrigin: 'left center' }}>
-              <AddToCartButton
-                quantity={activeQty}
-                onAdd={handleAdd}
-                onRemove={handleRemove}
-                onSetQuantity={handleSetQty}
-                disabled={!product.inStock}
-              />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <div style={{ transform: 'scale(1.15)', transformOrigin: 'left center' }}>
+                <AddToCartButton
+                  quantity={activeQty}
+                  onAdd={handleAdd}
+                  onRemove={handleRemove}
+                  onSetQuantity={handleSetQty}
+                  disabled={!product.inStock}
+                />
+              </div>
+              {activeQty > 0 && (
+                <span style={{ color: '#B91C1C', fontWeight: 700, fontSize: '13px' }}>
+                  ✓ {activeQty} {selectedVariant ? `× ${selectedVariant.quantity} ${selectedVariant.unit}` : product.unit} {t.itemsAdded}
+                </span>
+              )}
             </div>
             {activeQty > 0 && (
-              <span style={{ color: '#B91C1C', fontWeight: 700, fontSize: '13px' }}>
-                ✓ {activeQty} {selectedVariant ? `× ${selectedVariant.quantity} ${selectedVariant.unit}` : product.unit} {t.itemsAdded}
-              </span>
-            )}
-            {activeQty > 0 && (
-              <a href="/cart" style={{
-                marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px',
-                background: '#B91C1C', color: '#fff',
-                padding: '8px 16px', borderRadius: '6px',
-                fontWeight: 700, fontSize: '12px', textDecoration: 'none', transition: 'all 0.15s',
-              }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#991b1b' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#B91C1C' }}
-              >
-                🛒 {t.viewOrder}
-              </a>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  onClick={onClose}
+                  style={{
+                    flex: 1, padding: '10px 16px', borderRadius: '6px',
+                    border: '2px solid #e5e7eb', background: '#fff',
+                    fontWeight: 700, fontSize: '13px', cursor: 'pointer',
+                    color: '#374151', fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    transition: 'all 0.15s',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#B91C1C'; (e.currentTarget as HTMLButtonElement).style.color = '#B91C1C' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e7eb'; (e.currentTarget as HTMLButtonElement).style.color = '#374151' }}
+                >
+                  ← {lang === 'hi' ? 'और देखें' : 'Continue Shopping'}
+                </button>
+                <a href="/cart" style={{
+                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                  background: '#B91C1C', color: '#fff',
+                  padding: '10px 16px', borderRadius: '6px',
+                  fontWeight: 700, fontSize: '13px', textDecoration: 'none', transition: 'all 0.15s',
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#991b1b' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#B91C1C' }}
+                >
+                  🛒 {t.viewOrder}
+                </a>
+              </div>
             )}
           </div>
 
