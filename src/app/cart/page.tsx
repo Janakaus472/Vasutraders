@@ -380,20 +380,20 @@ export default function CartPage() {
     const total = cartProducts.reduce((s, i) => s + getEffectivePrice(i) * i.quantity, 0)
 
     return (
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 14px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 14px', fontFamily: "'Plus Jakarta Sans', sans-serif", overflowX: 'hidden' }}>
         <style>{`
           .notepad-line { border-bottom: 1.5px solid #d4e4f7; padding: 10px 0 10px 12px; display: flex; justify-content: space-between; align-items: center; }
           .cart-grid { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
-          @media (min-width: 1024px) { .cart-grid { grid-template-columns: 1fr 340px; gap: 32px; } }
+          @media (min-width: 1024px) { .cart-grid { grid-template-columns: minmax(0, 1fr) 340px; gap: 32px; } }
           .cart-notepad { display: none; }
           @media (min-width: 1024px) { .cart-notepad { display: block; } }
           .cart-table-header { display: none; }
-          @media (min-width: 640px) { .cart-table-header { display: grid; } }
+          @media (min-width: 768px) { .cart-table-header { display: grid; } }
           .cart-row { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; }
-          @media (min-width: 640px) { .cart-row { display: grid; grid-template-columns: 1fr auto auto auto auto; gap: 12px; align-items: center; padding: 16px 24px; } }
-          .cart-product-name { font-weight: 700; color: #1a1a1a; font-size: 15px; margin: 0 0 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-          .cart-mobile-row-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; width: 100%; min-width: 0; overflow: hidden; }
-          @media (min-width: 640px) { .cart-mobile-row-meta { display: contents; } }
+          @media (min-width: 768px) { .cart-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto auto; gap: 12px; align-items: center; padding: 16px 24px; } }
+          .cart-product-name { font-weight: 700; color: #1a1a1a; font-size: 15px; margin: 0 0 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+          .cart-mobile-row-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-width: 0; }
+          @media (min-width: 768px) { .cart-mobile-row-meta { display: contents; } }
         `}</style>
 
         <div className="cart-grid">
@@ -565,8 +565,8 @@ export default function CartPage() {
     const total = cartProducts.reduce((s, i) => s + getEffectivePrice(i) * i.quantity, 0)
 
     return (
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 14px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-        <style>{`.notepad-line { border-bottom: 1.5px solid #d4e4f7; padding: 10px 0 10px 12px; display: flex; justify-content: space-between; align-items: center; } .cart-notepad-d { display: none; } @media (min-width: 1024px) { .cart-notepad-d { display: block; } } .details-grid { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; } @media (min-width: 1024px) { .details-grid { grid-template-columns: 1fr 340px; gap: 32px; } }`}</style>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 14px', fontFamily: "'Plus Jakarta Sans', sans-serif", overflowX: 'hidden' }}>
+        <style>{`.notepad-line { border-bottom: 1.5px solid #d4e4f7; padding: 10px 0 10px 12px; display: flex; justify-content: space-between; align-items: center; } .cart-notepad-d { display: none; } @media (min-width: 1024px) { .cart-notepad-d { display: block; } } .details-grid { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; } @media (min-width: 1024px) { .details-grid { grid-template-columns: minmax(0, 1fr) 340px; gap: 32px; } }`}</style>
 
         <div className="details-grid">
 
