@@ -77,7 +77,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
       className="animate-fadeIn"
       onClick={onClose}
       style={{
-        position: 'fixed', inset: 0, zIndex: 999,
+        position: 'fixed', inset: 0, zIndex: 1001,
         background: 'rgba(0, 0, 0, 0.7)',
         backdropFilter: 'blur(8px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -279,13 +279,13 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
               </p>
 
               {/* Scrollable row: base pill + variant cards */}
-              <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+              <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '6px', paddingLeft: '2px', paddingRight: '2px' }}>
 
                 {/* Base product pill */}
                 <button
                   type="button"
                   className={`base-pill${selectedVariantId === null ? ' active' : ''}`}
-                  onClick={() => setSelectedVariantId(null)}
+                  onClick={(e) => { setSelectedVariantId(null); (e.currentTarget as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' }) }}
                 >
                   <span style={{ fontSize: '14px' }}>📦</span>
                   per {product.unit}
@@ -306,7 +306,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
                       key={v.id}
                       type="button"
                       className={`bulk-card${isActive ? ' active' : ''}`}
-                      onClick={() => setSelectedVariantId(v.id)}
+                      onClick={(e) => { setSelectedVariantId(v.id); (e.currentTarget as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' }) }}
                     >
                       {/* Variant image */}
                       <div style={{ position: 'relative', width: '52px', height: '52px', borderRadius: '8px', overflow: 'hidden', background: '#f9f9f9', border: '1px solid #e5e7eb', flexShrink: 0 }}>
@@ -338,6 +338,9 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
                           color: isActive ? '#fff' : '#6b7280',
                           borderRadius: '4px', padding: '2px 5px',
                           letterSpacing: '0.3px',
+                          maxWidth: '80px', overflow: 'hidden',
+                          textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          display: 'block',
                         }}>
                           {v.label}
                         </span>
@@ -386,7 +389,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           {/* Cart controls */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-              <div style={{ transform: 'scale(1.15)', transformOrigin: 'left center' }}>
+              <div>
                 <AddToCartButton
                   quantity={activeQty}
                   onAdd={handleAdd}
@@ -408,9 +411,9 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
                   style={{
                     flex: 1, padding: '10px 16px', borderRadius: '6px',
                     border: '2px solid #e5e7eb', background: '#fff',
-                    fontWeight: 700, fontSize: '13px', cursor: 'pointer',
+                    fontWeight: 700, fontSize: '12px', cursor: 'pointer',
                     color: '#374151', fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    transition: 'all 0.15s',
+                    transition: 'all 0.15s', whiteSpace: 'nowrap',
                   }}
                   onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#B91C1C'; (e.currentTarget as HTMLButtonElement).style.color = '#B91C1C' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e7eb'; (e.currentTarget as HTMLButtonElement).style.color = '#374151' }}
@@ -421,8 +424,8 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                   background: '#B91C1C', color: '#fff',
                   padding: '10px 16px', borderRadius: '6px',
-                  fontWeight: 700, fontSize: '13px', textDecoration: 'none', transition: 'all 0.15s',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontWeight: 700, fontSize: '12px', textDecoration: 'none', transition: 'all 0.15s',
+                  fontFamily: "'Plus Jakarta Sans', sans-serif", whiteSpace: 'nowrap',
                 }}
                   onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#991b1b' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#B91C1C' }}

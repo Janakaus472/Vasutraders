@@ -110,7 +110,7 @@ function CatalogContent({ initialProducts, initialOrderedCats, initialCatEmojis,
 
   const totalItems = items.reduce((s, i) => s + i.quantity, 0)
 
-  const selectedCartItem = selectedProduct ? items.find(i => i.productId === selectedProduct.id) : null
+  const selectedCartItem = selectedProduct ? items.find(i => i.productId === selectedProduct.id && !i.variantId) : null
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative', background: '#f9f9f9', overflowX: 'hidden', width: '100%' }}>
