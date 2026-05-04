@@ -280,7 +280,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
               </p>
 
               {/* Scrollable row: base pill + variant cards */}
-              <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '6px', paddingLeft: '2px', paddingRight: '2px' }}>
+              <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '6px', paddingLeft: '2px', paddingRight: '2px', alignItems: 'flex-start' }}>
 
                 {/* Base product pill */}
                 <button
