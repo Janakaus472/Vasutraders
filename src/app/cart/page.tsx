@@ -380,7 +380,7 @@ export default function CartPage() {
     const total = cartProducts.reduce((s, i) => s + getEffectivePrice(i) * i.quantity, 0)
 
     return (
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 14px', fontFamily: "'Plus Jakarta Sans', sans-serif", overflowX: 'hidden' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 14px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
         <style>{`
           .notepad-line { border-bottom: 1.5px solid #d4e4f7; padding: 10px 0 10px 12px; display: flex; justify-content: space-between; align-items: center; }
           .cart-grid { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
@@ -565,7 +565,7 @@ export default function CartPage() {
     const total = cartProducts.reduce((s, i) => s + getEffectivePrice(i) * i.quantity, 0)
 
     return (
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 14px', fontFamily: "'Plus Jakarta Sans', sans-serif", overflowX: 'hidden' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 14px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
         <style>{`.notepad-line { border-bottom: 1.5px solid #d4e4f7; padding: 10px 0 10px 12px; display: flex; justify-content: space-between; align-items: center; } .cart-notepad-d { display: none; } @media (min-width: 1024px) { .cart-notepad-d { display: block; } } .details-grid { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; } @media (min-width: 1024px) { .details-grid { grid-template-columns: minmax(0, 1fr) 340px; gap: 32px; } }`}</style>
 
         <div className="details-grid">
