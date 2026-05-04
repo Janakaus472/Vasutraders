@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect, Suspense } from 'react'
+import { useState, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useCart } from '@/context/CartContext'
 import { useLanguage } from '@/context/LanguageContext'
@@ -13,9 +13,13 @@ const DEFAULT_EMOJI = '📦'
 
 interface Props {
   initialProducts: Product[]
+  initialOrderedCats: string[]
+  initialCatEmojis: Record<string, string>
+  initialCatImages: Record<string, string>
+  initialCatSubMap: Record<string, string[]>
 }
 
-function CatalogContent({ initialProducts }: Props) {
+function CatalogContent({ initialProducts, initialOrderedCats, initialCatEmojis, initialCatImages, initialCatSubMap }: Props) {
   const { items, addItem, removeItem, updateQuantity } = useCart()
   const { t, catLabel, lang } = useLanguage()
   const searchParams = useSearchParams()
@@ -25,11 +29,11 @@ function CatalogContent({ initialProducts }: Props) {
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(() => searchParams.get('subcategory') || null)
   const [search, setSearch] = useState('')
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [orderedCats, setOrderedCats] = useState<string[]>([])
-  const [catEmojis, setCatEmojis] = useState<Record<string, string>>({})
-  const [catImages, setCatImages] = useState<Record<string, string>>({})
-  const [catSubMap, setCatSubMap] = useState<Record<string, string[]>>({})
-  const [catsLoaded, setCatsLoaded] = useState(false)
+  const orderedCats = initialOrderedCats
+  const catEmojis = initialCatEmojis
+  const catImages = initialCatImages
+  const catSubMap = initialCatSubMap
+  const catsLoaded = true
 
   // Helper to update URL without triggering Next.js navigation (avoids Suspense freeze)
   const syncUrl = (cat: string, sub: string | null) => {
@@ -52,38 +56,6 @@ function CatalogContent({ initialProducts }: Props) {
     setActiveSubcategory(sub)
     syncUrl(activeCategory, sub)
   }
-
-  // Fetch category order+emojis from home-layout, subcategories from categories API
-  useEffect(() => {
-    Promise.all([
-      fetch('/api/admin/home-layout').then(r => r.json()).catch(() => []),
-      fetch('/api/admin/categories').then(r => r.json()).catch(() => []),
-    ]).then(([layout, cats]) => {
-      // Order + emojis from home layout
-      if (Array.isArray(layout) && layout.length > 0) {
-        setOrderedCats(layout.filter((l: any) => l.visible !== false).map((l: any) => l.name))
-        const emojiMap: Record<string, string> = {}
-        const imageMap: Record<string, string> = {}
-        layout.forEach((l: any) => {
-          emojiMap[l.name] = l.emoji || DEFAULT_EMOJI
-          if (l.imageUrl) imageMap[l.name] = l.imageUrl
-        })
-        setCatEmojis(emojiMap)
-        setCatImages(imageMap)
-      } else if (Array.isArray(cats)) {
-        setOrderedCats(cats.map((c: any) => c.name))
-      }
-      // Subcategories from categories API
-      if (Array.isArray(cats)) {
-        const subMap: Record<string, string[]> = {}
-        cats.forEach((c: any) => {
-          if (c.subcategories) subMap[c.name] = c.subcategories.map((s: any) => s.name)
-        })
-        setCatSubMap(subMap)
-      }
-      setCatsLoaded(true)
-    })
-  }, [])
 
   const categories = useMemo(() => {
     const productCats = Array.from(new Set(products.map((p) => p.category).filter(Boolean)))
@@ -501,10 +473,10 @@ function CatalogContent({ initialProducts }: Props) {
   )
 }
 
-export default function CatalogClient({ initialProducts }: Props) {
+export default function CatalogClient(props: Props) {
   return (
     <Suspense fallback={<div style={{ minHeight: '100vh' }} />}>
-      <CatalogContent initialProducts={initialProducts} />
+      <CatalogContent {...props} />
     </Suspense>
   )
 }
