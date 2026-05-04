@@ -24,7 +24,7 @@ export default async function CatalogPage() {
   const catImages: Record<string, string> = {}
 
   if (Array.isArray(layout) && layout.length > 0) {
-    orderedCats = layout.filter(l => l.visible !== false).map(l => l.name)
+    orderedCats = layout.filter(l => l.visible).map(l => l.name)
     layout.forEach(l => {
       catEmojis[l.name] = l.emoji || '📦'
       if (l.imageUrl) catImages[l.name] = l.imageUrl

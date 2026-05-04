@@ -60,10 +60,8 @@ function CatalogContent({ initialProducts, initialOrderedCats, initialCatEmojis,
   const categories = useMemo(() => {
     const productCats = Array.from(new Set(products.map((p) => p.category).filter(Boolean)))
     if (orderedCats.length > 0) {
-      // Use API order, then append any product categories not in the API list
       const ordered = orderedCats.filter(c => productCats.includes(c))
-      const remaining = productCats.filter(c => !orderedCats.includes(c)).sort()
-      return ['All', ...ordered, ...remaining]
+      return ['All', ...ordered]
     }
     return ['All', ...productCats.sort()]
   }, [products, orderedCats])
