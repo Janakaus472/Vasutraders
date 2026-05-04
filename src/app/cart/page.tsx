@@ -391,7 +391,8 @@ export default function CartPage() {
           @media (min-width: 768px) { .cart-table-header { display: grid; } }
           .cart-row { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; }
           @media (min-width: 768px) { .cart-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto auto; gap: 12px; align-items: center; padding: 16px 24px; } }
-          .cart-product-name { font-weight: 700; color: #1a1a1a; font-size: 15px; margin: 0 0 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+          .cart-product-name { font-weight: 700; color: #1a1a1a; font-size: 14px; margin: 0 0 2px; word-break: break-word; overflow-wrap: anywhere; line-height: 1.3; }
+          @media (min-width: 768px) { .cart-product-name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } }
           .cart-mobile-row-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-width: 0; }
           @media (min-width: 768px) { .cart-mobile-row-meta { display: contents; } }
         `}</style>
@@ -410,7 +411,7 @@ export default function CartPage() {
             </div>
 
             <div style={{ background: '#fff', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(92,45,15,0.10)', marginBottom: '24px' }}>
-              <div className="cart-table-header" style={{ gridTemplateColumns: '1fr auto auto auto auto', gap: '12px', padding: '14px 24px', background: '#5C2D0F', color: '#FFD4A0', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>
+              <div className="cart-table-header" style={{ gridTemplateColumns: 'minmax(0,1fr) auto auto auto auto', gap: '12px', padding: '14px 24px', background: '#5C2D0F', color: '#FFD4A0', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 <div>{lang === 'hi' ? 'उत्पाद' : 'Product'}</div>
                 <div style={{ textAlign: 'center' }}>{lang === 'hi' ? 'कीमत' : 'Price'}</div>
                 <div style={{ textAlign: 'center' }}>{lang === 'hi' ? 'मात्रा' : 'Qty'}</div>
