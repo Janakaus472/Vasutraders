@@ -57,14 +57,20 @@ const CATEGORY_SEO: Record<string, { description: string; keywords: string[] }> 
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const categories = await getCategories().catch(() => [])
+  const [categories, allProducts] = await Promise.all([
+    getCategories().catch(() => []),
+    getProducts().catch(() => []),
+  ])
   const category = categories.find(c => toSlug(c.name) === slug)
-  if (!category) return { title: 'Not Found' }
+  const categoryName = category?.name ??
+    Array.from(new Set(allProducts.map(p => p.category).filter(Boolean)))
+      .find(c => toSlug(c) === slug)
+  if (!categoryName) return { title: 'Not Found' }
 
-  const seo = CATEGORY_SEO[category.name]
-  const title = `${category.name} Wholesale Supplier in Indore | Vasu Traders`
+  const seo = CATEGORY_SEO[categoryName]
+  const title = `${categoryName} Wholesale Supplier in Indore | Vasu Traders`
   const description = seo?.description ||
-    `Buy ${category.name} wholesale from Vasu Traders, Indore. Quality products at bulk prices for retailers across India.`
+    `Buy ${categoryName} wholesale from Vasu Traders, Indore. Quality products at bulk prices for retailers across India.`
 
   return {
     title,
@@ -75,7 +81,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       url: `https://www.vasutraders.com/catalog/c/${slug}`,
-      images: [{ url: '/logo.png', alt: `${category.name} Wholesale — Vasu Traders Indore` }],
+      images: [{ url: '/logo.png', alt: `${categoryName} Wholesale — Vasu Traders Indore` }],
     },
     twitter: {
       card: 'summary_large_image',
@@ -95,16 +101,21 @@ export default async function CategoryPage({ params }: Props) {
     getProducts(),
   ])
   const category = categories.find(c => toSlug(c.name) === slug)
-  if (!category) notFound()
 
-  const products = allProducts.filter(p => p.category === category.name)
+  // Fall back to matching by product category field if not in categories table
+  const categoryName = category?.name ??
+    Array.from(new Set(allProducts.map(p => p.category).filter(Boolean)))
+      .find(c => toSlug(c) === slug)
+  if (!categoryName) notFound()
+
+  const products = allProducts.filter(p => p.category === categoryName)
   if (products.length === 0) notFound()
 
-  const activeSubs = category.subcategories.filter(sub =>
+  const activeSubs = (category?.subcategories ?? []).filter(sub =>
     products.some(p => p.subcategory === sub.name)
   )
 
-  const seo = CATEGORY_SEO[category.name]
+  const seo = CATEGORY_SEO[categoryName]
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -112,14 +123,14 @@ export default async function CategoryPage({ params }: Props) {
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.vasutraders.com' },
       { '@type': 'ListItem', position: 2, name: 'Catalog', item: 'https://www.vasutraders.com/catalog' },
-      { '@type': 'ListItem', position: 3, name: category.name, item: `https://www.vasutraders.com/catalog/c/${slug}` },
+      { '@type': 'ListItem', position: 3, name: categoryName, item: `https://www.vasutraders.com/catalog/c/${slug}` },
     ],
   }
 
   const itemListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: `${category.name} Wholesale Products — Vasu Traders`,
+    name: `${categoryName} Wholesale Products — Vasu Traders`,
     numberOfItems: products.length,
     itemListElement: products.slice(0, 20).map((p, i) => ({
       '@type': 'ListItem',
@@ -147,17 +158,17 @@ export default async function CategoryPage({ params }: Props) {
           <span>/</span>
           <Link href="/catalog" style={{ color: '#B91C1C', textDecoration: 'none', fontWeight: 600 }}>Catalog</Link>
           <span>/</span>
-          <span style={{ color: '#374151' }}>{category.name}</span>
+          <span style={{ color: '#374151' }}>{categoryName}</span>
         </nav>
 
         {/* Header */}
         <div style={{ marginBottom: '32px' }}>
           <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.8rem, 5vw, 2.8rem)', color: '#1a1a1a', margin: '0 0 12px', letterSpacing: '1px', lineHeight: 1.1 }}>
-            {category.name} — Wholesale Supplier
+            {categoryName} — Wholesale Supplier
           </h1>
           <p style={{ fontSize: '15px', color: '#4b5563', lineHeight: 1.7, maxWidth: '750px', margin: '0 0 16px' }}>
             {seo?.description ||
-              `Buy ${category.name} wholesale from Vasu Traders, Indore. Quality products at bulk prices for retailers across India.`}
+              `Buy ${categoryName} wholesale from Vasu Traders, Indore. Quality products at bulk prices for retailers across India.`}
           </p>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
             <span style={{ background: '#FEF2F2', color: '#B91C1C', fontSize: '13px', fontWeight: 700, padding: '6px 14px', borderRadius: '20px', border: '1px solid #FECACA' }}>
@@ -249,13 +260,13 @@ export default async function CategoryPage({ params }: Props) {
         {/* Bottom CTA */}
         <div style={{ background: '#FEF2F2', borderRadius: '12px', padding: '24px', marginBottom: '32px', border: '1px solid #FECACA', textAlign: 'center' }}>
           <p style={{ fontWeight: 700, fontSize: '16px', color: '#1a1a1a', margin: '0 0 8px' }}>
-            Looking for bulk pricing on {category.name}?
+            Looking for bulk pricing on {categoryName}?
           </p>
           <p style={{ color: '#6b7280', fontSize: '14px', margin: '0 0 16px' }}>
             Contact Vasu Traders for wholesale rates and minimum order details.
           </p>
           <a
-            href={`https://wa.me/919074000786?text=${encodeURIComponent(`Hi, I'd like to enquire about wholesale ${category.name} from Vasu Traders.`)}`}
+            href={`https://wa.me/919074000786?text=${encodeURIComponent(`Hi, I'd like to enquire about wholesale ${categoryName} from Vasu Traders.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '12px 28px', borderRadius: '6px', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}
