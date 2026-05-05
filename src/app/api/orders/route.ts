@@ -8,8 +8,7 @@ function generateOrderNumber(): string {
 }
 
 function isAdmin(req: NextRequest) {
-  const cookie = req.cookies.get('vt_admin')?.value
-  return cookie && cookie === process.env.ADMIN_SECRET
+  return req.cookies.get('vt_admin')?.value === '1'
 }
 
 export async function POST(req: NextRequest) {

@@ -18,13 +18,11 @@ export function getSupabase(): SupabaseClient {
   return _client
 }
 
-// Admin client uses service key — bypasses RLS for writes
+// Admin client uses service key — bypasses RLS for writes.
+// SUPABASE_SERVICE_KEY must NOT have a NEXT_PUBLIC_ prefix — it is server-only.
 export function getAdminSupabase(): SupabaseClient {
   if (!_adminClient) {
-    const serviceKey =
-      process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY ||
-      process.env.SUPABASE_SERVICE_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    const serviceKey = process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     _adminClient = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       serviceKey,
