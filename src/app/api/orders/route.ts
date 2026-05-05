@@ -2,7 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { saveOrder, fetchOrders } from '@/lib/supabase/orders'
 
 function generateOrderNumber(): string {
-  return 'VT' + Date.now().toString().slice(-6)
+  const ts = Date.now().toString().slice(-6)
+  const rand = Math.floor(Math.random() * 100).toString().padStart(2, '0')
+  return 'VT' + ts + rand
+}
+
+function isAdmin(req: NextRequest) {
+  const cookie = req.cookies.get('vt_admin')?.value
+  return cookie && cookie === process.env.ADMIN_SECRET
 }
 
 export async function POST(req: NextRequest) {
@@ -36,6 +43,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  if (!isAdmin(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
     const { id, status } = await req.json()
     const { updateOrderStatus } = await import('@/lib/supabase/orders')
@@ -47,7 +55,8 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!isAdmin(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
     const orders = await fetchOrders()
     return NextResponse.json({ orders })

@@ -109,7 +109,6 @@ export default async function CategoryPage({ params }: Props) {
   if (!categoryName) notFound()
 
   const products = allProducts.filter(p => p.category === categoryName)
-  if (products.length === 0) notFound()
 
   const activeSubs = (category?.subcategories ?? []).filter(sub =>
     products.some(p => p.subcategory === sub.name)
@@ -204,7 +203,21 @@ export default async function CategoryPage({ params }: Props) {
           </div>
         )}
 
-        {/* Product grid */}
+        {/* Product grid or empty state */}
+        {products.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '80px 0 48px' }}>
+            <div style={{ fontSize: '4rem', marginBottom: '16px' }}>📦</div>
+            <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.8rem', color: '#5C2D0F', marginBottom: '8px' }}>
+              Coming Soon
+            </h2>
+            <p style={{ color: '#8B4513', fontSize: '15px', marginBottom: '24px' }}>
+              We&apos;re stocking up on {categoryName}. Check back soon or contact us for availability.
+            </p>
+            <Link href="/catalog" style={{ background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff', fontWeight: 700, padding: '14px 32px', borderRadius: '12px', textDecoration: 'none', fontSize: '16px' }}>
+              Browse All Products
+            </Link>
+          </div>
+        ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(180px, 45%), 1fr))', gap: '16px', marginBottom: '48px' }}>
           {products.map(product => {
             const imgBg = CATEGORY_BG[product.category] || 'linear-gradient(135deg,#f8f7f4,#efefed)'
@@ -256,6 +269,7 @@ export default async function CategoryPage({ params }: Props) {
             )
           })}
         </div>
+        )}
 
         {/* Bottom CTA */}
         <div style={{ background: '#FEF2F2', borderRadius: '12px', padding: '24px', marginBottom: '32px', border: '1px solid #FECACA', textAlign: 'center' }}>

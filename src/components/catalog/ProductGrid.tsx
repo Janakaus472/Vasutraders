@@ -48,21 +48,27 @@ export default function ProductGrid({ products, cartItems, onAdd, onRemove, onSe
       <div className="product-grid">
         {products.map((product, index) => {
           const hasVariants = (product.bulkVariants?.length ?? 0) > 0
-          // Only count the base product (no variantId) towards the card quantity
           const baseCartItem = cartItems.find((i) => i.productId === product.id && !('variantId' in i && i.variantId))
           const baseQty = baseCartItem?.quantity || 0
+          // For variant products show total qty across all variants so the badge is accurate
+          const totalCartQty = hasVariants
+            ? cartItems.filter(i => i.productId === product.id).reduce((s, i) => s + i.quantity, 0)
+            : baseQty
           return (
             <ProductCard
               key={product.id}
               product={product}
-              cartQuantity={baseQty}
+              cartQuantity={totalCartQty}
               onAdd={() => {
-                // First tap on a product with variants → open modal to pick an option
-                if (hasVariants && baseQty === 0) { onOpen(product); return }
+                // Variant products always open modal — card +/− controls only manage base
+                if (hasVariants) { onOpen(product); return }
                 onAdd(product.id)
               }}
-              onRemove={() => onRemove(product.id)}
-              onSetQuantity={onSetQuantity ? (qty) => onSetQuantity(product.id, qty) : undefined}
+              onRemove={() => {
+                if (hasVariants) { onOpen(product); return }
+                onRemove(product.id)
+              }}
+              onSetQuantity={hasVariants ? undefined : (onSetQuantity ? (qty) => onSetQuantity(product.id, qty) : undefined)}
               onOpen={() => onOpen(product)}
               index={index}
               hideCategory={hideCategory}

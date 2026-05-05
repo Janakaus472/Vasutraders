@@ -105,12 +105,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem('vt-lang') as Lang
-    if (saved === 'hi' || saved === 'en') setLangState(saved)
+    if (saved === 'hi' || saved === 'en') {
+      setLangState(saved)
+      document.documentElement.lang = saved
+    }
   }, [])
 
   const setLang = (l: Lang) => {
     setLangState(l)
     localStorage.setItem('vt-lang', l)
+    document.documentElement.lang = l
   }
 
   const t = translations[lang]

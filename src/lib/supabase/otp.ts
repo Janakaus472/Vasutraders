@@ -1,10 +1,25 @@
 import { adminSupabase } from './client'
 
 export async function saveOtp(phone: string, code: string): Promise<void> {
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString()
+  const now = Date.now()
+  const expiresAt = new Date(now + 10 * 60 * 1000).toISOString()
+  const createdAt = new Date(now).toISOString()
+
+  // Server-side rate limit: block resend within 30 seconds
+  const { data: existing } = await adminSupabase
+    .from('phone_otps')
+    .select('created_at')
+    .eq('phone', phone)
+    .single()
+
+  if (existing) {
+    const secondsSinceSend = (now - new Date(existing.created_at).getTime()) / 1000
+    if (secondsSinceSend < 30) throw new Error('Please wait before requesting a new OTP')
+  }
+
   const { error } = await adminSupabase
     .from('phone_otps')
-    .upsert({ phone, code, expires_at: expiresAt, attempts: 0, created_at: new Date().toISOString() })
+    .upsert({ phone, code, expires_at: expiresAt, attempts: 0, created_at: createdAt })
   if (error) throw error
 }
 

@@ -186,6 +186,11 @@ export default function AnimatedLogo({ size = 200 }: AnimatedLogoProps) {
           background: radial-gradient(closest-side, #6ea0ff, #1e3a85);
           color: #fff;
         }
+
+        @media (prefers-reduced-motion: reduce) {
+          .vt-stage.on { animation: none; opacity: 1; transform: scale(1); }
+          .vt-halo, .vt-glow-ring, .vt-orbit-ring, .vt-logo-box, .vt-emblem-orbit, .vt-emblem { animation: none; }
+        }
       `}</style>
 
       <div

@@ -401,7 +401,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
               </div>
               {activeQty > 0 && (
                 <span style={{ color: '#B91C1C', fontWeight: 700, fontSize: '13px' }}>
-                  ✓ {activeQty} {selectedVariant ? `× ${selectedVariant.quantity} ${selectedVariant.unit}` : product.unit} {t.itemsAdded}
+                  ✓ {activeQty} {selectedVariant ? `× ${selectedVariant.quantity} ${selectedVariant.unit}` : product.unit} {activeQty === 1 ? (lang === 'hi' ? 'जोड़ा' : 'item ready') : t.itemsAdded}
                 </span>
               )}
             </div>

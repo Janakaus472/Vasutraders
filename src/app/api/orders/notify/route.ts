@@ -3,6 +3,13 @@ import { NextRequest, NextResponse } from 'next/server'
 const OWNER_EMAIL = 'janakaus472@gmail.com'
 
 export async function POST(req: NextRequest) {
+  // Only allow calls from within the same origin (internal server-to-server)
+  const origin = req.headers.get('origin')
+  const host = req.headers.get('host')
+  if (origin && host && !origin.includes(host)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) return NextResponse.json({ error: 'No API key' }, { status: 500 })
 

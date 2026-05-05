@@ -22,17 +22,20 @@ const CartContext = createContext<CartContextValue | null>(null)
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
+  const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem(CART_STORAGE_KEY)
       if (stored) setItems(JSON.parse(stored))
     } catch {}
+    setHydrated(true)
   }, [])
 
   useEffect(() => {
+    if (!hydrated) return
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
-  }, [items])
+  }, [items, hydrated])
 
   const addItem = (productId: string, variantId?: string) => {
     setItems((prev) => {

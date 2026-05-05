@@ -366,12 +366,12 @@ export default function HomePageClient({ categories, totalProducts, layout, stor
               <Link href="/catalog" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
                 {lang === 'hi' ? 'सभी उत्पाद' : 'All Products'}
               </Link>
-              <Link href="#about" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+              <a href="/#about" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
                 {lang === 'hi' ? 'हमारे बारे में' : 'About Us'}
-              </Link>
-              <Link href="#contact" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+              </a>
+              <a href="/#contact" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
                 {lang === 'hi' ? 'संपर्क करें' : 'Contact Us'}
-              </Link>
+              </a>
             </div>
           </div>
           <div>

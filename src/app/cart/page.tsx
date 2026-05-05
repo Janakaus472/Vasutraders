@@ -79,6 +79,7 @@ export default function CartPage() {
 
   const [orderNumber, setOrderNumber] = useState('')
   const [successItems, setSuccessItems] = useState<{ name: string; quantity: number; unit: string }[]>([])
+  const [waLink, setWaLink] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -123,11 +124,17 @@ export default function CartPage() {
       setOrderNumber(order.order_number)
       setSuccessItems(order.items)
 
-      // Build WhatsApp message and open immediately
+      // Build WhatsApp message — stored in state so user taps the button themselves
+      // (auto window.open after await is blocked by mobile browsers)
       const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''
-      const orderItems = (order.items as { name: string; quantity: number; unit: string }[])
-        .map((item: { name: string; quantity: number; unit: string }) => `• ${item.name} × ${item.quantity} ${item.unit}`)
+      const orderItems = (order.items as { name: string; quantity: number; unit: string; price?: number }[])
+        .map((item) => {
+          const priceStr = item.price && item.price > 0 ? ` — ₹${(item.price * item.quantity).toFixed(0)}` : ''
+          return `• ${item.name} × ${item.quantity} ${item.unit}${priceStr}`
+        })
         .join('\n')
+      const priceTotal = (order.items as { price?: number; quantity: number }[])
+        .reduce((s: number, i) => s + (i.price || 0) * i.quantity, 0)
       const waMessage = [
         `🛒 *New Order — ${order.order_number}*`,
         '',
@@ -138,10 +145,11 @@ export default function CartPage() {
         '',
         `*Items:*`,
         orderItems,
+        priceTotal > 0 ? `\n💰 *Total: ₹${priceTotal.toFixed(0)}*` : '',
         '',
         `Please confirm this order. Thank you!`,
       ].filter(Boolean).join('\n')
-      window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`, '_blank')
+      setWaLink(`https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`)
 
       // Send email to owner (fire and forget)
       fetch('/api/orders/notify', {
@@ -164,7 +172,7 @@ export default function CartPage() {
       clearCart()
       setStep('success')
     } catch {
-      setError('कुछ गलत हुआ। दोबारा कोशिश करें।')
+      setError(lang === 'hi' ? 'कुछ गलत हुआ। दोबारा कोशिश करें।' : 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -270,14 +278,14 @@ export default function CartPage() {
             fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.5rem, 8vw, 4rem)',
             color: '#15803d', letterSpacing: '1px', marginBottom: '8px',
           }}>
-            Order Placed!
+            {lang === 'hi' ? 'ऑर्डर हो गया!' : 'Order Placed!'}
           </h1>
           <div style={{
             background: 'rgba(255,240,230,0.95)', border: '2px solid #FFD4A0',
             borderRadius: '20px', padding: '28px 24px', margin: '24px 0',
           }}>
             <p style={{ fontSize: '15px', color: '#8B4513', marginBottom: '8px', fontWeight: 600 }}>
-              Order Number
+              {lang === 'hi' ? 'ऑर्डर नंबर' : 'Order Number'}
             </p>
             <p style={{
               fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.5rem',
@@ -286,26 +294,46 @@ export default function CartPage() {
               {orderNumber}
             </p>
             <p style={{ fontSize: '18px', color: '#5C2D0F', fontWeight: 700, lineHeight: 1.6 }}>
-              Thank you for placing an order with us!<br />
-              We will confirm it shortly on WhatsApp.
+              {lang === 'hi' ? 'ऑर्डर देने के लिए धन्यवाद! हम जल्द WhatsApp पर पुष्टि करेंगे।' : 'Thank you for placing an order with us! We will confirm it shortly on WhatsApp.'}
             </p>
+            {successItems.length > 0 && (
+              <div style={{ marginTop: '16px', borderTop: '1px solid #FFD4A0', paddingTop: '16px', textAlign: 'left' }}>
+                {successItems.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '14px', color: '#5C2D0F', borderBottom: i < successItems.length - 1 ? '1px solid #FFE0C0' : 'none' }}>
+                    <span style={{ fontWeight: 600 }}>{item.name}</span>
+                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1rem' }}>× {item.quantity} {item.unit}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href={`tel:${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''}`} style={{
-              background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff',
-              fontWeight: 800, padding: '16px 32px', borderRadius: '14px',
-              fontSize: '18px', textDecoration: 'none',
-              boxShadow: '0 8px 24px rgba(255,107,0,0.4)',
-            }}>
-              📞 Call Us
-            </a>
-            <Link href="/" style={{
-              background: 'rgba(92,45,15,0.1)', color: '#5C2D0F',
-              fontWeight: 700, padding: '16px 32px', borderRadius: '14px',
-              fontSize: '18px', textDecoration: 'none', border: '2px solid #FFD4A0',
-            }}>
-              🏠 Home
-            </Link>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'stretch' }}>
+            {waLink && (
+              <a href={waLink} target="_blank" rel="noopener noreferrer" style={{
+                background: 'linear-gradient(135deg, #25D366, #128C7E)', color: '#fff',
+                fontWeight: 800, padding: '18px 32px', borderRadius: '14px',
+                fontSize: '18px', textDecoration: 'none', textAlign: 'center',
+                boxShadow: '0 8px 24px rgba(37,211,102,0.4)',
+              }}>
+                💬 {lang === 'hi' ? 'WhatsApp पर भेजें' : 'Send Order on WhatsApp'}
+              </a>
+            )}
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <a href={`tel:${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''}`} style={{
+                background: 'rgba(92,45,15,0.1)', color: '#5C2D0F',
+                fontWeight: 700, padding: '14px 28px', borderRadius: '14px',
+                fontSize: '16px', textDecoration: 'none', border: '2px solid #FFD4A0',
+              }}>
+                📞 {lang === 'hi' ? 'कॉल करें' : 'Call Us'}
+              </a>
+              <Link href="/" style={{
+                background: 'rgba(92,45,15,0.1)', color: '#5C2D0F',
+                fontWeight: 700, padding: '14px 28px', borderRadius: '14px',
+                fontSize: '16px', textDecoration: 'none', border: '2px solid #FFD4A0',
+              }}>
+                🏠 {lang === 'hi' ? 'होम' : 'Home'}
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -486,7 +514,7 @@ export default function CartPage() {
             </Link>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => setStep(hasSavedDetails ? 'review' : 'details')} style={{ background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff', border: 'none', cursor: 'pointer', padding: '16px 32px', borderRadius: '16px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 'clamp(16px, 4vw, 20px)', boxShadow: '0 8px 32px rgba(255,107,0,0.45)', display: 'flex', alignItems: 'center', gap: '12px', width: '100%', justifyContent: 'center' }}>
+              <button onClick={() => setStep('details')} style={{ background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff', border: 'none', cursor: 'pointer', padding: '16px 32px', borderRadius: '16px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 'clamp(16px, 4vw, 20px)', boxShadow: '0 8px 32px rgba(255,107,0,0.45)', display: 'flex', alignItems: 'center', gap: '12px', width: '100%', justifyContent: 'center' }}>
                 {lang === 'hi' ? 'ऑर्डर पक्का करें →' : 'Confirm Order →'}
               </button>
             </div>
@@ -596,11 +624,16 @@ export default function CartPage() {
               <div>
                 <label style={LABEL_STYLE}>📱 Mobile Number *</label>
                 <input type="tel" inputMode="numeric" pattern="[0-9]*" maxLength={10} value={details.phone} onChange={e => {
-                    setDetails(d => ({ ...d, phone: e.target.value.replace(/\D/g, '') }))
+                    let v = e.target.value.replace(/\D/g, '')
+                    // Strip leading 91 country code if pasted with it
+                    if (v.length === 12 && v.startsWith('91')) v = v.slice(2)
+                    if (v.length > 10) v = v.slice(0, 10)
+                    setDetails(d => ({ ...d, phone: v }))
                     setWaVerified(false)
                     setOtpSent(false)
                     setOtpValue('')
                     setOtpError('')
+                    setResendTimer(0)
                   }} placeholder="10-digit number" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
                 {details.phone && !validPhone && (
                   <p style={{ color: '#ef4444', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>Enter a valid Indian mobile number (starts with 6-9)</p>
