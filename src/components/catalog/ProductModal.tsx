@@ -26,8 +26,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
   const variants = product.bulkVariants || []
 
   // null = base product selected, string = variant id selected
-  // Default to first variant when variants exist so base pill isn't accidentally added
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(variants.length > 0 ? variants[0].id : null)
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
   const selectedVariant = variants.find(v => v.id === selectedVariantId) ?? null
 
   // Cart quantity for the currently selected variant (or base product)
@@ -36,9 +35,9 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
     : null
   const activeQty = selectedVariantId ? (variantCartItem?.quantity || 0) : cartQuantity
 
-  // Price shown in the price box
-  const activePrice = selectedVariant?.price !== null && selectedVariant?.price !== undefined
-    ? selectedVariant.price
+  // Price shown in the price box — never fall back to base price when a bulk variant is selected
+  const activePrice = selectedVariant
+    ? (selectedVariant.price !== null && selectedVariant.price !== undefined ? selectedVariant.price : 0)
     : product.pricePerUnit
 
   // Image shown in left panel

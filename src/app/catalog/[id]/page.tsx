@@ -210,7 +210,7 @@ export default async function ProductPage({ params }: Props) {
                 </p>
               </div>
               <Link
-                href={`/catalog?category=${encodeURIComponent(product.category)}`}
+                href={`/catalog/c/${toSlug(product.category)}`}
                 style={{ color: '#B91C1C', fontWeight: 700, fontSize: '13px', textDecoration: 'none', flexShrink: 0 }}
               >
                 View all →
@@ -227,8 +227,17 @@ export default async function ProductPage({ params }: Props) {
 
         {/* Back link */}
         <div style={{ marginTop: '40px', paddingTop: '24px', borderTop: '1px solid #f0f0f0' }}>
-          <Link href="/catalog" style={{ color: '#B91C1C', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>
-            ← Back to Catalog
+          <Link
+            href={
+              product.subcategory && product.category
+                ? `/catalog/c/${toSlug(product.category)}/${toSlug(product.subcategory)}`
+                : product.category
+                  ? `/catalog/c/${toSlug(product.category)}`
+                  : '/catalog'
+            }
+            style={{ color: '#B91C1C', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}
+          >
+            ← Back to {product.subcategory || product.category || 'Catalog'}
           </Link>
         </div>
 
