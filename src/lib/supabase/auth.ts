@@ -1,4 +1,4 @@
-import { supabase } from './client'
+import { adminSupabase } from './client'
 import { Customer } from '@/types/user'
 
 export async function lookupPhone(phone: string): Promise<Customer | null> {
@@ -7,7 +7,7 @@ export async function lookupPhone(phone: string): Promise<Customer | null> {
   if (normalized.startsWith('0')) normalized = '61' + normalized.slice(1)
   if (!normalized.startsWith('61')) normalized = '61' + normalized
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('customers')
     .select('*')
     .eq('phone', normalized)

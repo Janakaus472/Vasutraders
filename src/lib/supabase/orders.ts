@@ -1,4 +1,4 @@
-import { supabase } from './client'
+import { supabase, adminSupabase } from './client'
 
 export interface OrderItem {
   name: string
@@ -32,7 +32,7 @@ export async function saveOrder(payload: OrderPayload): Promise<Order> {
 }
 
 export async function fetchOrders(): Promise<Order[]> {
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('orders')
     .select('*')
     .order('created_at', { ascending: false })
@@ -41,6 +41,6 @@ export async function fetchOrders(): Promise<Order[]> {
 }
 
 export async function updateOrderStatus(id: string, status: string): Promise<void> {
-  const { error } = await supabase.from('orders').update({ status }).eq('id', id)
+  const { error } = await adminSupabase.from('orders').update({ status }).eq('id', id)
   if (error) throw error
 }
