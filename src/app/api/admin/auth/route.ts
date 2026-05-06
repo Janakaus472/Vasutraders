@@ -1,26 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { verifyAdminLogin } from '@/lib/supabase/admin-credentials'
 
-export async function POST(req: NextRequest) {
-  const { username, password } = await req.json()
-
-  const correctUser = process.env.ADMIN_USER
-  const correctPass = process.env.ADMIN_PASSWORD
-
-  if (!correctUser || !correctPass) {
-    return NextResponse.json({ ok: false, error: 'Server misconfigured' }, { status: 500 })
-  }
-
-  if (username !== correctUser || password !== correctPass) {
-    return NextResponse.json({ ok: false, error: 'Invalid credentials' }, { status: 401 })
-  }
-
-  const res = NextResponse.json({ ok: true })
+function setAdminCookie(res: NextResponse) {
   res.cookies.set('vt_admin', '1', {
     httpOnly: true,
     sameSite: 'strict',
     maxAge: 24 * 60 * 60,
     path: '/',
   })
+}
+
+export async function POST(req: NextRequest) {
+  const { username, password } = await req.json()
+  const ok = await verifyAdminLogin(username, password)
+  if (!ok) return NextResponse.json({ ok: false, error: 'Invalid credentials' }, { status: 401 })
+  const res = NextResponse.json({ ok: true })
+  setAdminCookie(res)
   return res
 }
 

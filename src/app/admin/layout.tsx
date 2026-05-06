@@ -3,7 +3,7 @@
 import { adminLogout } from '@/hooks/useAdminGuard'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 const SESSION_KEY = 'vt_admin_session'
@@ -18,18 +18,36 @@ const navItems = [
   { href: '/admin/orders', label: 'Orders', icon: '🛒' },
   { href: '/admin/analysis', label: 'Analysis', icon: '📈' },
   { href: '/admin/tracking', label: 'Tracking', icon: '📊' },
+  { href: '/admin/security', label: 'Security', icon: '🔐' },
 ]
+
+const inputStyle: React.CSSProperties = {
+  width: '100%', padding: '13px 16px', fontSize: '16px',
+  borderRadius: '12px', border: '2px solid #FFD4A0',
+  background: '#FFFAF5', color: '#1a1a1a',
+  fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600,
+  boxSizing: 'border-box',
+}
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+
+  // Login state
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [loginLoading, setLoginLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Forgot password state machine: 'login' | 'forgot' | 'reset'
+  const [view, setView] = useState<'login' | 'forgot' | 'reset'>('login')
+  const [recoveryEmail, setRecoveryEmail] = useState('')
+  const [otpCode, setOtpCode] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [forgotLoading, setForgotLoading] = useState(false)
 
   useEffect(() => {
     try {
@@ -38,7 +56,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         const session = JSON.parse(raw)
         if (session.expires > Date.now()) {
           setIsAdmin(true)
-          // Re-set the httpOnly cookie in case it expired or was never set
           if (session.u && session.p) {
             fetch('/api/admin/auth', {
               method: 'POST',
@@ -58,8 +75,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
-    setLoginLoading(true)
+    setError(''); setLoginLoading(true)
     try {
       const res = await fetch('/api/admin/auth', {
         method: 'POST',
@@ -67,27 +83,55 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         body: JSON.stringify({ username, password }),
       })
       const data = await res.json()
-      if (!res.ok || !data.ok) {
-        setError('Invalid username or password.')
-        setPassword('')
-        return
-      }
+      if (!res.ok || !data.ok) { setError('Invalid username or password.'); setPassword(''); return }
       localStorage.setItem(SESSION_KEY, JSON.stringify({ expires: Date.now() + SESSION_TTL, u: username, p: password }))
       setIsAdmin(true)
-    } catch {
-      setError('Connection error. Try again.')
-    } finally {
-      setLoginLoading(false)
-    }
+    } catch { setError('Connection error. Try again.') }
+    finally { setLoginLoading(false) }
+  }
+
+  const handleForgot = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(''); setForgotLoading(true)
+    try {
+      const res = await fetch('/api/admin/auth/forgot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: recoveryEmail }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error); return }
+      setView('reset')
+    } catch { setError('Connection error. Try again.') }
+    finally { setForgotLoading(false) }
+  }
+
+  const handleReset = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(''); setForgotLoading(true)
+    try {
+      const res = await fetch('/api/admin/auth/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: otpCode, new_password: newPassword, confirm_password: confirmPassword }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error); return }
+      // Auto-login
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ expires: Date.now() + SESSION_TTL, u: data.username, p: newPassword }))
+      setIsAdmin(true)
+    } catch { setError('Connection error. Try again.') }
+    finally { setForgotLoading(false) }
   }
 
   const handleLogout = () => {
     adminLogout()
-    // Clear the httpOnly cookie server-side
     fetch('/api/admin/auth', { method: 'DELETE' }).catch(() => {})
-    setIsAdmin(false)
-    setUsername('')
-    setPassword('')
+    setIsAdmin(false); setUsername(''); setPassword(''); setView('login')
+  }
+
+  const resetForgotFlow = () => {
+    setView('login'); setError(''); setRecoveryEmail(''); setOtpCode(''); setNewPassword(''); setConfirmPassword('')
   }
 
   if (isLoading) {
@@ -103,72 +147,91 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!isAdmin) {
     return (
-      <div style={{
-        minHeight: '100vh', display: 'flex', alignItems: 'center',
-        justifyContent: 'center', padding: '24px 16px',
-        fontFamily: "'Plus Jakarta Sans', sans-serif",
-      }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
           .login-input { outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
           .login-input:focus { border-color: #FF6B00 !important; box-shadow: 0 0 0 3px rgba(255,107,0,0.15) !important; }
         `}</style>
-        <div style={{
-          background: 'rgba(255,245,235,0.96)', backdropFilter: 'blur(20px)',
-          borderRadius: '24px', padding: '40px 32px', width: '100%', maxWidth: '400px',
-          boxShadow: '0 20px 60px rgba(92,45,15,0.2), 0 0 0 1px rgba(194,105,26,0.15)',
-        }}>
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <Image
-              src="/logo.png"
-              alt="Vasu Traders"
-              width={80}
-              height={80}
-              style={{ borderRadius: '50%', boxShadow: '0 8px 24px rgba(255,107,0,0.35)', marginBottom: '16px' }}
-            />
-            <h1 style={{
-              fontFamily: "'Bebas Neue', sans-serif", fontSize: '2rem',
-              color: '#5C2D0F', letterSpacing: '2px', margin: '0 0 4px',
-            }}>VASU TRADERS</h1>
+        <div style={{ background: 'rgba(255,245,235,0.96)', backdropFilter: 'blur(20px)', borderRadius: '24px', padding: '40px 32px', width: '100%', maxWidth: '400px', boxShadow: '0 20px 60px rgba(92,45,15,0.2), 0 0 0 1px rgba(194,105,26,0.15)' }}>
+
+          {/* Logo */}
+          <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <Image src="/logo.png" alt="Vasu Traders" width={80} height={80} style={{ borderRadius: '50%', boxShadow: '0 8px 24px rgba(255,107,0,0.35)', marginBottom: '16px' }} />
+            <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2rem', color: '#5C2D0F', letterSpacing: '2px', margin: '0 0 4px' }}>VASU TRADERS</h1>
             <p style={{ color: '#8B4513', fontSize: '13px', fontWeight: 600, margin: 0 }}>Admin Panel</p>
           </div>
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div>
-              <label style={{ display: 'block', fontWeight: 700, fontSize: '13px', color: '#5C2D0F', marginBottom: '7px' }}>👤 Username</label>
-              <input type="text" className="login-input" value={username}
-                onChange={e => { setUsername(e.target.value); setError('') }}
-                placeholder="Enter username" autoFocus autoComplete="username"
-                style={{ width: '100%', padding: '13px 16px', fontSize: '16px', borderRadius: '12px', border: '2px solid #FFD4A0', background: '#FFFAF5', color: '#1a1a1a', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, boxSizing: 'border-box' }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', fontWeight: 700, fontSize: '13px', color: '#5C2D0F', marginBottom: '7px' }}>🔑 Password</label>
-              <input type="password" className="login-input" value={password}
-                onChange={e => { setPassword(e.target.value); setError('') }}
-                placeholder="Enter password" autoComplete="current-password"
-                style={{ width: '100%', padding: '13px 16px', fontSize: '16px', borderRadius: '12px', border: '2px solid #FFD4A0', background: '#FFFAF5', color: '#1a1a1a', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, boxSizing: 'border-box' }}
-              />
-            </div>
-            {error && (
-              <div style={{ background: '#FEE2E2', border: '1px solid #FECACA', borderRadius: '10px', padding: '10px 14px', color: '#DC2626', fontSize: '13px', fontWeight: 600 }}>
-                ⚠️ {error}
+
+          {/* LOGIN VIEW */}
+          {view === 'login' && (
+            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '13px', color: '#5C2D0F', marginBottom: '7px' }}>👤 Username</label>
+                <input type="text" className="login-input" value={username} onChange={e => { setUsername(e.target.value); setError('') }} placeholder="Enter username" autoFocus autoComplete="username" style={inputStyle} />
               </div>
-            )}
-            <button type="submit" disabled={!username.trim() || !password || loginLoading}
-              style={{
-                width: '100%', padding: '15px',
-                background: (username.trim() && password && !loginLoading) ? 'linear-gradient(135deg, #FF6B00, #C2410C)' : '#E5E7EB',
-                color: (username.trim() && password && !loginLoading) ? '#fff' : '#9CA3AF',
-                border: 'none', borderRadius: '14px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '15px',
-                cursor: (username.trim() && password && !loginLoading) ? 'pointer' : 'not-allowed',
-                boxShadow: (username.trim() && password && !loginLoading) ? '0 6px 20px rgba(255,107,0,0.35)' : 'none',
-                transition: 'all 0.2s', marginTop: '4px',
-              }}
-            >
-              {loginLoading ? '⏳ Verifying...' : 'Login →'}
-            </button>
-          </form>
+              <div>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '13px', color: '#5C2D0F', marginBottom: '7px' }}>🔑 Password</label>
+                <input type="password" className="login-input" value={password} onChange={e => { setPassword(e.target.value); setError('') }} placeholder="Enter password" autoComplete="current-password" style={inputStyle} />
+              </div>
+              {error && <div style={{ background: '#FEE2E2', border: '1px solid #FECACA', borderRadius: '10px', padding: '10px 14px', color: '#DC2626', fontSize: '13px', fontWeight: 600 }}>⚠️ {error}</div>}
+              <button type="submit" disabled={!username.trim() || !password || loginLoading}
+                style={{ width: '100%', padding: '15px', background: (username.trim() && password && !loginLoading) ? 'linear-gradient(135deg, #FF6B00, #C2410C)' : '#E5E7EB', color: (username.trim() && password && !loginLoading) ? '#fff' : '#9CA3AF', border: 'none', borderRadius: '14px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '15px', cursor: (username.trim() && password && !loginLoading) ? 'pointer' : 'not-allowed', boxShadow: (username.trim() && password && !loginLoading) ? '0 6px 20px rgba(255,107,0,0.35)' : 'none', transition: 'all 0.2s', marginTop: '4px' }}>
+                {loginLoading ? '⏳ Verifying...' : 'Login →'}
+              </button>
+              <button type="button" onClick={() => { setView('forgot'); setError('') }} style={{ background: 'none', border: 'none', color: '#8B4513', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline', padding: '4px 0' }}>
+                Forgot password?
+              </button>
+            </form>
+          )}
+
+          {/* FORGOT VIEW */}
+          {view === 'forgot' && (
+            <form onSubmit={handleForgot} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <p style={{ margin: '0 0 4px', fontSize: '14px', color: '#5C2D0F', fontWeight: 600 }}>Enter your recovery email and we&apos;ll send you a reset code.</p>
+              <div>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '13px', color: '#5C2D0F', marginBottom: '7px' }}>📧 Recovery Email</label>
+                <input type="email" className="login-input" value={recoveryEmail} onChange={e => { setRecoveryEmail(e.target.value); setError('') }} placeholder="your@email.com" autoFocus style={inputStyle} />
+              </div>
+              {error && <div style={{ background: '#FEE2E2', border: '1px solid #FECACA', borderRadius: '10px', padding: '10px 14px', color: '#DC2626', fontSize: '13px', fontWeight: 600 }}>⚠️ {error}</div>}
+              <button type="submit" disabled={!recoveryEmail.trim() || forgotLoading}
+                style={{ width: '100%', padding: '15px', background: (recoveryEmail.trim() && !forgotLoading) ? 'linear-gradient(135deg, #FF6B00, #C2410C)' : '#E5E7EB', color: (recoveryEmail.trim() && !forgotLoading) ? '#fff' : '#9CA3AF', border: 'none', borderRadius: '14px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '15px', cursor: (recoveryEmail.trim() && !forgotLoading) ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>
+                {forgotLoading ? '⏳ Sending...' : 'Send Reset Code →'}
+              </button>
+              <button type="button" onClick={resetForgotFlow} style={{ background: 'none', border: 'none', color: '#8B4513', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline', padding: '4px 0' }}>
+                ← Back to login
+              </button>
+            </form>
+          )}
+
+          {/* RESET VIEW */}
+          {view === 'reset' && (
+            <form onSubmit={handleReset} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <p style={{ margin: '0 0 4px', fontSize: '14px', color: '#166534', fontWeight: 600, background: '#F0FDF4', padding: '10px 14px', borderRadius: '10px', border: '1px solid #BBF7D0' }}>
+                ✅ Code sent to {recoveryEmail}
+              </p>
+              <div>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '13px', color: '#5C2D0F', marginBottom: '7px' }}>🔢 6-Digit Code</label>
+                <input type="text" className="login-input" value={otpCode} onChange={e => { setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setError('') }} placeholder="123456" autoFocus inputMode="numeric" style={{ ...inputStyle, letterSpacing: '6px', fontSize: '22px', textAlign: 'center' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '13px', color: '#5C2D0F', marginBottom: '7px' }}>🔒 New Password</label>
+                <input type="password" className="login-input" value={newPassword} onChange={e => { setNewPassword(e.target.value); setError('') }} placeholder="New password" autoComplete="new-password" style={inputStyle} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '13px', color: '#5C2D0F', marginBottom: '7px' }}>🔒 Confirm Password</label>
+                <input type="password" className="login-input" value={confirmPassword} onChange={e => { setConfirmPassword(e.target.value); setError('') }} placeholder="Confirm new password" autoComplete="new-password" style={inputStyle} />
+              </div>
+              {error && <div style={{ background: '#FEE2E2', border: '1px solid #FECACA', borderRadius: '10px', padding: '10px 14px', color: '#DC2626', fontSize: '13px', fontWeight: 600 }}>⚠️ {error}</div>}
+              <button type="submit" disabled={otpCode.length !== 6 || !newPassword || !confirmPassword || forgotLoading}
+                style={{ width: '100%', padding: '15px', background: (otpCode.length === 6 && newPassword && confirmPassword && !forgotLoading) ? 'linear-gradient(135deg, #FF6B00, #C2410C)' : '#E5E7EB', color: (otpCode.length === 6 && newPassword && confirmPassword && !forgotLoading) ? '#fff' : '#9CA3AF', border: 'none', borderRadius: '14px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '15px', cursor: (otpCode.length === 6 && newPassword && confirmPassword && !forgotLoading) ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>
+                {forgotLoading ? '⏳ Resetting...' : 'Reset Password →'}
+              </button>
+              <button type="button" onClick={resetForgotFlow} style={{ background: 'none', border: 'none', color: '#8B4513', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline', padding: '4px 0' }}>
+                ← Back to login
+              </button>
+            </form>
+          )}
+
         </div>
       </div>
     )
@@ -183,28 +246,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         ${sidebarOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full md:translate-x-0 md:w-20'}`}>
         <div className="p-4 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
-            <Image
-              src="/logo.png"
-              alt="VT"
-              width={36}
-              height={36}
-              style={{ borderRadius: '50%', flexShrink: 0 }}
-            />
+            <Image src="/logo.png" alt="VT" width={36} height={36} style={{ borderRadius: '50%', flexShrink: 0 }} />
             {sidebarOpen && <span className="font-bold text-lg">Vasu Traders</span>}
           </div>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-white/70 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-white/70 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center">
             {sidebarOpen ? '✕' : '▶'}
           </button>
         </div>
-        <nav className="flex-1 py-4">
+        <nav className="flex-1 py-4 overflow-y-auto">
           {navItems.map(item => {
             const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
             return (
               <Link key={item.href} href={item.href} onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 mx-2 rounded-lg transition-colors ${
-                  isActive ? 'bg-orange-500 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'
-                }`}>
+                className={`flex items-center gap-3 px-4 py-3 mx-2 rounded-lg transition-colors ${isActive ? 'bg-orange-500 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
                 <span className="text-xl">{item.icon}</span>
                 {sidebarOpen && <span>{item.label}</span>}
               </Link>
@@ -220,8 +274,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
       <main className="flex-1 md:ml-20 min-w-0">
         <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-          <button onClick={() => setSidebarOpen(prev => !prev)}
-            className="text-gray-600 hover:text-gray-900 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-gray-100">
+          <button onClick={() => setSidebarOpen(prev => !prev)} className="text-gray-600 hover:text-gray-900 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-gray-100">
             <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
@@ -230,8 +283,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Image src="/logo.png" alt="VT" width={28} height={28} style={{ borderRadius: '50%' }} />
             <span className="font-semibold text-gray-700">Admin Panel</span>
           </div>
-          <button onClick={handleLogout}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+          <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
