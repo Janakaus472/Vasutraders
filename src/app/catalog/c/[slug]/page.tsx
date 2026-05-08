@@ -134,8 +134,20 @@ export default async function CategoryPage({ params }: Props) {
     itemListElement: products.slice(0, 20).map((p, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      url: `https://www.vasutraders.com/catalog/${p.id}`,
-      name: p.name,
+      item: {
+        '@type': 'Product',
+        name: p.name,
+        url: `https://www.vasutraders.com/catalog/${p.id}`,
+        ...(p.imageUrl ? { image: p.imageUrl } : {}),
+        ...(p.pricePerUnit > 0 ? {
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: 'INR',
+            price: p.pricePerUnit,
+            availability: p.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          },
+        } : {}),
+      },
     })),
   }
 

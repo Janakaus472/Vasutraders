@@ -121,25 +121,42 @@ export default async function ProductPage({ params }: Props) {
     if (related.length === 6) break
   }
 
+  const priceValidUntil = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  const allImages = [product.imageUrl, ...(product.galleryImages ?? [])].filter(Boolean) as string[]
+  const variantPrices = (product.bulkVariants ?? []).map(v => v.price).filter((p): p is number => p !== null && p > 0)
+  const allPrices = [product.pricePerUnit, ...variantPrices].filter(p => p > 0)
+  const highPrice = allPrices.length > 0 ? Math.max(...allPrices) : 0
+
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
     description: descEn || `${product.name} — wholesale supplier Indore`,
-    image: product.imageUrl || 'https://www.vasutraders.com/logo.png',
+    image: allImages.length > 0 ? allImages : ['https://www.vasutraders.com/logo.png'],
     sku: product.id,
     brand: { '@type': 'Brand', name: 'Vasu Traders' },
     category: product.category,
-    offers: {
-      '@type': 'Offer',
-      url: `https://www.vasutraders.com/catalog/${product.id}`,
-      priceCurrency: 'INR',
-      ...(lowestPrice > 0 ? { price: lowestPrice } : {}),
-      availability: product.inStock
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-      seller: { '@type': 'Organization', name: 'Vasu Traders' },
-    },
+    offers: variantPrices.length > 0
+      ? {
+          '@type': 'AggregateOffer',
+          url: `https://www.vasutraders.com/catalog/${product.id}`,
+          priceCurrency: 'INR',
+          lowPrice: lowestPrice > 0 ? lowestPrice : undefined,
+          highPrice: highPrice > 0 ? highPrice : undefined,
+          offerCount: 1 + variantPrices.length,
+          availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          priceValidUntil,
+          seller: { '@type': 'Organization', name: 'Vasu Traders' },
+        }
+      : {
+          '@type': 'Offer',
+          url: `https://www.vasutraders.com/catalog/${product.id}`,
+          priceCurrency: 'INR',
+          ...(lowestPrice > 0 ? { price: lowestPrice, priceValidUntil } : {}),
+          availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          itemCondition: 'https://schema.org/NewCondition',
+          seller: { '@type': 'Organization', name: 'Vasu Traders' },
+        },
   }
 
   const breadcrumbSchema = {
