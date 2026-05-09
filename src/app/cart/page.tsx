@@ -615,11 +615,11 @@ export default function CartPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               <div>
                 <label style={LABEL_STYLE}>🏪 Shop Name *</label>
-                <input type="text" value={details.shopName} onChange={e => setDetails(d => ({ ...d, shopName: e.target.value }))} placeholder="e.g. Sharma General Store" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
+                <input type="text" value={details.shopName} onChange={e => setDetails(d => ({ ...d, shopName: e.target.value }))} placeholder="Your shop name" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
               </div>
               <div>
                 <label style={LABEL_STYLE}>👤 Your Name</label>
-                <input type="text" value={details.contactName} onChange={e => setDetails(d => ({ ...d, contactName: e.target.value }))} placeholder="e.g. Ram Sharma" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
+                <input type="text" value={details.contactName} onChange={e => setDetails(d => ({ ...d, contactName: e.target.value }))} placeholder="Your name" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
               </div>
               <div>
                 <label style={LABEL_STYLE}>📱 Mobile Number *</label>
@@ -696,7 +696,7 @@ export default function CartPage() {
               </div>
               <div>
                 <label style={LABEL_STYLE}>📍 Area / Locality *</label>
-                <input type="text" value={details.locality} onChange={e => setDetails(d => ({ ...d, locality: e.target.value }))} placeholder="e.g. Rajwada, Indore" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
+                <input type="text" value={details.locality} onChange={e => setDetails(d => ({ ...d, locality: e.target.value }))} placeholder="Your area / locality" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
               </div>
             </div>
 
