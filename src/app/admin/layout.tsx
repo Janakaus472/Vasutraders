@@ -18,6 +18,7 @@ const navItems = [
   { href: '/admin/orders', label: 'Orders', icon: '🛒' },
   { href: '/admin/analysis', label: 'Analysis', icon: '📈' },
   { href: '/admin/tracking', label: 'Tracking', icon: '📊' },
+  { href: '/admin/visitors', label: 'Visitors', icon: '🌍' },
   { href: '/admin/security', label: 'Security', icon: '🔐' },
 ]
 
