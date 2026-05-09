@@ -60,18 +60,6 @@ export default function CartPage() {
   const [resendTimer, setResendTimer] = useState(0)
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('vt_customer')
-      if (saved) {
-        const parsed = JSON.parse(saved) as CustomerDetails
-        if (parsed.shopName && parsed.phone) {
-          setDetails(parsed)
-          setHasSavedDetails(true)
-        }
-      }
-    } catch {}
-  }, [])
-  useEffect(() => {
     if (resendTimer <= 0) return
     const t = setTimeout(() => setResendTimer(n => n - 1), 1000)
     return () => clearTimeout(t)
