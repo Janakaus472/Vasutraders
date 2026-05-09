@@ -2,9 +2,14 @@ import { supabase, adminSupabase } from './client'
 import { Product } from '@/types/product'
 import { getBulkVariantsForProducts } from './bulk_variants'
 
+function nameToSlug(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
 function rowToProduct(row: any): Product {
   return {
     id: row.id,
+    slug: nameToSlug(row.name),
     name: row.name,
     description: row.description || '',
     imageUrl: row.image_url || '',
@@ -40,17 +45,20 @@ export async function getProducts(adminMode = false): Promise<Product[]> {
   return products.map(p => ({ ...p, bulkVariants: variantsMap.get(p.id) || [] }))
 }
 
-export async function getProduct(id: string): Promise<Product | null> {
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('id', id)
-    .single()
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
-  if (error || !data) return null
-  const product = rowToProduct(data)
-  const variantsMap = await getBulkVariantsForProducts([id])
-  return { ...product, bulkVariants: variantsMap.get(id) || [] }
+export async function getProduct(slugOrId: string): Promise<Product | null> {
+  if (UUID_RE.test(slugOrId)) {
+    const { data } = await supabase.from('products').select('*').eq('id', slugOrId).maybeSingle()
+    if (data) {
+      const product = rowToProduct(data)
+      const variantsMap = await getBulkVariantsForProducts([data.id])
+      return { ...product, bulkVariants: variantsMap.get(data.id) || [] }
+    }
+  }
+  // Slug lookup — find by matching computed slug
+  const all = await getProducts()
+  return all.find(p => p.slug === slugOrId) ?? null
 }
 
 export async function addProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {

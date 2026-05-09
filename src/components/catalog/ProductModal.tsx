@@ -271,6 +271,33 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
             )}
           </div>
 
+          {/* Price box — shown before bulk selector so base product is the clear default */}
+          <div style={{
+            background: '#FEF2F2', borderRadius: '8px', padding: '14px 18px',
+            display: 'flex', alignItems: 'baseline', gap: '8px',
+            border: '1px solid #FECACA',
+          }}>
+            {activePrice > 0 ? (
+              <>
+                <span style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: 'clamp(1.6rem, 5vw, 2.4rem)', color: '#B91C1C',
+                  lineHeight: 1, letterSpacing: '1px',
+                }}>₹{activePrice.toFixed(0)}</span>
+                <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: 600 }}>
+                  {selectedVariant
+                    ? `/ ${selectedVariant.quantity} ${selectedVariant.unit}`
+                    : `/ ${product.unit}`}
+                </span>
+              </>
+            ) : (
+              <span style={{
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: '1.6rem', color: '#B91C1C', letterSpacing: '1px',
+              }}>{t.callForPrice}</span>
+            )}
+          </div>
+
           {/* ── Bulk variant selector ───────────────────────────────────── */}
           {variants.length > 0 && (
             <div>
@@ -358,33 +385,6 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
               </div>
             </div>
           )}
-
-          {/* Price box */}
-          <div style={{
-            background: '#FEF2F2', borderRadius: '8px', padding: '14px 18px',
-            display: 'flex', alignItems: 'baseline', gap: '8px',
-            border: '1px solid #FECACA',
-          }}>
-            {activePrice > 0 ? (
-              <>
-                <span style={{
-                  fontFamily: "'Bebas Neue', sans-serif",
-                  fontSize: 'clamp(1.6rem, 5vw, 2.4rem)', color: '#B91C1C',
-                  lineHeight: 1, letterSpacing: '1px',
-                }}>₹{activePrice.toFixed(0)}</span>
-                <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: 600 }}>
-                  {selectedVariant
-                    ? `/ ${selectedVariant.quantity} ${selectedVariant.unit}`
-                    : `/ ${product.unit}`}
-                </span>
-              </>
-            ) : (
-              <span style={{
-                fontFamily: "'Bebas Neue', sans-serif",
-                fontSize: '1.6rem', color: '#B91C1C', letterSpacing: '1px',
-              }}>{t.callForPrice}</span>
-            )}
-          </div>
 
           {/* Cart controls */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>

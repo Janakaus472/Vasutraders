@@ -1,3 +1,21 @@
+export function getProductSeo(description: string | undefined): {
+  metaTitle?: string
+  metaDescription?: string
+  keywords?: string[]
+} {
+  if (!description) return {}
+  try {
+    const parsed = JSON.parse(description)
+    return {
+      metaTitle: parsed.meta_title || undefined,
+      metaDescription: parsed.meta_description || undefined,
+      keywords: Array.isArray(parsed.keywords) && parsed.keywords.length ? parsed.keywords : undefined,
+    }
+  } catch {
+    return {}
+  }
+}
+
 export function getDescription(description: string | undefined, lang: 'en' | 'hi'): string {
   if (!description) return ''
 

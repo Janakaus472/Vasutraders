@@ -72,6 +72,21 @@ export default function ProductForm({ product }: Props) {
     try { const p = JSON.parse(d); return p.hi || '' } catch { return '' }
   })
 
+  // SEO override fields — stored inside description JSON
+  const [metaTitle, setMetaTitle] = useState(() => {
+    const d = product?.description
+    if (!d) return ''
+    try { const p = JSON.parse(d); return p.meta_title || '' } catch { return '' }
+  })
+  const [keywords, setKeywords] = useState(() => {
+    const d = product?.description
+    if (!d) return ''
+    try {
+      const p = JSON.parse(d)
+      return Array.isArray(p.keywords) ? p.keywords.join(', ') : ''
+    } catch { return '' }
+  })
+
   // Inline create states
   const [creatingCat, setCreatingCat] = useState(false)
   const [newCatName, setNewCatName] = useState('')
@@ -247,8 +262,14 @@ export default function ProductForm({ product }: Props) {
     if (!name.trim()) { setError('Product name is required'); return }
     setSaving(true); setError('')
     try {
-      const descValue = descEn.trim() || descHi.trim()
-        ? JSON.stringify({ en: descEn.trim(), hi: descHi.trim() })
+      const kwList = keywords.split(',').map((k: string) => k.trim()).filter((k: string) => k.length > 0)
+      const descValue = descEn.trim() || descHi.trim() || metaTitle.trim() || kwList.length
+        ? JSON.stringify({
+            en: descEn.trim(),
+            hi: descHi.trim(),
+            ...(metaTitle.trim() && { meta_title: metaTitle.trim() }),
+            ...(kwList.length && { keywords: kwList }),
+          })
         : ''
       const data = {
         name: name.trim(),
@@ -516,6 +537,41 @@ export default function ProductForm({ product }: Props) {
           className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-orange-400 text-sm resize-none"
           style={{ fontSize: '16px' }}
         />
+      </div>
+
+      {/* SEO Overrides */}
+      <div style={{ background: '#f0fdf4', border: '1.5px solid #bbf7d0', borderRadius: '14px', padding: '16px' }}>
+        <p className="text-sm font-bold text-green-800 mb-3">🔍 Google Search Settings</p>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">
+              Custom Page Title
+              <span className="ml-1 font-normal text-gray-400">— overrides auto-generated title (max 60 chars)</span>
+            </label>
+            <input
+              value={metaTitle}
+              onChange={e => setMetaTitle(e.target.value)}
+              maxLength={60}
+              placeholder={`${name || 'Product Name'} — Wholesale | Vasu Traders`}
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 outline-none focus:border-green-400 text-sm"
+              style={{ fontSize: '15px' }}
+            />
+            <p className="text-xs text-gray-400 mt-0.5">{metaTitle.length}/60 characters</p>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">
+              Search Keywords
+              <span className="ml-1 font-normal text-gray-400">— comma separated, helps Google rank this product</span>
+            </label>
+            <input
+              value={keywords}
+              onChange={e => setKeywords(e.target.value)}
+              placeholder="e.g. playing cards wholesale, ताश थोक, card decks bulk India"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 outline-none focus:border-green-400 text-sm"
+              style={{ fontSize: '15px' }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Category */}

@@ -17,6 +17,7 @@ export interface BulkVariant {
 
 export interface Product {
   id: string
+  slug: string   // SEO-friendly URL slug, derived from name
   name: string
   description: string
   imageUrl: string

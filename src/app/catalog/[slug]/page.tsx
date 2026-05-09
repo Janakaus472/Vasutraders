@@ -1,36 +1,51 @@
 import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { getProduct, getProducts } from '@/lib/supabase/products'
-import { getDescription } from '@/lib/i18n'
+import { getDescription, getProductSeo } from '@/lib/i18n'
 import { CATEGORY_BG } from '@/components/catalog/marketplaceConfig'
 import { toSlug } from '@/lib/categorySlug'
 import ProductPageInteractive from './ProductPageInteractive'
 import { Product } from '@/types/product'
 
 interface Props {
-  params: Promise<{ id: string }>
+  params: Promise<{ slug: string }>
+}
+
+export async function generateStaticParams() {
+  try {
+    const products = await getProducts()
+    return products.map(p => ({ slug: p.slug }))
+  } catch {
+    return []
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params
-  const product = await getProduct(id)
+  const { slug } = await params
+  const product = await getProduct(slug)
   if (!product) return { title: 'Product Not Found | Vasu Traders' }
 
-  const desc = getDescription(product.description, 'en').replace(/\n/g, ' ').trim()
-  const title = `${product.name} — Wholesale ${product.category} | Vasu Traders`
-  const description = desc ||
+  const seo = getProductSeo(product.description)
+  const descEn = getDescription(product.description, 'en').replace(/\n/g, ' ').trim()
+  const title = seo.metaTitle || `${product.name} — Wholesale ${product.category} | Vasu Traders`
+  const description = seo.metaDescription || descEn ||
     `Buy ${product.name} wholesale from Vasu Traders, Indore. ${product.category} supplier with bulk order options. Minimum order: ${product.minOrderQty} ${product.unit}.`
+  const canonicalSlug = product.slug
+  const canonicalUrl = `https://www.vasutraders.com/catalog/${canonicalSlug}`
 
   return {
     title,
     description,
-    alternates: { canonical: `https://www.vasutraders.com/catalog/${id}` },
+    ...(seo.keywords?.length ? { keywords: seo.keywords } : {}),
+    alternates: { canonical: canonicalUrl },
     openGraph: {
       title,
       description,
-      url: `https://www.vasutraders.com/catalog/${id}`,
+      type: 'website',
+      url: canonicalUrl,
+      siteName: 'Vasu Traders',
       images: product.imageUrl ? [{ url: product.imageUrl, alt: product.name }] : [{ url: '/logo.png', alt: 'Vasu Traders' }],
     },
     twitter: {
@@ -50,7 +65,7 @@ function RelatedProductCard({ product }: { product: Product }) {
 
   return (
     <Link
-      href={`/catalog/${product.id}`}
+      href={`/catalog/${product.slug}`}
       style={{ textDecoration: 'none', display: 'block', borderRadius: '12px', overflow: 'hidden', border: '1px solid #f0f0f0', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', background: '#fff', transition: 'box-shadow 0.15s' }}
     >
       {/* Image */}
@@ -95,12 +110,20 @@ function RelatedProductCard({ product }: { product: Product }) {
 }
 
 export default async function ProductPage({ params }: Props) {
-  const { id } = await params
-  const [product, allProducts] = await Promise.all([
-    getProduct(id),
-    getProducts(),
-  ])
+  const { slug } = await params
+
+  const allProducts = await getProducts()
+
+  // Try slug match first, then UUID match
+  let product = allProducts.find(p => p.slug === slug)
+  const foundBySlug = !!product
+  if (!product) product = allProducts.find(p => p.id === slug)
   if (!product) notFound()
+
+  // Redirect legacy UUID URLs to canonical slug URL (301)
+  if (!foundBySlug && product.slug && product.slug !== slug) {
+    redirect(`/catalog/${product.slug}`)
+  }
 
   const descEn = getDescription(product.description, 'en')
   const lowestPrice = product.bulkVariants?.length
@@ -109,13 +132,13 @@ export default async function ProductPage({ params }: Props) {
       )
     : product.pricePerUnit
 
-  // Related products: same subcategory → same category → any other product, always fill up to 6
+  // Related products: same subcategory → same category → any other product, fill up to 6
   const seen = new Set<string>()
   const related: typeof allProducts = []
   for (const p of [
-    ...allProducts.filter(p => p.id !== product.id && p.subcategory && p.subcategory === product.subcategory),
-    ...allProducts.filter(p => p.id !== product.id && p.category === product.category && (!p.subcategory || p.subcategory !== product.subcategory)),
-    ...allProducts.filter(p => p.id !== product.id && p.category !== product.category),
+    ...allProducts.filter(p => p.id !== product!.id && p.subcategory && p.subcategory === product!.subcategory),
+    ...allProducts.filter(p => p.id !== product!.id && p.category === product!.category && (!p.subcategory || p.subcategory !== product!.subcategory)),
+    ...allProducts.filter(p => p.id !== product!.id && p.category !== product!.category),
   ]) {
     if (!seen.has(p.id)) { seen.add(p.id); related.push(p) }
     if (related.length === 6) break
@@ -126,6 +149,7 @@ export default async function ProductPage({ params }: Props) {
   const variantPrices = (product.bulkVariants ?? []).map(v => v.price).filter((p): p is number => p !== null && p > 0)
   const allPrices = [product.pricePerUnit, ...variantPrices].filter(p => p > 0)
   const highPrice = allPrices.length > 0 ? Math.max(...allPrices) : 0
+  const canonicalUrl = `https://www.vasutraders.com/catalog/${product.slug}`
 
   const productSchema = {
     '@context': 'https://schema.org',
@@ -136,10 +160,11 @@ export default async function ProductPage({ params }: Props) {
     sku: product.id,
     brand: { '@type': 'Brand', name: 'Vasu Traders' },
     category: product.category,
+    url: canonicalUrl,
     offers: variantPrices.length > 0
       ? {
           '@type': 'AggregateOffer',
-          url: `https://www.vasutraders.com/catalog/${product.id}`,
+          url: canonicalUrl,
           priceCurrency: 'INR',
           lowPrice: lowestPrice > 0 ? lowestPrice : undefined,
           highPrice: highPrice > 0 ? highPrice : undefined,
@@ -150,7 +175,7 @@ export default async function ProductPage({ params }: Props) {
         }
       : {
           '@type': 'Offer',
-          url: `https://www.vasutraders.com/catalog/${product.id}`,
+          url: canonicalUrl,
           priceCurrency: 'INR',
           ...(lowestPrice > 0 ? { price: lowestPrice, priceValidUntil } : {}),
           availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
@@ -166,7 +191,7 @@ export default async function ProductPage({ params }: Props) {
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.vasutraders.com' },
       { '@type': 'ListItem', position: 2, name: 'Catalog', item: 'https://www.vasutraders.com/catalog' },
       ...(product.category ? [{ '@type': 'ListItem', position: 3, name: product.category, item: `https://www.vasutraders.com/catalog/c/${toSlug(product.category)}` }] : []),
-      { '@type': 'ListItem', position: product.category ? 4 : 3, name: product.name, item: `https://www.vasutraders.com/catalog/${product.id}` },
+      { '@type': 'ListItem', position: product.category ? 4 : 3, name: product.name, item: canonicalUrl },
     ],
   }
 
@@ -211,10 +236,10 @@ export default async function ProductPage({ params }: Props) {
           <span style={{ color: '#374151' }}>{product.name}</span>
         </nav>
 
-        {/* ── Product main section (client component handles both columns reactively) ── */}
+        {/* Product main section */}
         <ProductPageInteractive product={product} />
 
-        {/* ── Related products ── */}
+        {/* Related products */}
         {related.length > 0 && (
           <div style={{ marginTop: '48px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
