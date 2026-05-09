@@ -120,71 +120,6 @@ export default function HomePageClient({ categories, totalProducts, layout, stor
         ))}
       </div>
 
-      {/* ── ABOUT ── */}
-      <section id="about" style={{ background: '#fff', padding: 'clamp(40px, 6vw, 64px) 20px', borderBottom: '1px solid #f0f0f0' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <h2 style={{ fontSize: 'clamp(22px, 4vw, 36px)', fontWeight: 800, color: '#1a1a1a', marginBottom: '8px', fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '2px' }}>
-              {lang === 'hi' ? 'हमारे बारे में' : 'About Vasu Traders'}
-            </h2>
-            <div style={{ width: '50px', height: '4px', background: '#DC2626', margin: '0 auto', borderRadius: '2px' }} />
-          </div>
-
-          {/* Text content */}
-          <div style={{ maxWidth: '720px', margin: '0 auto 36px', textAlign: 'center' }}>
-            <p style={{ fontSize: '15px', color: '#4b5563', lineHeight: 1.85, marginBottom: '14px' }}>
-              {lang === 'hi'
-                ? (storeInfo?.about_text_1_hi || storeInfo?.about_text_1 || '')
-                : (storeInfo?.about_text_1 || '')}
-            </p>
-            {(storeInfo?.about_text_2 || storeInfo?.about_text_2_hi) && (
-              <p style={{ fontSize: '15px', color: '#4b5563', lineHeight: 1.85 }}>
-                {lang === 'hi'
-                  ? (storeInfo?.about_text_2_hi || storeInfo?.about_text_2 || '')
-                  : (storeInfo?.about_text_2 || '')}
-              </p>
-            )}
-          </div>
-
-          {/* Trust badges */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: storeInfo?.team?.length ? '48px' : '0' }}>
-            {[
-              { icon: '📍', text: lang === 'hi' ? (storeInfo?.address_hi || 'इंदौर, मध्य प्रदेश') : (storeInfo?.address || 'Indore, Madhya Pradesh') },
-              { icon: '🏪', text: lang === 'hi' ? `${storeInfo?.established_year ? `${new Date().getFullYear() - Number(storeInfo.established_year)}+` : '20+'} वर्ष का अनुभव` : `${storeInfo?.established_year ? `${new Date().getFullYear() - Number(storeInfo.established_year)}+` : '20+'} Years in Business` },
-              { icon: '🚚', text: lang === 'hi' ? 'पूरे भारत में डिलीवरी' : 'Pan India Supply' },
-              ...(storeInfo?.gst_number ? [{ icon: '✅', text: `GST: ${storeInfo.gst_number}` }] : []),
-            ].map(item => (
-              <span key={item.text} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#FEF2F2', color: '#B91C1C', fontSize: '13px', fontWeight: 700, padding: '8px 16px', borderRadius: '20px', border: '1px solid #FECACA' }}>
-                {item.icon} {item.text}
-              </span>
-            ))}
-          </div>
-
-          {/* Team photos */}
-          {storeInfo?.team && storeInfo.team.length > 0 && (
-            <div>
-              <h3 style={{ textAlign: 'center', fontSize: 'clamp(16px, 3vw, 22px)', fontWeight: 800, color: '#1a1a1a', marginBottom: '24px', fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '1.5px' }}>
-                {lang === 'hi' ? 'हमारी टीम' : 'Meet Our Team'}
-              </h3>
-              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                {storeInfo.team.map(member => (
-                  <div key={member.id} style={{ textAlign: 'center', width: '130px' }}>
-                    <div style={{ width: '100px', height: '100px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #FECACA', background: '#FEF2F2', margin: '0 auto 10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {member.imageUrl
-                        ? <img src={member.imageUrl} alt={member.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        : <span style={{ fontSize: '40px' }}>👤</span>
-                      }
-                    </div>
-                    {member.name && <div style={{ fontWeight: 800, fontSize: '14px', color: '#1a1a1a', lineHeight: 1.2, marginBottom: '3px' }}>{member.name}</div>}
-                    {member.role && <div style={{ fontSize: '12px', color: '#B91C1C', fontWeight: 700 }}>{member.role}</div>}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
       {/* ── CATEGORIES ── */}
       <section style={{ background: '#f9f9f9', padding: 'clamp(40px, 6vw, 64px) 20px' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
@@ -366,9 +301,9 @@ export default function HomePageClient({ categories, totalProducts, layout, stor
               <Link href="/catalog" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
                 {lang === 'hi' ? 'सभी उत्पाद' : 'All Products'}
               </Link>
-              <a href="/#about" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+              <Link href="/about" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
                 {lang === 'hi' ? 'हमारे बारे में' : 'About Us'}
-              </a>
+              </Link>
               <a href="/#contact" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
                 {lang === 'hi' ? 'संपर्क करें' : 'Contact Us'}
               </a>
