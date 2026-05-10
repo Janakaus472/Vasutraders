@@ -51,27 +51,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [forgotLoading, setForgotLoading] = useState(false)
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(SESSION_KEY)
-      if (raw) {
-        const session = JSON.parse(raw)
-        if (session.expires > Date.now()) {
-          setIsAdmin(true)
-          if (session.u && session.p) {
-            fetch('/api/admin/auth', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ username: session.u, password: session.p }),
-            }).catch(() => {})
+    const init = async () => {
+      try {
+        const raw = localStorage.getItem(SESSION_KEY)
+        if (raw) {
+          const session = JSON.parse(raw)
+          if (session.expires > Date.now()) {
+            if (session.u && session.p) {
+              await fetch('/api/admin/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: session.u, password: session.p }),
+              }).catch(() => {})
+            }
+            setIsAdmin(true)
+          } else {
+            localStorage.removeItem(SESSION_KEY)
           }
-        } else {
-          localStorage.removeItem(SESSION_KEY)
         }
+      } catch {
+        localStorage.removeItem(SESSION_KEY)
       }
-    } catch {
-      localStorage.removeItem(SESSION_KEY)
+      setIsLoading(false)
     }
-    setIsLoading(false)
+    init()
   }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
