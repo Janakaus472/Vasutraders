@@ -6,10 +6,29 @@ function nameToSlug(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
+// Add slug column once and backfill all existing products
+let slugReady = false
+async function ensureSlugColumn(): Promise<void> {
+  if (slugReady) return
+  slugReady = true
+  try {
+    await adminSupabase.rpc('exec_sql', {
+      sql: `
+        ALTER TABLE public.products ADD COLUMN IF NOT EXISTS slug text;
+        UPDATE public.products
+          SET slug = lower(trim(both '-' from regexp_replace(name, '[^a-z0-9]+', '-', 'gi')))
+          WHERE slug IS NULL OR slug = '';
+      `,
+    })
+  } catch {
+    // exec_sql may not exist on all Supabase plans — fall back to computed slugs silently
+  }
+}
+
 function rowToProduct(row: any): Product {
   return {
     id: row.id,
-    slug: nameToSlug(row.name),
+    slug: row.slug || nameToSlug(row.name),   // prefer stored slug; fall back to computed
     name: row.name,
     description: row.description || '',
     imageUrl: row.image_url || '',
@@ -62,10 +81,14 @@ export async function getProduct(slugOrId: string): Promise<Product | null> {
 }
 
 export async function addProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  await ensureSlugColumn()
+  const slug = product.slug || nameToSlug(product.name)
+
   const { data, error } = await adminSupabase
     .from('products')
     .insert({
       name: product.name,
+      slug,
       description: product.description,
       image_url: product.imageUrl,
       gallery_images: product.galleryImages || [],
