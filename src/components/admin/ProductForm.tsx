@@ -78,6 +78,11 @@ export default function ProductForm({ product }: Props) {
     if (!d) return ''
     try { const p = JSON.parse(d); return p.meta_title || '' } catch { return '' }
   })
+  const [metaDesc, setMetaDesc] = useState(() => {
+    const d = product?.description
+    if (!d) return ''
+    try { const p = JSON.parse(d); return p.meta_description || '' } catch { return '' }
+  })
   const [keywords, setKeywords] = useState(() => {
     const d = product?.description
     if (!d) return ''
@@ -263,11 +268,12 @@ export default function ProductForm({ product }: Props) {
     setSaving(true); setError('')
     try {
       const kwList = keywords.split(',').map((k: string) => k.trim()).filter((k: string) => k.length > 0)
-      const descValue = descEn.trim() || descHi.trim() || metaTitle.trim() || kwList.length
+      const descValue = descEn.trim() || descHi.trim() || metaTitle.trim() || metaDesc.trim() || kwList.length
         ? JSON.stringify({
             en: descEn.trim(),
             hi: descHi.trim(),
             ...(metaTitle.trim() && { meta_title: metaTitle.trim() }),
+            ...(metaDesc.trim() && { meta_description: metaDesc.trim() }),
             ...(kwList.length && { keywords: kwList }),
           })
         : ''
@@ -514,19 +520,19 @@ export default function ProductForm({ product }: Props) {
       {/* Description */}
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-1">
-          SEO Description (English)
-          <span className="ml-1 text-xs font-normal text-gray-400">— shown on product page &amp; Google</span>
+          Product Description (English)
+          <span className="ml-1 text-xs font-normal text-gray-400">— shown on product page to customers</span>
         </label>
         <textarea
           value={descEn}
           onChange={e => setDescEn(e.target.value)}
-          placeholder="e.g. Premium quality playing cards for wholesale. Ideal for game shops, events, and bulk orders."
+          placeholder="e.g. Premium quality playing cards for wholesale. Suitable for game shops, events, and bulk orders. Available in standard and custom sizes."
           rows={3}
           className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-orange-400 text-sm resize-none"
           style={{ fontSize: '16px' }}
         />
         <label className="block text-sm font-semibold text-gray-700 mb-1 mt-3">
-          SEO Description (Hindi)
+          Product Description (Hindi)
           <span className="ml-1 text-xs font-normal text-gray-400">— optional</span>
         </label>
         <textarea
@@ -541,12 +547,15 @@ export default function ProductForm({ product }: Props) {
 
       {/* SEO Overrides */}
       <div style={{ background: '#f0fdf4', border: '1.5px solid #bbf7d0', borderRadius: '14px', padding: '16px' }}>
-        <p className="text-sm font-bold text-green-800 mb-3">🔍 Google Search Settings</p>
-        <div className="space-y-3">
+        <p className="text-sm font-bold text-green-800 mb-1">🔍 Google Search Settings</p>
+        <p className="text-xs text-green-700 mb-3">Fill these to control exactly how this product appears in Google search results.</p>
+        <div className="space-y-4">
+
+          {/* Page Title */}
           <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1">
-              Custom Page Title
-              <span className="ml-1 font-normal text-gray-400">— overrides auto-generated title (max 60 chars)</span>
+              Google Page Title
+              <span className="ml-1 font-normal text-gray-400">— max 60 chars. Leave blank to auto-generate.</span>
             </label>
             <input
               value={metaTitle}
@@ -556,12 +565,40 @@ export default function ProductForm({ product }: Props) {
               className="w-full border border-gray-200 rounded-xl px-3 py-2 outline-none focus:border-green-400 text-sm"
               style={{ fontSize: '15px' }}
             />
-            <p className="text-xs text-gray-400 mt-0.5">{metaTitle.length}/60 characters</p>
+            <p className={`text-xs mt-0.5 ${metaTitle.length > 55 ? 'text-orange-500 font-semibold' : 'text-gray-400'}`}>
+              {metaTitle.length}/60 characters {metaTitle.length > 55 ? '— getting long, Google may cut it off' : ''}
+            </p>
           </div>
+
+          {/* Meta Description */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">
+              Google Search Description
+              <span className="ml-1 font-normal text-gray-400">— the snippet shown under the title in Google. 120–155 chars ideal.</span>
+            </label>
+            <textarea
+              value={metaDesc}
+              onChange={e => setMetaDesc(e.target.value)}
+              maxLength={160}
+              placeholder={`Buy ${name || 'product'} wholesale from Vasu Traders, Indore. Best prices on bulk orders. Call or WhatsApp for rates.`}
+              rows={3}
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 outline-none focus:border-green-400 text-sm resize-none"
+              style={{ fontSize: '15px' }}
+            />
+            <p className={`text-xs mt-0.5 ${metaDesc.length > 155 ? 'text-red-500 font-semibold' : metaDesc.length >= 120 ? 'text-green-600 font-semibold' : metaDesc.length > 0 ? 'text-orange-500' : 'text-gray-400'}`}>
+              {metaDesc.length}/160 characters
+              {metaDesc.length === 0 ? ' — will fall back to product description' : ''}
+              {metaDesc.length > 0 && metaDesc.length < 120 ? ' — too short, aim for 120–155' : ''}
+              {metaDesc.length >= 120 && metaDesc.length <= 155 ? ' ✓ good length' : ''}
+              {metaDesc.length > 155 ? ' — Google will cut this off' : ''}
+            </p>
+          </div>
+
+          {/* Keywords */}
           <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1">
               Search Keywords
-              <span className="ml-1 font-normal text-gray-400">— comma separated, helps Google rank this product</span>
+              <span className="ml-1 font-normal text-gray-400">— comma separated</span>
             </label>
             <input
               value={keywords}
@@ -571,6 +608,25 @@ export default function ProductForm({ product }: Props) {
               style={{ fontSize: '15px' }}
             />
           </div>
+
+          {/* Google Preview */}
+          {(metaTitle || name) && (
+            <div>
+              <p className="text-xs font-semibold text-gray-500 mb-2">Google Preview</p>
+              <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '10px', padding: '14px 16px', fontFamily: 'Arial, sans-serif' }}>
+                <p style={{ fontSize: '12px', color: '#202124', marginBottom: '2px' }}>
+                  vasutraders.com › catalog › ...
+                </p>
+                <p style={{ fontSize: '16px', color: '#1a0dab', fontWeight: 500, margin: '0 0 4px', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {metaTitle || `${name} — Wholesale${category ? ` ${category}` : ''} | Vasu Traders`}
+                </p>
+                <p style={{ fontSize: '13px', color: '#4d5156', margin: 0, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  {metaDesc || descEn || `Buy ${name} wholesale from Vasu Traders, Indore.`}
+                </p>
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
 
