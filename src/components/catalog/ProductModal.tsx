@@ -389,7 +389,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           {/* Cart controls */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-              <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <AddToCartButton
                   quantity={activeQty}
                   onAdd={handleAdd}
@@ -397,6 +397,24 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
                   onSetQuantity={handleSetQty}
                   disabled={!product.inStock}
                 />
+                {activeQty > 0 && (
+                  <button
+                    onClick={() => handleSetQty(0)}
+                    title="Remove from cart"
+                    style={{
+                      width: '34px', height: '34px', borderRadius: '6px',
+                      background: '#FEF2F2', border: '1px solid #FECACA',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', flexShrink: 0, transition: 'background 0.15s',
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#FEE2E2' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#FEF2F2' }}
+                  >
+                    <svg width="15" height="15" fill="none" stroke="#DC2626" viewBox="0 0 24 24" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                )}
               </div>
               {activeQty > 0 && (
                 <span style={{ color: '#B91C1C', fontWeight: 700, fontSize: '13px' }}>
