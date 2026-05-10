@@ -8,6 +8,7 @@ interface LocationData {
   states: LocationStat[]
   cities: LocationStat[]
   total: number
+  setupRequired?: boolean
 }
 
 const COUNTRY_FLAGS: Record<string, string> = {
@@ -117,6 +118,25 @@ export default function VisitorsPage() {
       {error && (
         <div style={{ background: '#FEF2F2', border: '1.5px solid #FECACA', borderRadius: '12px', padding: '14px 16px', color: '#DC2626', fontWeight: 600, fontSize: '14px', marginBottom: '20px' }}>
           ⚠️ {error}
+        </div>
+      )}
+
+      {/* Setup required state */}
+      {!loading && !error && data?.setupRequired && (
+        <div style={{ background: '#fffbeb', border: '1.5px solid #fde68a', borderRadius: '14px', padding: '20px', marginBottom: '20px' }}>
+          <p style={{ fontWeight: 700, fontSize: '15px', color: '#92400e', margin: '0 0 8px' }}>⚙️ One-time setup required</p>
+          <p style={{ fontSize: '13px', color: '#78350f', margin: '0 0 12px' }}>
+            Location tracking columns are missing from your database. Run this SQL in your{' '}
+            <strong>Supabase Dashboard → SQL Editor</strong>:
+          </p>
+          <pre style={{ background: '#1a1a1a', color: '#a3e635', borderRadius: '10px', padding: '14px', fontSize: '12px', overflowX: 'auto', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{`ALTER TABLE public.analytics ADD COLUMN IF NOT EXISTS country text;
+ALTER TABLE public.analytics ADD COLUMN IF NOT EXISTS country_code text;
+ALTER TABLE public.analytics ADD COLUMN IF NOT EXISTS region text;
+ALTER TABLE public.analytics ADD COLUMN IF NOT EXISTS city text;
+CREATE INDEX IF NOT EXISTS idx_analytics_country_code ON public.analytics(country_code);`}</pre>
+          <p style={{ fontSize: '12px', color: '#92400e', margin: '10px 0 0' }}>
+            After running the SQL, refresh this page. New visits will automatically include location data.
+          </p>
         </div>
       )}
 

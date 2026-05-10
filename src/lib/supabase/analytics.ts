@@ -39,58 +39,10 @@ export interface DailyCount {
   views: number
 }
 
-let tableChecked = false
-async function ensureTable() {
-  if (tableChecked) return
-  const db = getAdminSupabase()
-  const { error } = await db.from('analytics').select('id').limit(1)
-  if (error && error.code === 'PGRST205') {
-    await db.rpc('exec_sql', {
-      sql: `
-        CREATE TABLE IF NOT EXISTS public.analytics (
-          id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-          event_type text NOT NULL,
-          page text NOT NULL,
-          product_id text,
-          product_name text,
-          category text,
-          referrer text,
-          user_agent text,
-          country text,
-          country_code text,
-          region text,
-          city text,
-          created_at timestamptz DEFAULT now()
-        );
-        CREATE INDEX IF NOT EXISTS idx_analytics_event_type ON public.analytics(event_type);
-        CREATE INDEX IF NOT EXISTS idx_analytics_product_id ON public.analytics(product_id);
-        CREATE INDEX IF NOT EXISTS idx_analytics_created_at ON public.analytics(created_at);
-        CREATE INDEX IF NOT EXISTS idx_analytics_country_code ON public.analytics(country_code);
-        ALTER TABLE public.analytics ENABLE ROW LEVEL SECURITY;
-        CREATE POLICY IF NOT EXISTS "Allow service role full access" ON public.analytics FOR ALL USING (true);
-        CREATE POLICY IF NOT EXISTS "Allow anon insert" ON public.analytics FOR INSERT WITH CHECK (true);
-      `
-    })
-  } else {
-    // Table exists — make sure location columns exist (safe to run repeatedly)
-    const { error: colErr } = await db.rpc('exec_sql', {
-      sql: `
-        ALTER TABLE public.analytics ADD COLUMN IF NOT EXISTS country text;
-        ALTER TABLE public.analytics ADD COLUMN IF NOT EXISTS country_code text;
-        ALTER TABLE public.analytics ADD COLUMN IF NOT EXISTS region text;
-        ALTER TABLE public.analytics ADD COLUMN IF NOT EXISTS city text;
-        CREATE INDEX IF NOT EXISTS idx_analytics_country_code ON public.analytics(country_code);
-      `
-    })
-    if (colErr) console.warn('Could not add location columns (may already exist):', colErr.message)
-  }
-  tableChecked = true
-}
-
 export async function recordEvent(event: AnalyticsEvent) {
-  await ensureTable()
   const db = getAdminSupabase()
-  const { error } = await db.from('analytics').insert({
+
+  const fullRow = {
     event_type: event.event_type,
     page: event.page,
     product_id: event.product_id || null,
@@ -102,8 +54,27 @@ export async function recordEvent(event: AnalyticsEvent) {
     country_code: event.country_code || null,
     region: event.region || null,
     city: event.city || null,
-  })
-  if (error) console.error('Analytics insert error:', error.message)
+  }
+
+  const { error } = await db.from('analytics').insert(fullRow)
+
+  if (error) {
+    // If location columns don't exist yet, fall back to basic fields so visits still get recorded
+    if (error.code === '42703') {
+      const { error: fallbackError } = await db.from('analytics').insert({
+        event_type: event.event_type,
+        page: event.page,
+        product_id: event.product_id || null,
+        product_name: event.product_name || null,
+        category: event.category || null,
+        referrer: event.referrer || null,
+        user_agent: event.user_agent || null,
+      })
+      if (fallbackError) console.error('Analytics insert error:', fallbackError.message)
+    } else {
+      console.error('Analytics insert error:', error.message)
+    }
+  }
 }
 
 export async function getLocationStats(days = 30): Promise<{
@@ -111,18 +82,23 @@ export async function getLocationStats(days = 30): Promise<{
   states: LocationStat[]
   cities: LocationStat[]
   total: number
+  setupRequired?: boolean
 }> {
-  await ensureTable()
   const db = getAdminSupabase()
   const since = new Date()
   since.setDate(since.getDate() - days)
 
-  const { data, count } = await db
+  const { data, count, error } = await db
     .from('analytics')
     .select('country, country_code, region, city', { count: 'exact' })
     .eq('event_type', 'page_view')
     .gte('created_at', since.toISOString())
     .not('country_code', 'is', null)
+
+  // Location columns don't exist — user needs to run the SQL migration
+  if (error && error.code === '42703') {
+    return { countries: [], states: [], cities: [], total: 0, setupRequired: true }
+  }
 
   const rows = (data || []) as { country: string; country_code: string; region: string; city: string }[]
 
@@ -176,7 +152,6 @@ const INDIA_STATES: Record<string, string> = {
 }
 
 export async function getAnalyticsSummary(days = 30) {
-  await ensureTable()
   const db = getAdminSupabase()
   const since = new Date()
   since.setDate(since.getDate() - days)
