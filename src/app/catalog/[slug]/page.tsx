@@ -1,13 +1,11 @@
 import { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { getProduct, getProducts } from '@/lib/supabase/products'
 import { getDescription, getProductSeo } from '@/lib/i18n'
-import { CATEGORY_BG } from '@/components/catalog/marketplaceConfig'
 import { toSlug } from '@/lib/categorySlug'
 import ProductPageInteractive from './ProductPageInteractive'
-import { Product } from '@/types/product'
+import RelatedProductsSection from './RelatedProductsSection'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -50,55 +48,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export const revalidate = 3600
 
-function RelatedProductCard({ product }: { product: Product }) {
-  const imgBg = CATEGORY_BG[product.category] || 'linear-gradient(135deg,#f8f7f4,#efefed)'
-  const descEn = getDescription(product.description, 'en')
-
-  return (
-    <Link
-      href={`/catalog/${product.slug}`}
-      style={{ textDecoration: 'none', display: 'block', borderRadius: '12px', overflow: 'hidden', border: '1px solid #f0f0f0', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', background: '#fff', transition: 'box-shadow 0.15s' }}
-    >
-      {/* Image */}
-      <div style={{ position: 'relative', aspectRatio: '1/1', background: imgBg }}>
-        {product.imageUrl ? (
-          <Image
-            src={product.imageUrl}
-            alt={product.name}
-            fill
-            style={{ objectFit: 'contain', padding: '12px' }}
-            sizes="(max-width: 540px) 50vw, (max-width: 1024px) 33vw, 200px"
-          />
-        ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: '40px' }}>📦</div>
-        )}
-        {(product.bulkVariants?.length ?? 0) > 0 && (
-          <div style={{ position: 'absolute', bottom: '6px', right: '6px', background: '#1d4ed8', fontSize: '8px', fontWeight: 800, color: '#fff', padding: '3px 7px', borderRadius: '4px', letterSpacing: '0.8px' }}>
-            BULK
-          </div>
-        )}
-      </div>
-      {/* Info */}
-      <div style={{ padding: '10px 12px' }}>
-        <p style={{ fontWeight: 800, fontSize: '13px', color: '#1a1a1a', margin: '0 0 3px', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-          {product.name}
-        </p>
-        {descEn && (
-          <p style={{ color: '#6b7280', fontSize: '11px', margin: '0 0 6px', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-            {descEn}
-          </p>
-        )}
-        {product.pricePerUnit > 0 ? (
-          <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#B91C1C', margin: 0 }}>
-            ₹{product.pricePerUnit.toFixed(0)} <span style={{ fontSize: '10px', color: '#9ca3af', fontFamily: 'sans-serif', fontWeight: 400 }}>/{product.unit}</span>
-          </p>
-        ) : (
-          <p style={{ color: '#B91C1C', fontWeight: 700, fontSize: '12px', margin: 0 }}>Call for price</p>
-        )}
-      </div>
-    </Link>
-  )
-}
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params
@@ -250,11 +199,7 @@ export default async function ProductPage({ params }: Props) {
               </Link>
             </div>
 
-            <div className="related-grid">
-              {related.map(p => (
-                <RelatedProductCard key={p.id} product={p} />
-              ))}
-            </div>
+            <RelatedProductsSection products={related} />
           </div>
         )}
 
