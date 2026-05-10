@@ -95,18 +95,31 @@ export default function RelatedProductsSection({ products }: { products: Product
                       {hasVariants ? '+ Options' : '+ Add'}
                     </button>
                   ) : (
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                        <button
+                          onClick={e => { e.preventDefault(); removeItem(product.id) }}
+                          style={{ flex: 1, height: '28px', background: '#DC2626', color: '#fff', border: 'none', borderRadius: '6px 0 0 6px', fontWeight: 700, fontSize: '16px', cursor: 'pointer' }}
+                        >−</button>
+                        <span style={{ width: '32px', height: '28px', background: '#DC2626', color: '#fff', fontFamily: "'Bebas Neue', sans-serif", fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>
+                          {cartQty}
+                        </span>
+                        <button
+                          onClick={e => { e.preventDefault(); addItem(product.id) }}
+                          style={{ flex: 1, height: '28px', background: '#DC2626', color: '#fff', border: 'none', borderRadius: '0 6px 6px 0', fontWeight: 700, fontSize: '16px', cursor: 'pointer' }}
+                        >+</button>
+                      </div>
                       <button
-                        onClick={e => { e.preventDefault(); removeItem(product.id) }}
-                        style={{ flex: 1, height: '28px', background: '#DC2626', color: '#fff', border: 'none', borderRadius: '6px 0 0 6px', fontWeight: 700, fontSize: '16px', cursor: 'pointer' }}
-                      >−</button>
-                      <span style={{ width: '36px', height: '28px', background: '#DC2626', color: '#fff', fontFamily: "'Bebas Neue', sans-serif", fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>
-                        {cartQty}
-                      </span>
-                      <button
-                        onClick={e => { e.preventDefault(); addItem(product.id) }}
-                        style={{ flex: 1, height: '28px', background: '#DC2626', color: '#fff', border: 'none', borderRadius: '0 6px 6px 0', fontWeight: 700, fontSize: '16px', cursor: 'pointer' }}
-                      >+</button>
+                        onClick={e => { e.preventDefault(); updateQuantity(product.id, 0) }}
+                        title="Remove from cart"
+                        style={{ width: '28px', height: '28px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#FEE2E2' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#FEF2F2' }}
+                      >
+                        <svg width="12" height="12" fill="none" stroke="#DC2626" viewBox="0 0 24 24" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
                     </div>
                   )}
                 </div>
