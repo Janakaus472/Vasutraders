@@ -1,12 +1,10 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { getProducts } from '@/lib/supabase/products'
 import { getCategories } from '@/lib/supabase/categories'
-import { getDescription } from '@/lib/i18n'
-import { CATEGORY_BG } from '@/components/catalog/marketplaceConfig'
 import { toSlug } from '@/lib/categorySlug'
+import CategoryProductGrid from '@/components/catalog/CategoryProductGrid'
 
 interface Props {
   params: Promise<{ slug: string; subSlug: string }>
@@ -99,11 +97,6 @@ export default async function SubcategoryPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }} />
 
-      <style>{`
-        .sub-product-card { transition: box-shadow 0.15s; }
-        .sub-product-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
-      `}</style>
-
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '16px 20px' }}>
 
         {/* Breadcrumb */}
@@ -166,56 +159,8 @@ export default async function SubcategoryPage({ params }: Props) {
         )}
 
         {/* Product grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(180px, 45%), 1fr))', gap: '16px', marginBottom: '48px' }}>
-          {products.map(product => {
-            const imgBg = CATEGORY_BG[product.category] || 'linear-gradient(135deg,#f8f7f4,#efefed)'
-            const descEn = getDescription(product.description, 'en')
-            return (
-              <Link
-                key={product.id}
-                href={`/catalog/${product.id}`}
-                className="sub-product-card"
-                style={{ textDecoration: 'none', display: 'block', borderRadius: '12px', overflow: 'hidden', border: '1px solid #f0f0f0', background: '#fff' }}
-              >
-                <div style={{ position: 'relative', aspectRatio: '1/1', background: imgBg }}>
-                  {product.imageUrl ? (
-                    <Image
-                      src={product.imageUrl}
-                      alt={`${product.name} wholesale`}
-                      fill
-                      style={{ objectFit: 'contain', padding: '12px' }}
-                      sizes="(max-width: 600px) 50vw, (max-width: 900px) 33vw, 200px"
-                    />
-                  ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: '40px' }}>📦</div>
-                  )}
-                  {(product.bulkVariants?.length ?? 0) > 0 && (
-                    <div style={{ position: 'absolute', bottom: '6px', right: '6px', background: '#1d4ed8', fontSize: '8px', fontWeight: 800, color: '#fff', padding: '3px 7px', borderRadius: '4px', letterSpacing: '0.8px' }}>
-                      BULK
-                    </div>
-                  )}
-                </div>
-                <div style={{ padding: '10px 12px' }}>
-                  <p style={{ fontWeight: 800, fontSize: '13px', color: '#1a1a1a', margin: '0 0 3px', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                    {product.name}
-                  </p>
-                  {descEn && (
-                    <p style={{ color: '#6b7280', fontSize: '11px', margin: '0 0 6px', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {descEn}
-                    </p>
-                  )}
-                  {product.pricePerUnit > 0 ? (
-                    <p style={{ fontSize: '1rem', color: '#B91C1C', margin: 0, fontWeight: 800 }}>
-                      ₹{product.pricePerUnit.toFixed(0)}{' '}
-                      <span style={{ fontSize: '10px', color: '#9ca3af', fontWeight: 400 }}>/{product.unit}</span>
-                    </p>
-                  ) : (
-                    <p style={{ color: '#B91C1C', fontWeight: 700, fontSize: '12px', margin: 0 }}>Call for price</p>
-                  )}
-                </div>
-              </Link>
-            )
-          })}
+        <div style={{ marginBottom: '48px' }}>
+          <CategoryProductGrid products={products} hideCategory={true} />
         </div>
 
         <div style={{ paddingTop: '24px', borderTop: '1px solid #f0f0f0' }}>
