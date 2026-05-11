@@ -611,10 +611,11 @@ export default function CartPage() {
               </div>
               <div>
                 <label style={LABEL_STYLE}>📱 Mobile Number *</label>
-                <input type="tel" inputMode="numeric" pattern="[0-9]*" maxLength={10} value={details.phone} onChange={e => {
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" value={details.phone} onChange={e => {
                     let v = e.target.value.replace(/\D/g, '')
-                    // Strip leading 91 country code if pasted with it
+                    // Strip country code prefixes commonly pasted from contacts
                     if (v.length === 12 && v.startsWith('91')) v = v.slice(2)
+                    else if (v.length === 11 && v.startsWith('0')) v = v.slice(1)
                     if (v.length > 10) v = v.slice(0, 10)
                     setDetails(d => ({ ...d, phone: v }))
                     setWaVerified(false)
