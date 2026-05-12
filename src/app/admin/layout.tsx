@@ -17,6 +17,7 @@ const navItems = [
   { href: '/admin/home-layout', label: 'Home Layout', icon: '🎨' },
   { href: '/admin/store-info', label: 'Store Info', icon: 'ℹ️' },
   { href: '/admin/orders', label: 'Orders', icon: '🛒' },
+  { href: '/admin/customers', label: 'Customers', icon: '👥' },
   { href: '/admin/analysis', label: 'Analysis', icon: '📈' },
   { href: '/admin/tracking', label: 'Tracking', icon: '📊' },
   { href: '/admin/visitors', label: 'Visitors', icon: '🌍' },

@@ -46,9 +46,10 @@ export default function OrdersPage() {
 
   const filteredOrders = orders.filter(order => {
     const matchesFilter = filter === 'all' || order.status === filter
-    const matchesSearch = !search || 
+    const matchesSearch = !search ||
       order.order_number.toLowerCase().includes(search.toLowerCase()) ||
-      order.shop_name.toLowerCase().includes(search.toLowerCase()) ||
+      (order.shop_name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (order.contact_name || '').toLowerCase().includes(search.toLowerCase()) ||
       order.phone.includes(search)
     return matchesFilter && matchesSearch
   })
@@ -113,7 +114,7 @@ export default function OrdersPage() {
                       <span className="font-semibold text-orange-600">{order.order_number}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-800">{order.shop_name}</div>
+                      <div className="font-medium text-gray-800">{order.shop_name || <span className="text-gray-400 italic text-sm">No shop</span>}</div>
                       <div className="text-gray-400 text-xs">{order.locality}</div>
                     </td>
                     <td className="px-4 py-3">

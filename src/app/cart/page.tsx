@@ -14,6 +14,7 @@ interface CustomerDetails {
   contactName: string
   phone: string
   locality: string
+  email: string
 }
 
 const FIELD_STYLE: React.CSSProperties = {
@@ -50,6 +51,7 @@ export default function CartPage() {
     contactName: '',
     phone: '',
     locality: '',
+    email: '',
   })
   const [hasSavedDetails, setHasSavedDetails] = useState(false)
   const [waVerified, setWaVerified] = useState(false)
@@ -96,8 +98,8 @@ export default function CartPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          shop_name: details.shopName,
-          contact_name: details.contactName,
+          shop_name: details.shopName || '',
+          contact_name: details.contactName || null,
           phone: details.phone,
           locality: details.locality,
           items: cartProducts.map(({ quantity, product, variant }) => ({
@@ -126,9 +128,10 @@ export default function CartPage() {
       const waMessage = [
         `🛒 *New Order — ${order.order_number}*`,
         '',
-        `🏪 Shop: ${details.shopName}`,
+        details.shopName ? `🏪 Shop: ${details.shopName}` : '',
         details.contactName ? `👤 Name: ${details.contactName}` : '',
         `📱 Phone: ${details.phone}`,
+        details.email ? `📧 Email: ${details.email}` : '',
         `📍 Area: ${details.locality}`,
         '',
         `*Items:*`,
@@ -148,10 +151,25 @@ export default function CartPage() {
           shop_name: details.shopName,
           contact_name: details.contactName,
           phone: details.phone,
+          email: details.email,
           locality: details.locality,
           items: order.items,
         }),
       }).catch(() => {})
+
+      // Save customer email if provided (fire and forget)
+      if (details.email.trim()) {
+        fetch('/api/customer-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: details.phone,
+            email: details.email.trim(),
+            name: details.contactName,
+            shop_name: details.shopName,
+          }),
+        }).catch(() => {})
+      }
 
       // Save customer details for next order
       try { localStorage.setItem('vt_customer', JSON.stringify(details)) } catch {}
@@ -168,11 +186,12 @@ export default function CartPage() {
 
   // Indian mobile: starts with 6,7,8,9 — 10 digits
   const validPhone = /^[6-9]\d{9}$/.test(details.phone)
+  const validEmail = !details.email.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(details.email.trim())
   const isDetailsValid =
-    details.shopName.trim() &&
     validPhone &&
     waVerified &&
-    details.locality.trim()
+    details.locality.trim() &&
+    validEmail
 
   const sendOtp = async () => {
     setOtpLoading(true)
@@ -602,12 +621,12 @@ export default function CartPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               <div>
-                <label style={LABEL_STYLE}>🏪 Shop Name *</label>
-                <input type="text" autoComplete="off" value={details.shopName} onChange={e => setDetails(d => ({ ...d, shopName: e.target.value }))} placeholder="Your shop name" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
+                <label style={LABEL_STYLE}>🏪 Shop Name <span style={{ fontWeight: 400, fontSize: '13px', color: '#9ca3af' }}>(optional)</span></label>
+                <input type="text" autoComplete="off" value={details.shopName} onChange={e => setDetails(d => ({ ...d, shopName: e.target.value }))} placeholder="Your shop name (optional)" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
               </div>
               <div>
-                <label style={LABEL_STYLE}>👤 Your Name</label>
-                <input type="text" autoComplete="off" value={details.contactName} onChange={e => setDetails(d => ({ ...d, contactName: e.target.value }))} placeholder="Your name" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
+                <label style={LABEL_STYLE}>👤 Your Name <span style={{ fontWeight: 400, fontSize: '13px', color: '#9ca3af' }}>(optional)</span></label>
+                <input type="text" autoComplete="off" value={details.contactName} onChange={e => setDetails(d => ({ ...d, contactName: e.target.value }))} placeholder="Your name (optional)" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
               </div>
               <div>
                 <label style={LABEL_STYLE}>📱 Mobile Number *</label>
@@ -686,6 +705,13 @@ export default function CartPage() {
               <div>
                 <label style={LABEL_STYLE}>📍 Area / Locality *</label>
                 <input type="text" autoComplete="off" value={details.locality} onChange={e => setDetails(d => ({ ...d, locality: e.target.value }))} placeholder="Your area / locality" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
+              </div>
+              <div>
+                <label style={LABEL_STYLE}>📧 Email <span style={{ fontWeight: 400, fontSize: '13px', color: '#9ca3af' }}>(optional)</span></label>
+                <input type="email" autoComplete="email" value={details.email} onChange={e => setDetails(d => ({ ...d, email: e.target.value }))} placeholder="your@email.com (optional)" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
+                {details.email.trim() && !validEmail && (
+                  <p style={{ color: '#ef4444', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>Enter a valid email address</p>
+                )}
               </div>
             </div>
 
@@ -775,9 +801,10 @@ export default function CartPage() {
           </button>
         </div>
         {[
-          { label: '🏪 Shop', value: details.shopName },
+          { label: '🏪 Shop', value: details.shopName || '—' },
           { label: '👤 Name', value: details.contactName || '—' },
           { label: '📱 Mobile', value: details.phone },
+          { label: '📧 Email', value: details.email || '—' },
           { label: '📍 Area', value: details.locality },
         ].map(({ label, value }) => (
           <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #FFE0C0' }}>

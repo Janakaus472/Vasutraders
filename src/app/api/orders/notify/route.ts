@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   if (!apiKey) return NextResponse.json({ error: 'No API key' }, { status: 500 })
 
   try {
-    const { order_number, shop_name, contact_name, phone, locality, items } = await req.json()
+    const { order_number, shop_name, contact_name, phone, email, locality, items } = await req.json()
 
     const itemRows = (items as { name: string; quantity: number; unit: string }[])
       .map((item) => `<tr><td style="padding:8px 12px;border-bottom:1px solid #FFE0C0">${item.name}</td><td style="padding:8px 12px;border-bottom:1px solid #FFE0C0;text-align:center">${item.quantity} ${item.unit}</td></tr>`)
@@ -29,9 +29,10 @@ export async function POST(req: NextRequest) {
         <div style="background:#FFF8F0;padding:24px;border:2px solid #FFD4A0;border-top:none;border-radius:0 0 16px 16px">
           <h3 style="color:#5C2D0F;margin:0 0 12px;font-size:16px">Customer Details</h3>
           <table style="width:100%;font-size:15px;color:#1a1a1a;margin-bottom:20px">
-            <tr><td style="padding:6px 0;color:#8B4513;width:100px">Shop</td><td style="font-weight:700">${shop_name}</td></tr>
+            ${shop_name ? `<tr><td style="padding:6px 0;color:#8B4513;width:100px">Shop</td><td style="font-weight:700">${shop_name}</td></tr>` : ''}
             ${contact_name ? `<tr><td style="padding:6px 0;color:#8B4513">Name</td><td style="font-weight:700">${contact_name}</td></tr>` : ''}
             <tr><td style="padding:6px 0;color:#8B4513">Phone</td><td style="font-weight:700"><a href="tel:${phone}" style="color:#C2410C;text-decoration:none">${phone}</a></td></tr>
+            ${email ? `<tr><td style="padding:6px 0;color:#8B4513">Email</td><td style="font-weight:700"><a href="mailto:${email}" style="color:#C2410C;text-decoration:none">${email}</a></td></tr>` : ''}
             <tr><td style="padding:6px 0;color:#8B4513">Area</td><td style="font-weight:700">${locality}</td></tr>
           </table>
           <h3 style="color:#5C2D0F;margin:0 0 12px;font-size:16px">Items Ordered</h3>
@@ -43,6 +44,7 @@ export async function POST(req: NextRequest) {
         </div>
       </div>`
 
+    const orderLabel = shop_name || contact_name || phone
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -52,7 +54,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         from: 'Vasu Traders <onboarding@resend.dev>',
         to: OWNER_EMAIL,
-        subject: `New Order ${order_number} - ${shop_name}`,
+        subject: `New Order ${order_number} - ${orderLabel}`,
         html,
       }),
     })

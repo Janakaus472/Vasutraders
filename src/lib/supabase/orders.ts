@@ -9,7 +9,7 @@ export interface OrderItem {
 export interface OrderPayload {
   order_number: string
   shop_name: string
-  contact_name: string
+  contact_name: string | null
   phone: string
   locality: string
   items: OrderItem[]
