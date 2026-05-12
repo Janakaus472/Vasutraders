@@ -13,6 +13,7 @@ const navItems = [
   { href: '/admin', label: 'Home', icon: '🏠' },
   { href: '/admin/products', label: 'Products', icon: '📦' },
   { href: '/admin/categories', label: 'Categories', icon: '🏷️' },
+  { href: '/admin/theme-management', label: 'Themes', icon: '✨' },
   { href: '/admin/home-layout', label: 'Home Layout', icon: '🎨' },
   { href: '/admin/store-info', label: 'Store Info', icon: 'ℹ️' },
   { href: '/admin/orders', label: 'Orders', icon: '🛒' },
