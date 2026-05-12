@@ -6,7 +6,7 @@ export interface FestivalThemeConfig {
   greetingText?: string
   subText?: string
   showDecorations: boolean
-  decorationType: 'diyas' | 'confetti' | 'lights' | 'none'
+  decorationType: 'sparkles' | 'confetti' | 'lights' | 'stars' | 'diyas' | 'none'
   primaryColor: string
   secondaryColor: string
   startDate?: string
@@ -41,7 +41,7 @@ export const DEFAULT_FESTIVAL: FestivalThemeConfig = {
   greetingText: '',
   subText: '',
   showDecorations: true,
-  decorationType: 'diyas',
+  decorationType: 'sparkles',
   primaryColor: '#FF6B00',
   secondaryColor: '#FAC41A',
 }

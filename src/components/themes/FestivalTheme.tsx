@@ -75,6 +75,12 @@ export default function FestivalTheme({ festivalConfig, categories, totalProduct
           0%, 100% { opacity: 0.2; transform: scale(0.7); }
           50% { opacity: 1; transform: scale(1.5); }
         }
+        @keyframes festStar {
+          0%   { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.6); }
+          20%  { opacity: 0.9; }
+          80%  { opacity: 0.9; }
+          100% { opacity: 0; transform: translateY(-30px) rotate(180deg) scale(1.2); }
+        }
         .fest-cat-card { transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
         .fest-cat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
         .fest-cat-card:active { transform: scale(0.97); }
@@ -104,7 +110,10 @@ export default function FestivalTheme({ festivalConfig, categories, totalProduct
             {DECO_POSITIONS.map((pos, i) => {
               const delay = `${pos.d}s`
               const dur = `${3 + (i % 3)}s`
-              if (festivalConfig.decorationType === 'diyas') {
+              const dt = festivalConfig.decorationType
+
+              // sparkles / diyas (backward-compat alias) — glowing floating orbs
+              if (dt === 'sparkles' || dt === 'diyas') {
                 const col = i % 2 === 0 ? primary : secondary
                 return (
                   <div key={i} style={{
@@ -115,7 +124,7 @@ export default function FestivalTheme({ festivalConfig, categories, totalProduct
                   }} />
                 )
               }
-              if (festivalConfig.decorationType === 'confetti') {
+              if (dt === 'confetti') {
                 return (
                   <div key={i} style={{
                     position: 'absolute', left: `${pos.l}%`, top: '-20px',
@@ -126,7 +135,7 @@ export default function FestivalTheme({ festivalConfig, categories, totalProduct
                   }} />
                 )
               }
-              if (festivalConfig.decorationType === 'lights') {
+              if (dt === 'lights') {
                 const col = i % 2 === 0 ? primary : secondary
                 return (
                   <div key={i} style={{
@@ -135,6 +144,18 @@ export default function FestivalTheme({ festivalConfig, categories, totalProduct
                     background: col, boxShadow: `0 0 ${pos.s}px ${pos.s}px ${col}55`,
                     animation: `festTwinkle ${dur} ${delay} infinite ease-in-out`,
                   }} />
+                )
+              }
+              if (dt === 'stars') {
+                const col = i % 3 === 0 ? primary : i % 3 === 1 ? secondary : '#ffffff'
+                return (
+                  <div key={i} style={{
+                    position: 'absolute', left: `${pos.l}%`, top: `${pos.p}%`,
+                    fontSize: `${pos.s + 4}px`, lineHeight: 1, color: col,
+                    textShadow: `0 0 ${pos.s}px ${col}`,
+                    animation: `festStar ${dur} ${delay} infinite ease-in-out`,
+                    userSelect: 'none',
+                  }}>★</div>
                 )
               }
               return null
