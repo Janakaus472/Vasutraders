@@ -7,6 +7,7 @@ import Header from "@/components/layout/Header";
 import BottomNav from "@/components/layout/BottomNav";
 import ChatWidget from "@/components/ChatWidget";
 import PageViewTracker from "@/components/PageViewTracker";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -196,14 +197,69 @@ export default function RootLayout({
             <Header />
             <main className="min-h-[calc(100vh-4rem)]" style={{ position: 'relative', zIndex: 1 }}>{children}</main>
             <BottomNav />
-            <footer style={{ textAlign: 'center', padding: '20px 16px 32px', fontSize: '12px', color: 'rgba(139,69,19,0.4)', fontFamily: 'sans-serif', position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '8px' }}>
-                <a href="/about" style={{ color: 'rgba(139,69,19,0.5)', textDecoration: 'none', fontWeight: 600 }}>About Us</a>
-                <span style={{ opacity: 0.3 }}>·</span>
-                <a href="/refund-policy" style={{ color: 'rgba(139,69,19,0.5)', textDecoration: 'none', fontWeight: 600 }}>Order &amp; Delivery Policy</a>
+            <footer style={{ background: '#1a1a1a', color: '#fff', fontFamily: "'Plus Jakarta Sans', sans-serif", position: 'relative', zIndex: 1 }}>
+              <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px 32px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '36px' }}>
+                {/* Brand */}
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '18px', color: '#fff', marginBottom: '8px', letterSpacing: '0.5px' }}>Vasu Traders</div>
+                  <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: '16px' }}>
+                    Wholesale supplier of playing cards, poker chips, party balloons, rubber bands, sports goods &amp; more.
+                    Based in Indore, MP.
+                  </div>
+                  <div style={{ display: 'inline-block', background: '#DC2626', color: '#fff', fontSize: '11px', fontWeight: 800, padding: '4px 12px', borderRadius: '4px', letterSpacing: '2px', textTransform: 'uppercase' as const }}>
+                    Wholesale Only
+                  </div>
+                </div>
+                {/* Quick Links */}
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '12px', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textTransform: 'uppercase' as const, marginBottom: '14px' }}>Quick Links</div>
+                  <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '8px' }}>
+                    {[
+                      { href: '/', label: 'Home' },
+                      { href: '/catalog', label: 'Product Catalog' },
+                      { href: '/about', label: 'About Us' },
+                      { href: '/contact', label: 'Contact Us' },
+                    ].map(link => (
+                      <a key={link.href} href={link.href} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none', fontWeight: 500 }}>{link.label}</a>
+                    ))}
+                  </div>
+                </div>
+                {/* Policies */}
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '12px', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textTransform: 'uppercase' as const, marginBottom: '14px' }}>Policies</div>
+                  <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '8px' }}>
+                    {[
+                      { href: '/shipping-policy', label: 'Shipping Policy' },
+                      { href: '/returns-policy', label: 'Return & Refund Policy' },
+                      { href: '/cancellation-policy', label: 'Cancellation Policy' },
+                      { href: '/payment-terms', label: 'Payment Terms' },
+                      { href: '/terms-and-conditions', label: 'Terms & Conditions' },
+                      { href: '/privacy-policy', label: 'Privacy Policy' },
+                    ].map(link => (
+                      <a key={link.href} href={link.href} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none', fontWeight: 500 }}>{link.label}</a>
+                    ))}
+                  </div>
+                </div>
+                {/* Contact */}
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '12px', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textTransform: 'uppercase' as const, marginBottom: '14px' }}>Contact</div>
+                  <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '10px', fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>
+                    <div>📍 Indore, Madhya Pradesh, India</div>
+                    <div>🕐 Mon – Sat: 10:00 AM – 7:00 PM</div>
+                    <div style={{ marginTop: '4px' }}>
+                      <a href="/contact" style={{ display: 'inline-block', background: '#25D366', color: '#fff', fontWeight: 700, fontSize: '13px', padding: '8px 16px', borderRadius: '8px', textDecoration: 'none' }}>
+                        💬 WhatsApp / Call
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <a href="https://aussieai.shop" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>powered by AussieAI</a>
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' as const, gap: '8px', maxWidth: '1100px', margin: '0 auto' }}>
+                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>© {new Date().getFullYear()} Vasu Traders · All Rights Reserved · Wholesale Supplier, Indore MP</span>
+                <a href="https://aussieai.shop" target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', textDecoration: 'none' }}>powered by AussieAI</a>
+              </div>
             </footer>
+            <WhatsAppFloat />
             <ChatWidget />
             <PageViewTracker />
           </CartProvider>

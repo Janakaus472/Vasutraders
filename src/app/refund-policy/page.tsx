@@ -76,11 +76,26 @@ export default async function RefundPolicyPage() {
     <div style={{ maxWidth: '860px', margin: '0 auto', padding: 'clamp(40px, 6vw, 64px) 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
 
       {/* Breadcrumb */}
-      <nav style={{ display: 'flex', gap: '6px', alignItems: 'center', fontSize: '13px', color: '#9ca3af', marginBottom: '32px' }}>
+      <nav style={{ display: 'flex', gap: '6px', alignItems: 'center', fontSize: '13px', color: '#9ca3af', marginBottom: '20px' }}>
         <Link href="/" style={{ color: '#B91C1C', textDecoration: 'none', fontWeight: 600 }}>Home</Link>
         <span>/</span>
         <span style={{ color: '#374151' }}>Order &amp; Delivery Policy</span>
       </nav>
+
+      {/* Related policies */}
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '28px' }}>
+        {[
+          { href: '/returns-policy', label: 'Return & Refund Policy' },
+          { href: '/shipping-policy', label: 'Shipping Policy' },
+          { href: '/cancellation-policy', label: 'Cancellation Policy' },
+          { href: '/payment-terms', label: 'Payment Terms' },
+          { href: '/terms-and-conditions', label: 'Terms & Conditions' },
+        ].map(p => (
+          <Link key={p.href} href={p.href} style={{ fontSize: '12px', fontWeight: 700, color: '#B91C1C', background: '#FEF2F2', border: '1px solid #FECACA', padding: '5px 12px', borderRadius: '20px', textDecoration: 'none' }}>
+            {p.label}
+          </Link>
+        ))}
+      </div>
 
       {/* Title */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>

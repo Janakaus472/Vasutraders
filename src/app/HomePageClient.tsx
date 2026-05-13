@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { BUSINESS_NAME, WHATSAPP_NUMBER } from '@/lib/constants'
 import { useLanguage } from '@/context/LanguageContext'
 import AnimatedLogo from '@/components/AnimatedLogo'
-import { StoreInfo } from './api/admin/store-info/route'
+import { StoreInfo } from '@/types/store-info'
 
 const DEFAULT_EMOJIS: Record<string, string> = {
   'Playing Cards':        '🃏',
@@ -39,11 +39,17 @@ export default function HomePageClient({ categories, totalProducts, layout, stor
 
   // Build ordered, filtered category list from layout config (if available)
   const catsWithIcons = (() => {
+    const countMap = new Map(categories.map(c => [c.name, c.count]))
     if (layout && layout.length > 0) {
-      const countMap = new Map(categories.map(c => [c.name, c.count]))
-      return layout
+      const layoutMap = new Map(layout.map(l => [l.name, l]))
+      const fromLayout = layout
         .filter(l => l.visible && countMap.has(l.name))
         .map(l => ({ name: l.name, count: countMap.get(l.name) || 0, emoji: l.emoji, imageUrl: l.imageUrl, color: '#DC2626', bg: '#FEF2F2' }))
+      // Include new categories added after the layout was last saved
+      const newCats = categories
+        .filter(c => !layoutMap.has(c.name))
+        .map(c => ({ name: c.name, count: c.count, emoji: DEFAULT_EMOJIS[c.name] || '📦', imageUrl: undefined, color: '#DC2626', bg: '#FEF2F2' }))
+      return [...fromLayout, ...newCats]
     }
     return categories.map(c => ({
       ...c,
@@ -157,6 +163,67 @@ export default function HomePageClient({ categories, totalProducts, layout, stor
                 {totalProducts} {lang === 'hi' ? 'उत्पाद' : 'total'}
               </div>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── HOW ORDERING WORKS ── */}
+      <section style={{ background: '#fff', padding: 'clamp(40px, 6vw, 64px) 20px', borderTop: '1px solid #f0f0f0' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(28px, 4vw, 44px)' }}>
+            <h2 style={{ fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 800, color: '#1a1a1a', marginBottom: '8px', fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '2px' }}>
+              {lang === 'hi' ? 'ऑर्डर कैसे दें' : 'How Ordering Works'}
+            </h2>
+            <div style={{ width: '60px', height: '4px', background: '#DC2626', margin: '0 auto 12px', borderRadius: '2px' }} />
+            <p style={{ fontSize: '15px', color: '#6b7280', maxWidth: '520px', margin: '0 auto' }}>
+              {lang === 'hi'
+                ? 'हम B2B थोक व्यापार करते हैं — ऑर्डर सीधे बात करके होता है'
+                : 'We are a wholesale B2B supplier — orders are placed through direct discussion'}
+            </p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 45%), 1fr))', gap: '16px' }}>
+            {[
+              {
+                step: '1', icon: '🔍',
+                title: lang === 'hi' ? 'कैटलॉग देखें' : 'Browse Catalog',
+                desc: lang === 'hi' ? 'उत्पाद देखें और जो चाहिए वो नोट करें' : 'Explore our products and note what you need',
+              },
+              {
+                step: '2', icon: '📲',
+                title: lang === 'hi' ? 'संपर्क करें' : 'Send Inquiry',
+                desc: lang === 'hi' ? 'फोन या WhatsApp पर उत्पाद और मात्रा बताएं' : 'Call or WhatsApp us with your product list & quantities',
+              },
+              {
+                step: '3', icon: '💬',
+                title: lang === 'hi' ? 'दाम तय करें' : 'Discuss Pricing',
+                desc: lang === 'hi' ? 'हम उपलब्धता और थोक दाम कन्फर्म करेंगे' : 'We confirm availability & share wholesale pricing',
+              },
+              {
+                step: '4', icon: '✅',
+                title: lang === 'hi' ? 'ऑर्डर कन्फर्म' : 'Confirm Order',
+                desc: lang === 'hi' ? 'डिलीवरी, भुगतान तय हो और ऑर्डर पक्का हो' : 'Agree on shipping, payment terms & confirm',
+              },
+              {
+                step: '5', icon: '🚚',
+                title: lang === 'hi' ? 'डिस्पैच' : 'Dispatch',
+                desc: lang === 'hi' ? 'भुगतान के बाद माल पैक होकर भेज दिया जाता है' : 'After payment, goods are packed & dispatched',
+              },
+            ].map(item => (
+              <div key={item.step} style={{ background: '#f9f9f9', borderRadius: '14px', padding: '22px 16px', textAlign: 'center', border: '1.5px solid #f0f0f0', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', width: '26px', height: '26px', borderRadius: '50%', background: '#DC2626', color: '#fff', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {item.step}
+                </div>
+                <div style={{ fontSize: '36px', marginBottom: '10px', marginTop: '4px' }}>{item.icon}</div>
+                <div style={{ fontWeight: 800, fontSize: '14px', color: '#1a1a1a', marginBottom: '6px' }}>{item.title}</div>
+                <div style={{ fontSize: '13px', color: '#6b7280', lineHeight: 1.5 }}>{item.desc}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: '28px' }}>
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '13px 28px', borderRadius: '8px', fontWeight: 800, fontSize: '14px', textDecoration: 'none' }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+              {lang === 'hi' ? 'अभी WhatsApp करें' : 'Start on WhatsApp'}
+            </a>
           </div>
         </div>
       </section>
@@ -304,9 +371,34 @@ export default function HomePageClient({ categories, totalProducts, layout, stor
               <Link href="/about" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
                 {lang === 'hi' ? 'हमारे बारे में' : 'About Us'}
               </Link>
-              <a href="/#contact" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+              <Link href="/contact" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
                 {lang === 'hi' ? 'संपर्क करें' : 'Contact Us'}
-              </a>
+              </Link>
+            </div>
+          </div>
+          <div>
+            <h4 style={{ color: '#FAC41A', fontSize: '13px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
+              {lang === 'hi' ? 'नीतियाँ' : 'Policies'}
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <Link href="/shipping-policy" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+                {lang === 'hi' ? 'शिपिंग नीति' : 'Shipping Policy'}
+              </Link>
+              <Link href="/returns-policy" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+                {lang === 'hi' ? 'वापसी नीति' : 'Return & Refund Policy'}
+              </Link>
+              <Link href="/cancellation-policy" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+                {lang === 'hi' ? 'रद्दीकरण नीति' : 'Cancellation Policy'}
+              </Link>
+              <Link href="/payment-terms" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+                {lang === 'hi' ? 'भुगतान शर्तें' : 'Payment Terms'}
+              </Link>
+              <Link href="/terms-and-conditions" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+                {lang === 'hi' ? 'नियम और शर्तें' : 'Terms & Conditions'}
+              </Link>
+              <Link href="/privacy-policy" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+                {lang === 'hi' ? 'गोपनीयता नीति' : 'Privacy Policy'}
+              </Link>
             </div>
           </div>
           <div>
