@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export const revalidate = 3600
+export const revalidate = 0
 
 
 export default async function ProductPage({ params }: Props) {
@@ -91,6 +91,16 @@ export default async function ProductPage({ params }: Props) {
   const highPrice = allPrices.length > 0 ? Math.max(...allPrices) : 0
   const canonicalUrl = `https://www.vasutraders.com/catalog/${product.slug}`
 
+  const returnPolicy = {
+    '@type': 'MerchantReturnPolicy',
+    applicableCountry: 'IN',
+    returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+    merchantReturnDays: 7,
+    returnMethod: 'https://schema.org/ReturnByMail',
+    returnFees: 'https://schema.org/FreeReturn',
+    merchantReturnLink: 'https://www.vasutraders.com/refund-policy',
+  }
+
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -101,6 +111,7 @@ export default async function ProductPage({ params }: Props) {
     brand: { '@type': 'Brand', name: 'Vasu Traders' },
     category: product.category,
     url: canonicalUrl,
+    hasMerchantReturnPolicy: returnPolicy,
     offers: variantPrices.length > 0
       ? {
           '@type': 'AggregateOffer',
@@ -112,6 +123,7 @@ export default async function ProductPage({ params }: Props) {
           availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
           priceValidUntil,
           seller: { '@type': 'Organization', name: 'Vasu Traders' },
+          hasMerchantReturnPolicy: returnPolicy,
         }
       : {
           '@type': 'Offer',
@@ -121,6 +133,7 @@ export default async function ProductPage({ params }: Props) {
           availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
           itemCondition: 'https://schema.org/NewCondition',
           seller: { '@type': 'Organization', name: 'Vasu Traders' },
+          hasMerchantReturnPolicy: returnPolicy,
         },
   }
 

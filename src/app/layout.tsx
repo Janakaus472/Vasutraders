@@ -196,7 +196,12 @@ export default function RootLayout({
             <Header />
             <main className="min-h-[calc(100vh-4rem)]" style={{ position: 'relative', zIndex: 1 }}>{children}</main>
             <BottomNav />
-            <footer style={{ textAlign: 'center', padding: '24px 0 32px', fontSize: '11px', color: 'rgba(139,69,19,0.25)', fontFamily: 'sans-serif', position: 'relative', zIndex: 1 }}>
+            <footer style={{ textAlign: 'center', padding: '20px 16px 32px', fontSize: '12px', color: 'rgba(139,69,19,0.4)', fontFamily: 'sans-serif', position: 'relative', zIndex: 1 }}>
+              <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '8px' }}>
+                <a href="/about" style={{ color: 'rgba(139,69,19,0.5)', textDecoration: 'none', fontWeight: 600 }}>About Us</a>
+                <span style={{ opacity: 0.3 }}>·</span>
+                <a href="/refund-policy" style={{ color: 'rgba(139,69,19,0.5)', textDecoration: 'none', fontWeight: 600 }}>Return &amp; Refund Policy</a>
+              </div>
               <a href="https://aussieai.shop" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>powered by AussieAI</a>
             </footer>
             <ChatWidget />
