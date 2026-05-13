@@ -200,7 +200,7 @@ export default function RootLayout({
               <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '8px' }}>
                 <a href="/about" style={{ color: 'rgba(139,69,19,0.5)', textDecoration: 'none', fontWeight: 600 }}>About Us</a>
                 <span style={{ opacity: 0.3 }}>·</span>
-                <a href="/refund-policy" style={{ color: 'rgba(139,69,19,0.5)', textDecoration: 'none', fontWeight: 600 }}>Return &amp; Refund Policy</a>
+                <a href="/refund-policy" style={{ color: 'rgba(139,69,19,0.5)', textDecoration: 'none', fontWeight: 600 }}>Order &amp; Delivery Policy</a>
               </div>
               <a href="https://aussieai.shop" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>powered by AussieAI</a>
             </footer>

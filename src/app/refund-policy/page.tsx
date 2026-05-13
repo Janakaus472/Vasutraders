@@ -4,8 +4,8 @@ import { getSetting } from '@/lib/supabase/settings'
 import { StoreInfo, DEFAULT_STORE_INFO } from '@/types/store-info'
 
 export const metadata: Metadata = {
-  title: 'Return & Refund Policy | Vasu Traders',
-  description: 'Read Vasu Traders return and refund policy. We accept returns for damaged or defective products within 7 days of delivery. Contact us for return requests.',
+  title: 'Order & Delivery Policy | Vasu Traders',
+  description: 'Vasu Traders order and delivery policy. All sales are final. Once payment is received, goods are dispatched via your requested transport mode. Delivery charges may apply.',
   alternates: { canonical: 'https://www.vasutraders.com/refund-policy' },
   robots: { index: true, follow: true },
 }
@@ -24,55 +24,46 @@ export default async function RefundPolicyPage() {
   const sections = [
     {
       title: 'Overview',
-      content: `Vasu Traders is a wholesale supplier based in ${address}. We strive to ensure every order meets your expectations. This policy explains the conditions under which we accept returns and issue refunds.`,
+      content: `Vasu Traders is a wholesale supplier based in ${address}. We deal in bulk wholesale orders for retailers and businesses. Please read this policy carefully before placing your order, as all sales are final once payment is received.`,
     },
     {
-      title: 'Eligible Returns',
+      title: 'No Return Policy',
+      content: 'All products sold by Vasu Traders are non-returnable. Once payment is received and the order is confirmed, the goods are prepared and dispatched to the customer. We do not accept returns or exchanges under any circumstances. We encourage all buyers to verify product requirements, quantities, and specifications before placing an order.',
+    },
+    {
+      title: 'Order Confirmation & Dispatch',
       items: [
-        'Products received in a damaged or defective condition',
-        'Products that are significantly different from what was ordered (wrong item, wrong quantity)',
-        'Products with manufacturing defects reported within 7 days of delivery',
+        'An order is confirmed only upon receipt of full payment',
+        'Once payment is received, goods will be packed and dispatched at the earliest',
+        'You will be notified when your order has been dispatched',
+        'Products are transported via the mode requested by the customer at the time of ordering',
+        'If no transport mode is specified, we will dispatch via a suitable carrier at our discretion',
       ],
     },
     {
-      title: 'Non-Eligible Returns',
+      title: 'Delivery Charges',
       items: [
-        'Returns due to change of mind',
-        'Products that have been used, opened, or altered',
-        'Returns requested after 7 days from the date of delivery',
-        'Perishable or consumable goods once delivered',
-        'Custom or specially ordered products',
+        'Delivery charges are not included in the product price unless explicitly stated',
+        'Delivery charges are calculated based on the quantity ordered, weight, and destination',
+        'Higher quantity orders may attract higher delivery charges',
+        'The applicable delivery charge will be communicated to you before dispatch',
+        'For local deliveries within Indore, delivery terms will be discussed separately',
       ],
     },
     {
-      title: 'How to Request a Return',
-      steps: [
-        `Contact us within 7 days of delivery via phone (${phone}) or email (${email})`,
-        'Provide your order details and describe the issue with clear photos of the damaged/defective product',
-        'We will review your request and respond within 2 business days',
-        'If approved, we will arrange pickup or ask you to ship the items back to our warehouse',
-        'Refund or replacement will be processed once we receive and inspect the returned goods',
-      ],
+      title: 'Transport Mode',
+      content: 'Customers can specify their preferred transport mode (e.g. road transport, courier, parcel service) at the time of placing the order. We will do our best to dispatch via the requested mode. Any additional cost arising from the chosen transport mode will be borne by the customer.',
     },
     {
-      title: 'Refund Method & Timeline',
+      title: 'Responsibility After Dispatch',
       items: [
-        'Approved refunds are processed within 5–7 business days after receiving the returned product',
-        'Refunds are issued via the original payment method or bank transfer',
-        'Shipping charges are non-refundable unless the return is due to our error',
-        'For wholesale orders paid via bank transfer, refunds are credited directly to your account',
+        'Once goods are handed over to the transporter or courier, responsibility for safe delivery rests with the transport provider',
+        'Vasu Traders is not liable for delays, damage, or loss caused during transit',
+        'Customers are advised to inspect goods upon receipt and raise any transit damage claims directly with the transporter',
       ],
     },
     {
-      title: 'Exchanges',
-      content: 'If you received a wrong or defective item, we offer a direct exchange for the correct product at no additional charge, subject to stock availability. Contact us within 7 days of delivery to request an exchange.',
-    },
-    {
-      title: 'Damaged in Transit',
-      content: 'If your order arrives visibly damaged, please refuse the delivery and notify us immediately. If damage is discovered after opening the package, take photos and contact us within 24 hours of delivery. We will arrange a replacement or full refund.',
-    },
-    {
-      title: 'Contact for Returns',
+      title: 'Contact Us',
       isContact: true,
       phone,
       email,
@@ -88,17 +79,17 @@ export default async function RefundPolicyPage() {
       <nav style={{ display: 'flex', gap: '6px', alignItems: 'center', fontSize: '13px', color: '#9ca3af', marginBottom: '32px' }}>
         <Link href="/" style={{ color: '#B91C1C', textDecoration: 'none', fontWeight: 600 }}>Home</Link>
         <span>/</span>
-        <span style={{ color: '#374151' }}>Return &amp; Refund Policy</span>
+        <span style={{ color: '#374151' }}>Order &amp; Delivery Policy</span>
       </nav>
 
       {/* Title */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
         <h1 style={{ fontSize: 'clamp(28px, 5vw, 44px)', fontWeight: 800, color: '#1a1a1a', marginBottom: '8px', fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '2px' }}>
-          Return &amp; Refund Policy
+          Order &amp; Delivery Policy
         </h1>
         <div style={{ width: '50px', height: '4px', background: '#DC2626', margin: '0 auto 12px', borderRadius: '2px' }} />
         <p style={{ color: '#6b7280', fontSize: '14px' }}>
-          Effective for all orders placed on or after 1 January 2024 &nbsp;·&nbsp; Last updated: May 2025
+          Effective for all orders &nbsp;·&nbsp; Last updated: May 2025
         </p>
       </div>
 
@@ -106,7 +97,7 @@ export default async function RefundPolicyPage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {sections.map((section) => (
           <div key={section.title} style={{ background: '#fff', border: '1.5px solid #f3f4f6', borderRadius: '16px', padding: '24px' }}>
-            <h2 style={{ fontSize: '17px', fontWeight: 800, color: '#1a1a1a', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 style={{ fontSize: '17px', fontWeight: 800, color: '#1a1a1a', marginBottom: '12px' }}>
               {section.title}
             </h2>
 
@@ -120,14 +111,6 @@ export default async function RefundPolicyPage() {
                   <li key={i} style={{ color: '#4b5563', fontSize: '15px', lineHeight: 1.6 }}>{item}</li>
                 ))}
               </ul>
-            )}
-
-            {'steps' in section && section.steps && (
-              <ol style={{ margin: 0, paddingLeft: '22px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {section.steps.map((step, i) => (
-                  <li key={i} style={{ color: '#4b5563', fontSize: '15px', lineHeight: 1.6 }}>{step}</li>
-                ))}
-              </ol>
             )}
 
             {'isContact' in section && section.isContact && (
@@ -155,22 +138,16 @@ export default async function RefundPolicyPage() {
       {/* CTA */}
       <div style={{ textAlign: 'center', marginTop: '40px', background: '#FEF2F2', border: '1.5px solid #FECACA', borderRadius: '20px', padding: '32px 24px' }}>
         <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#1a1a1a', marginBottom: '8px' }}>
-          Have a question about your order?
+          Have a question before ordering?
         </h2>
         <p style={{ color: '#6b7280', fontSize: '15px', marginBottom: '20px' }}>
           Our team is available {hours} to assist you.
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a
-            href={`tel:${phone}`}
-            style={{ background: '#DC2626', color: '#fff', fontWeight: 700, padding: '14px 28px', borderRadius: '12px', fontSize: '15px', textDecoration: 'none' }}
-          >
+          <a href={`tel:${phone}`} style={{ background: '#DC2626', color: '#fff', fontWeight: 700, padding: '14px 28px', borderRadius: '12px', fontSize: '15px', textDecoration: 'none' }}>
             📞 Call Us
           </a>
-          <a
-            href={`mailto:${email}`}
-            style={{ background: '#fff', color: '#B91C1C', fontWeight: 700, padding: '14px 28px', borderRadius: '12px', fontSize: '15px', textDecoration: 'none', border: '2px solid #FECACA' }}
-          >
+          <a href={`mailto:${email}`} style={{ background: '#fff', color: '#B91C1C', fontWeight: 700, padding: '14px 28px', borderRadius: '12px', fontSize: '15px', textDecoration: 'none', border: '2px solid #FECACA' }}>
             ✉️ Email Us
           </a>
         </div>
