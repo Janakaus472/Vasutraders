@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getProducts } from '@/lib/supabase/products'
 import { getDescription } from '@/lib/i18n'
 
-export const revalidate = 3600 // regenerate at most once per hour
+export const dynamic = 'force-dynamic'
 
 function esc(str: string): string {
   return str
