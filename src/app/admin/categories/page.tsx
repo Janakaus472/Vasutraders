@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { CategoryWithSubs, Category } from '@/lib/supabase/categories'
 import { Product } from '@/types/product'
 
 export default function CategoriesPage() {
+  const router = useRouter()
   const [categories, setCategories] = useState<CategoryWithSubs[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -387,9 +389,9 @@ export default function CategoriesPage() {
                       <button
                         onClick={() => openArrangeProducts(cat.name, sub.name)}
                         className="px-2.5 py-1 text-xs font-semibold bg-green-50 text-green-600 hover:bg-green-100 rounded-lg transition-colors"
-                        title="Arrange products in this subcategory"
+                        title="View and arrange products in this subcategory"
                       >
-                        Arrange
+                        Products
                       </button>
                       <button
                         onClick={() => { setRenamingId(sub.id); setRenameVal(sub.name) }}
@@ -457,12 +459,12 @@ export default function CategoriesPage() {
           >
             {/* Header */}
             <div className="px-5 py-4 border-b border-gray-100">
-              <h2 className="font-bold text-gray-800">Arrange Products</h2>
+              <h2 className="font-bold text-gray-800">Products</h2>
               <p className="text-sm text-gray-400 mt-0.5">
                 {arrangeSub.category} &rarr; {arrangeSub.subcategory}
               </p>
               <p className="text-xs text-gray-400 mt-1">
-                Use arrows to set the display order on the website
+                Use arrows to set display order &middot; click Edit to modify a product
               </p>
             </div>
 
@@ -523,6 +525,15 @@ export default function CategoriesPage() {
                           {!product.inStock && <span className="ml-2 text-red-400">(Hidden)</span>}
                         </div>
                       </div>
+
+                      {/* Edit button */}
+                      <button
+                        onClick={() => router.push(`/admin/products/${product.id}`)}
+                        className="shrink-0 px-3 py-1.5 text-xs font-semibold bg-orange-50 text-orange-600 hover:bg-orange-100 rounded-lg transition-colors"
+                        title="Edit product"
+                      >
+                        Edit
+                      </button>
                     </div>
                   ))}
                 </div>
