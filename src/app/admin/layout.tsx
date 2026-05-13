@@ -249,14 +249,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="fixed inset-0 z-20 bg-black/50 md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
       <aside className={`bg-[#1a3c5e] text-white flex flex-col transition-all duration-300 fixed h-full z-30
-        ${sidebarOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full md:translate-x-0 md:w-20'}`}>
+        ${sidebarOpen ? 'w-56 translate-x-0' : '-translate-x-full md:translate-x-0 md:w-56'}`}>
         <div className="p-4 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
             <Image src="/logo.png" alt="VT" width={36} height={36} style={{ borderRadius: '50%', flexShrink: 0 }} />
-            {sidebarOpen && <span className="font-bold text-lg">Vasu Traders</span>}
+            <span className="font-bold text-lg">Vasu Traders</span>
           </div>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-white/70 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center">
-            {sidebarOpen ? '✕' : '▶'}
+          <button onClick={() => setSidebarOpen(false)} className="text-white/70 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center md:hidden">
+            ✕
           </button>
         </div>
         <nav className="flex-1 py-4 overflow-y-auto">
@@ -265,20 +265,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             return (
               <Link key={item.href} href={item.href} onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 mx-2 rounded-lg transition-colors ${isActive ? 'bg-orange-500 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
-                <span className="text-xl">{item.icon}</span>
-                {sidebarOpen && <span>{item.label}</span>}
+                <span className="text-xl flex-shrink-0">{item.icon}</span>
+                <span className="text-sm font-medium">{item.label}</span>
               </Link>
             )
           })}
         </nav>
         <div className="p-4 border-t border-white/10">
           <Link href="/catalog" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 text-white/70 hover:text-white">
-            <span className="text-xl">🏪</span>
-            {sidebarOpen && <span>Back to Store</span>}
+            <span className="text-xl flex-shrink-0">🏪</span>
+            <span className="text-sm font-medium">Back to Store</span>
           </Link>
         </div>
       </aside>
-      <main className="flex-1 md:ml-20 min-w-0">
+      <main className="flex-1 md:ml-56 min-w-0">
         <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
           <button onClick={() => setSidebarOpen(prev => !prev)} className="text-gray-600 hover:text-gray-900 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-gray-100">
             <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
