@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { addProduct, updateProduct, updateProductPrice, bulkUpdatePrices, deleteProduct, duplicateProduct, reorderProducts, getProductsBySubcategory } from '@/lib/supabase/products'
+
+function pingGoogle() {
+  fetch('https://www.google.com/ping?sitemap=https://www.vasutraders.com/sitemap.xml')
+    .catch(() => {})
+}
 
 function isAdmin(req: NextRequest) {
   return req.cookies.get('vt_admin')?.value === '1'
@@ -22,16 +28,20 @@ export async function POST(req: NextRequest) {
       const id = searchParams.get('id')
       if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
       const product = await duplicateProduct(id)
+      revalidatePath('/', 'layout')
+      pingGoogle()
       return NextResponse.json(product)
     }
     if (action === 'bulk') {
       const updates = await req.json()
       await bulkUpdatePrices(updates)
+      revalidatePath('/', 'layout')
       return NextResponse.json({ ok: true })
     }
     if (action === 'reorder') {
       const updates = await req.json()
       await reorderProducts(updates)
+      revalidatePath('/', 'layout')
       return NextResponse.json({ ok: true })
     }
     if (action === 'get_by_subcategory') {
@@ -53,10 +63,13 @@ export async function POST(req: NextRequest) {
       } else {
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
       }
+      revalidatePath('/', 'layout')
       return NextResponse.json({ ok: true })
     }
     const product = await req.json()
     const id = await addProduct(product)
+    revalidatePath('/', 'layout')
+    pingGoogle()
     return NextResponse.json({ id })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
@@ -74,7 +87,9 @@ export async function PATCH(req: NextRequest) {
       await updateProductPrice(id, price)
     } else {
       await updateProduct(id, fields)
+      pingGoogle()
     }
+    revalidatePath('/', 'layout')
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
@@ -88,6 +103,7 @@ export async function DELETE(req: NextRequest) {
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
   try {
     await deleteProduct(id)
+    revalidatePath('/', 'layout')
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })

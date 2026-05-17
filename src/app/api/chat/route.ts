@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { env } from '@/lib/env'
 
 const SYSTEM_PROMPT = `You are a friendly sales assistant chatbot for Vasu Traders, a wholesale supplier based in Indore, Madhya Pradesh, India with 20+ years of experience and 500+ happy customers.
 
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
     const res = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+        'Authorization': `Bearer ${env.deepseekApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
