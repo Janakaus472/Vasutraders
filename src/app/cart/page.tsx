@@ -130,7 +130,7 @@ export default function CartPage() {
         '',
         details.shopName ? `🏪 Shop: ${details.shopName}` : '',
         details.contactName ? `👤 Name: ${details.contactName}` : '',
-        `📱 Phone: ${details.phone}`,
+        details.phone ? `📱 Phone: ${details.phone}` : '',
         details.email ? `📧 Email: ${details.email}` : '',
         `📍 Area: ${details.locality}`,
         '',
@@ -188,8 +188,7 @@ export default function CartPage() {
   const validPhone = /^[6-9]\d{9}$/.test(details.phone)
   const validEmail = !details.email.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(details.email.trim())
   const isDetailsValid =
-    validPhone &&
-    waVerified &&
+    (details.phone === '' || (validPhone && waVerified)) &&
     details.locality.trim() &&
     validEmail
 
@@ -629,7 +628,7 @@ export default function CartPage() {
                 <input type="text" autoComplete="off" value={details.contactName} onChange={e => setDetails(d => ({ ...d, contactName: e.target.value }))} placeholder="Your name (optional)" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
               </div>
               <div>
-                <label style={LABEL_STYLE}>📱 Mobile Number *</label>
+                <label style={LABEL_STYLE}>📱 Mobile Number <span style={{ fontWeight: 400, fontSize: '13px', color: '#9ca3af' }}>(optional)</span></label>
                 <input type="tel" inputMode="numeric" pattern="[0-9]*" value={details.phone} onChange={e => {
                     let v = e.target.value.replace(/\D/g, '')
                     // Strip country code prefixes commonly pasted from contacts
@@ -803,7 +802,7 @@ export default function CartPage() {
         {[
           { label: '🏪 Shop', value: details.shopName || '—' },
           { label: '👤 Name', value: details.contactName || '—' },
-          { label: '📱 Mobile', value: details.phone },
+          { label: '📱 Mobile', value: details.phone || '—' },
           { label: '📧 Email', value: details.email || '—' },
           { label: '📍 Area', value: details.locality },
         ].map(({ label, value }) => (
