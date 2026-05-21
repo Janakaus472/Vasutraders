@@ -18,6 +18,7 @@ function ProductsContent() {
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [unitFilter, setUnitFilter] = useState('all')
+  const [sortBy, setSortBy] = useState('newest')
   const [bulkMode, setBulkMode] = useState(isBulkMode)
   const [bulkPrices, setBulkPrices] = useState<Record<string, string>>({})
   const [savingBulk, setSavingBulk] = useState(false)
@@ -54,17 +55,30 @@ function ProductsContent() {
   const categories = ['all', ...Array.from(new Set(products.map(p => p.category).filter((c): c is string => !!c)))]
   const units = ['all', ...Array.from(new Set(products.map(p => p.unit).filter(Boolean)))]
 
-  const filtered = products.filter(p => {
-    const q = search.toLowerCase()
-    const matchSearch = !q || p.name.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q)
-    const matchCat = categoryFilter === 'all' || p.category === categoryFilter
-    const matchUnit = unitFilter === 'all' || p.unit === unitFilter
-    const matchFilter =
-      filterParam === 'noprice' ? (!p.pricePerUnit || p.pricePerUnit === 0) :
-      filterParam === 'nocategory' ? !p.category :
-      true
-    return matchSearch && matchCat && matchUnit && matchFilter
-  })
+  const filtered = products
+    .filter(p => {
+      const q = search.toLowerCase()
+      const matchSearch = !q || p.name.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q)
+      const matchCat = categoryFilter === 'all' || p.category === categoryFilter
+      const matchUnit = unitFilter === 'all' || p.unit === unitFilter
+      const matchFilter =
+        filterParam === 'noprice' ? (!p.pricePerUnit || p.pricePerUnit === 0) :
+        filterParam === 'nocategory' ? !p.category :
+        true
+      return matchSearch && matchCat && matchUnit && matchFilter
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'newest': return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        case 'oldest': return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        case 'name_az': return a.name.localeCompare(b.name)
+        case 'name_za': return b.name.localeCompare(a.name)
+        case 'price_asc': return (a.pricePerUnit || 0) - (b.pricePerUnit || 0)
+        case 'price_desc': return (b.pricePerUnit || 0) - (a.pricePerUnit || 0)
+        case 'category': return (a.category || '').localeCompare(b.category || '')
+        default: return 0
+      }
+    })
 
   const adminPatch = (body: object) =>
     fetch('/api/admin/products', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
@@ -279,8 +293,18 @@ function ProductsContent() {
           className="px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-orange-400 bg-white">
           {units.map(u => <option key={u} value={u}>{u === 'all' ? 'All Units' : u}</option>)}
         </select>
-        {(search || categoryFilter !== 'all' || unitFilter !== 'all' || filterParam) && (
-          <button onClick={() => { setSearch(''); setCategoryFilter('all'); setUnitFilter('all'); router.replace('/admin/products') }}
+        <select value={sortBy} onChange={e => setSortBy(e.target.value)}
+          className="px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-orange-400 bg-white">
+          <option value="newest">🕐 Newest First</option>
+          <option value="oldest">🕐 Oldest First</option>
+          <option value="name_az">A → Z</option>
+          <option value="name_za">Z → A</option>
+          <option value="price_asc">₹ Low → High</option>
+          <option value="price_desc">₹ High → Low</option>
+          <option value="category">Category A → Z</option>
+        </select>
+        {(search || categoryFilter !== 'all' || unitFilter !== 'all' || sortBy !== 'newest' || filterParam) && (
+          <button onClick={() => { setSearch(''); setCategoryFilter('all'); setUnitFilter('all'); setSortBy('newest'); router.replace('/admin/products') }}
             className="px-3 py-2.5 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-xl">
             ✕ Clear
           </button>
