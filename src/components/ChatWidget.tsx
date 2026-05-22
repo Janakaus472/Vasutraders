@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { trackWaClick } from '@/lib/trackWaClick'
 
 interface Message {
   role: 'user' | 'assistant'
   content: string
 }
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919425073114'
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919893084993'
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false)
@@ -145,6 +146,7 @@ export default function ChatWidget() {
               href={`https://wa.me/${WHATSAPP_NUMBER}`}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackWaClick('Chat Widget')}
               style={{
                 marginLeft: 'auto',
                 background: 'rgba(255,255,255,0.15)',

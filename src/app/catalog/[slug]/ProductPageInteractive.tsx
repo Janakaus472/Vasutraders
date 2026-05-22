@@ -8,6 +8,7 @@ import AddToCartButton from '@/components/catalog/AddToCartButton'
 import { CATEGORY_BG } from '@/components/catalog/marketplaceConfig'
 import { WHATSAPP_NUMBER } from '@/lib/constants'
 import { getDescription } from '@/lib/i18n'
+import { trackWaClick } from '@/lib/trackWaClick'
 
 export default function ProductPageInteractive({ product }: { product: Product }) {
   const { items, addItem, removeItem, updateQuantity } = useCart()
@@ -322,6 +323,7 @@ export default function ProductPageInteractive({ product }: { product: Product }
             href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappText)}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackWaClick('Product Page', product.name)}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
               background: '#25D366', color: '#fff', fontWeight: 800, fontSize: '15px',

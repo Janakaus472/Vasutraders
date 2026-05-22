@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { BUSINESS_NAME, WHATSAPP_NUMBER } from '@/lib/constants'
 import { useLanguage } from '@/context/LanguageContext'
-import { StoreInfo } from '@/app/api/admin/store-info/route'
+import { trackWaClick } from '@/lib/trackWaClick'
+import { StoreInfo } from '@/types/store-info'
 import { PromoThemeConfig } from '@/types/theme'
+import { toSlug } from '@/lib/categorySlug'
 
 interface HomeCategoryLayout {
   name: string
@@ -61,11 +63,16 @@ export default function PromotionalTheme({ promoConfig, categories, totalProduct
   }
 
   const catsWithIcons = (() => {
+    const countMap = new Map(categories.map(c => [c.name, c.count]))
     if (layout && layout.length > 0) {
-      const countMap = new Map(categories.map(c => [c.name, c.count]))
-      return layout
+      const layoutMap = new Map(layout.map(l => [l.name, l]))
+      const fromLayout = layout
         .filter(l => l.visible && countMap.has(l.name))
         .map(l => ({ name: l.name, count: countMap.get(l.name) || 0, emoji: l.emoji, imageUrl: l.imageUrl }))
+      const newCats = categories
+        .filter(c => !layoutMap.has(c.name))
+        .map(c => ({ name: c.name, count: c.count, emoji: DEFAULT_EMOJIS[c.name] || '📦', imageUrl: undefined }))
+      return [...fromLayout, ...newCats]
     }
     return categories.map(c => ({ ...c, emoji: DEFAULT_EMOJIS[c.name] || '📦', imageUrl: undefined }))
   })()
@@ -218,7 +225,7 @@ export default function PromotionalTheme({ promoConfig, categories, totalProduct
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 45%), 1fr))', gap: 'clamp(12px, 2vw, 20px)' }}>
             {catsWithIcons.map(cat => (
-              <Link key={cat.name} href={`/catalog?category=${encodeURIComponent(cat.name)}`} className="promo-cat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '12px', padding: 'clamp(24px, 4vw, 36px) 16px', textDecoration: 'none', border: '2px solid #f0f0f0', textAlign: 'center', minHeight: '200px' }}>
+              <Link key={cat.name} href={`/catalog/c/${toSlug(cat.name)}`} className="promo-cat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '12px', padding: 'clamp(24px, 4vw, 36px) 16px', textDecoration: 'none', border: '2px solid #f0f0f0', textAlign: 'center', minHeight: '200px' }}>
                 {cat.imageUrl
                   ? <img src={cat.imageUrl} alt={cat.name} style={{ width: '80px', height: '80px', borderRadius: '14px', objectFit: 'cover', marginBottom: '14px' }} />
                   : <div style={{ fontSize: '60px', lineHeight: 1, marginBottom: '14px' }}>{cat.emoji}</div>
@@ -309,7 +316,7 @@ export default function PromotionalTheme({ promoConfig, categories, totalProduct
             <Link href="/catalog" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#FAC41A', color: '#7f1d1d', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '1px' }}>
               {lang === 'hi' ? 'कैटलॉग देखें' : 'Browse Catalog'}
             </Link>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none' }}>
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackWaClick('Promo Theme')} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none' }}>
               {t.whatsappUs}
             </a>
           </div>
@@ -325,7 +332,7 @@ export default function PromotionalTheme({ promoConfig, categories, totalProduct
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {catsWithIcons.map(cat => (
-                <Link key={cat.name} href={`/catalog?category=${encodeURIComponent(cat.name)}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+                <Link key={cat.name} href={`/catalog/c/${toSlug(cat.name)}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
                   {catLabel(cat.name)}
                 </Link>
               ))}
@@ -346,7 +353,7 @@ export default function PromotionalTheme({ promoConfig, categories, totalProduct
               {lang === 'hi' ? 'संपर्क' : 'Get in Touch'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>WhatsApp</a>
+              <a href={waUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackWaClick('Promo Theme')} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>WhatsApp</a>
               {storeInfo?.email && <a href={`mailto:${storeInfo.email}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>✉️ {storeInfo.email}</a>}
               {storeInfo?.phone && <a href={`tel:${storeInfo.phone.replace(/\s/g, '')}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>📞 {storeInfo.phone}</a>}
               <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>{storeInfo?.address || 'Indore, Madhya Pradesh'}</span>

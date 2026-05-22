@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { BUSINESS_NAME, WHATSAPP_NUMBER } from '@/lib/constants'
+import { toSlug } from '@/lib/categorySlug'
+import { trackWaClick } from '@/lib/trackWaClick'
 import { useLanguage } from '@/context/LanguageContext'
 import AnimatedLogo from '@/components/AnimatedLogo'
 import { StoreInfo } from '@/types/store-info'
@@ -104,7 +106,7 @@ export default function HomePageClient({ categories, totalProducts, layout, stor
               {t.homeCta}
               <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
             </Link>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 700, fontSize: '15px', textDecoration: 'none', border: '2px solid rgba(255,255,255,0.3)', transition: 'all 0.15s' }}>
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackWaClick('Home Page')} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 700, fontSize: '15px', textDecoration: 'none', border: '2px solid rgba(255,255,255,0.3)', transition: 'all 0.15s' }}>
               <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
               {t.whatsappUs}
             </a>
@@ -141,7 +143,7 @@ export default function HomePageClient({ categories, totalProducts, layout, stor
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 45%), 1fr))', gap: 'clamp(12px, 2vw, 20px)' }}>
             {catsWithIcons.map(cat => (
-              <Link key={cat.name} href={`/catalog?category=${encodeURIComponent(cat.name)}`} className="cat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '12px', padding: 'clamp(24px, 4vw, 36px) 16px', textDecoration: 'none', border: '2px solid #f0f0f0', textAlign: 'center', minHeight: '200px' }}>
+              <Link key={cat.name} href={`/catalog/c/${toSlug(cat.name)}`} className="cat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '12px', padding: 'clamp(24px, 4vw, 36px) 16px', textDecoration: 'none', border: '2px solid #f0f0f0', textAlign: 'center', minHeight: '200px' }}>
                 {(cat as any).imageUrl
                   ? <img src={(cat as any).imageUrl} alt={cat.name} style={{ width: '80px', height: '80px', borderRadius: '14px', objectFit: 'cover', marginBottom: '14px' }} />
                   : <div style={{ fontSize: '60px', lineHeight: 1, marginBottom: '14px' }}>{cat.emoji}</div>
@@ -220,7 +222,7 @@ export default function HomePageClient({ categories, totalProducts, layout, stor
             ))}
           </div>
           <div style={{ textAlign: 'center', marginTop: '28px' }}>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '13px 28px', borderRadius: '8px', fontWeight: 800, fontSize: '14px', textDecoration: 'none' }}>
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackWaClick('Home Page')} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '13px 28px', borderRadius: '8px', fontWeight: 800, fontSize: '14px', textDecoration: 'none' }}>
               <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
               {lang === 'hi' ? 'अभी WhatsApp करें' : 'Start on WhatsApp'}
             </a>
@@ -338,103 +340,13 @@ export default function HomePageClient({ categories, totalProducts, layout, stor
             <Link href="/catalog" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#FAC41A', color: '#7f1d1d', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '1px' }}>
               {lang === 'hi' ? 'कैटलॉग देखें' : 'Browse Catalog'}
             </Link>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none' }}>
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackWaClick('Home Page')} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none' }}>
               {t.whatsappUs}
             </a>
           </div>
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
-      <footer style={{ background: '#7f1d1d', padding: '40px 20px 24px' }}>
-        <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '32px', marginBottom: '32px' }}>
-          <div>
-            <h4 style={{ color: '#FAC41A', fontSize: '13px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
-              {lang === 'hi' ? 'श्रेणियाँ' : 'Categories'}
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {catsWithIcons.map(cat => (
-                <Link key={cat.name} href={`/catalog?category=${encodeURIComponent(cat.name)}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
-                  {catLabel(cat.name)}
-                </Link>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h4 style={{ color: '#FAC41A', fontSize: '13px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
-              {lang === 'hi' ? 'जानकारी' : 'Information'}
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <Link href="/catalog" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
-                {lang === 'hi' ? 'सभी उत्पाद' : 'All Products'}
-              </Link>
-              <Link href="/about" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
-                {lang === 'hi' ? 'हमारे बारे में' : 'About Us'}
-              </Link>
-              <Link href="/contact" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
-                {lang === 'hi' ? 'संपर्क करें' : 'Contact Us'}
-              </Link>
-            </div>
-          </div>
-          <div>
-            <h4 style={{ color: '#FAC41A', fontSize: '13px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
-              {lang === 'hi' ? 'नीतियाँ' : 'Policies'}
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <Link href="/shipping-policy" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
-                {lang === 'hi' ? 'शिपिंग नीति' : 'Shipping Policy'}
-              </Link>
-              <Link href="/returns-policy" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
-                {lang === 'hi' ? 'वापसी नीति' : 'Return & Refund Policy'}
-              </Link>
-              <Link href="/cancellation-policy" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
-                {lang === 'hi' ? 'रद्दीकरण नीति' : 'Cancellation Policy'}
-              </Link>
-              <Link href="/payment-terms" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
-                {lang === 'hi' ? 'भुगतान शर्तें' : 'Payment Terms'}
-              </Link>
-              <Link href="/terms-and-conditions" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
-                {lang === 'hi' ? 'नियम और शर्तें' : 'Terms & Conditions'}
-              </Link>
-              <Link href="/privacy-policy" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
-                {lang === 'hi' ? 'गोपनीयता नीति' : 'Privacy Policy'}
-              </Link>
-            </div>
-          </div>
-          <div>
-            <h4 style={{ color: '#FAC41A', fontSize: '13px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
-              {lang === 'hi' ? 'संपर्क' : 'Get in Touch'}
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
-                WhatsApp
-              </a>
-              {storeInfo?.email && (
-                <a href={`mailto:${storeInfo.email}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
-                  ✉️ {storeInfo.email}
-                </a>
-              )}
-              {storeInfo?.phone && (
-                <a href={`tel:${storeInfo.phone.replace(/\s/g, '')}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
-                  📞 {storeInfo.phone}
-                </a>
-              )}
-              <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>
-                {storeInfo?.address || 'Indore, Madhya Pradesh'}
-              </span>
-              {storeInfo?.gst_number && (
-                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>
-                  GST: {storeInfo.gst_number}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px', textAlign: 'center' }}>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>© {new Date().getFullYear()} {BUSINESS_NAME} · All Rights Reserved</p>
-        </div>
-      </footer>
     </div>
   )
 }

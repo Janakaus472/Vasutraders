@@ -24,7 +24,7 @@ export const env = {
   openrouterApiKey: process.env.OPENROUTER_API_KEY,
   resendApiKey: process.env.RESEND_API_KEY!,
   resendFromEmail: process.env.RESEND_FROM_EMAIL ?? 'noreply@vasutraders.com',
-  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '919425073114',
+  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '919893084993',
   whatsappBotUrl: process.env.WHATSAPP_BOT_URL,
   greenApiInstanceId: process.env.GREENAPI_INSTANCE_ID,
   greenApiToken: process.env.GREENAPI_TOKEN,

@@ -3,9 +3,10 @@ import Link from 'next/link'
 import { getSetting } from '@/lib/supabase/settings'
 import { StoreInfo, DEFAULT_STORE_INFO } from '@/types/store-info'
 import { WHATSAPP_NUMBER } from '@/lib/constants'
+import WhatsAppTrackLink from '@/components/WhatsAppTrackLink'
 
 export const metadata: Metadata = {
-  title: 'Contact Us | Vasu Traders',
+  title: { absolute: 'Contact Us | Vasu Traders' },
   description: 'Contact Vasu Traders for wholesale inquiries. Call, WhatsApp, or email us. Based in Indore, Madhya Pradesh — serving retailers across India.',
   alternates: { canonical: 'https://www.vasutraders.com/contact' },
   robots: { index: true, follow: true },
@@ -80,6 +81,13 @@ export default async function ContactPage() {
             </div>
           )
           if (item.href) {
+            if (item.label === 'WhatsApp') {
+              return (
+                <WhatsAppTrackLink key={item.label} href={item.href} source="Contact Page" style={{ textDecoration: 'none', display: 'block' }}>
+                  {inner}
+                </WhatsAppTrackLink>
+              )
+            }
             return (
               <a key={item.label} href={item.href} target={item.external ? '_blank' : undefined} rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
                 {inner}
@@ -125,9 +133,9 @@ export default async function ContactPage() {
           </a>
         )}
         {waUrl && (
-          <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ background: '#25D366', color: '#fff', fontWeight: 700, padding: '14px 28px', borderRadius: '12px', fontSize: '15px', textDecoration: 'none' }}>
+          <WhatsAppTrackLink href={waUrl} source="Contact Page CTA" style={{ background: '#25D366', color: '#fff', fontWeight: 700, padding: '14px 28px', borderRadius: '12px', fontSize: '15px', textDecoration: 'none' }}>
             💬 WhatsApp
-          </a>
+          </WhatsAppTrackLink>
         )}
       </div>
 

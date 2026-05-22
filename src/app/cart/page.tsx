@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { useCart } from '@/context/CartContext'
 import { useProducts } from '@/hooks/useProducts'
 import { useLanguage } from '@/context/LanguageContext'
+import { trackWaClick } from '@/lib/trackWaClick'
 
 type Step = 'cart' | 'details' | 'review' | 'success'
 
@@ -54,19 +55,6 @@ export default function CartPage() {
     email: '',
   })
   const [hasSavedDetails, setHasSavedDetails] = useState(false)
-  const [waVerified, setWaVerified] = useState(false)
-  const [otpSent, setOtpSent] = useState(false)
-  const [otpValue, setOtpValue] = useState('')
-  const [otpLoading, setOtpLoading] = useState(false)
-  const [otpError, setOtpError] = useState('')
-  const [resendTimer, setResendTimer] = useState(0)
-
-  useEffect(() => {
-    if (resendTimer <= 0) return
-    const t = setTimeout(() => setResendTimer(n => n - 1), 1000)
-    return () => clearTimeout(t)
-  }, [resendTimer])
-
   const [orderNumber, setOrderNumber] = useState('')
   const [successItems, setSuccessItems] = useState<{ name: string; quantity: number; unit: string }[]>([])
   const [waLink, setWaLink] = useState('')
@@ -188,48 +176,9 @@ export default function CartPage() {
   const validPhone = /^[6-9]\d{9}$/.test(details.phone)
   const validEmail = !details.email.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(details.email.trim())
   const isDetailsValid =
-    (details.phone === '' || (validPhone && waVerified)) &&
+    (details.phone === '' || validPhone) &&
     details.locality.trim() &&
     validEmail
-
-  const sendOtp = async () => {
-    setOtpLoading(true)
-    setOtpError('')
-    try {
-      const res = await fetch('/api/otp/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: details.phone }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed to send OTP')
-      setOtpSent(true)
-      setResendTimer(30)
-    } catch (e: unknown) {
-      setOtpError(e instanceof Error ? e.message : 'Failed to send OTP')
-    } finally {
-      setOtpLoading(false)
-    }
-  }
-
-  const verifyOtpCode = async () => {
-    setOtpLoading(true)
-    setOtpError('')
-    try {
-      const res = await fetch('/api/otp/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: details.phone, code: otpValue }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Invalid OTP')
-      setWaVerified(true)
-    } catch (e: unknown) {
-      setOtpError(e instanceof Error ? e.message : 'Invalid OTP')
-    } finally {
-      setOtpLoading(false)
-    }
-  }
 
   // ─── EMPTY CART ────────────────────────────────────────────────
   if (items.length === 0 && step !== 'success') {
@@ -315,7 +264,7 @@ export default function CartPage() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'stretch' }}>
             {waLink && (
-              <a href={waLink} target="_blank" rel="noopener noreferrer" style={{
+              <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={() => trackWaClick('Order Success', `Order ${orderNumber}`)} style={{
                 background: 'linear-gradient(135deg, #25D366, #128C7E)', color: '#fff',
                 fontWeight: 800, padding: '18px 32px', borderRadius: '14px',
                 fontSize: '18px', textDecoration: 'none', textAlign: 'center',
@@ -636,69 +585,9 @@ export default function CartPage() {
                     else if (v.length === 11 && v.startsWith('0')) v = v.slice(1)
                     if (v.length > 10) v = v.slice(0, 10)
                     setDetails(d => ({ ...d, phone: v }))
-                    setWaVerified(false)
-                    setOtpSent(false)
-                    setOtpValue('')
-                    setOtpError('')
-                    setResendTimer(0)
                   }} autoComplete="off" placeholder="10-digit number" style={FIELD_STYLE} onFocus={e => (e.target.style.borderColor = '#FF6B00')} onBlur={e => (e.target.style.borderColor = '#FFD4A0')} />
                 {details.phone && !validPhone && (
                   <p style={{ color: '#ef4444', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>Enter a valid Indian mobile number (starts with 6-9)</p>
-                )}
-                {validPhone && (
-                  <div style={{ marginTop: '12px' }}>
-                    {waVerified ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: '#dcfce7', border: '2px solid #86efac', borderRadius: '12px' }}>
-                        <span style={{ fontSize: '18px' }}>✅</span>
-                        <span style={{ fontWeight: 700, color: '#15803d', fontSize: '15px' }}>Phone Verified</span>
-                      </div>
-                    ) : !otpSent ? (
-                      <button
-                        type="button"
-                        onClick={sendOtp}
-                        disabled={otpLoading}
-                        style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 20px', background: otpLoading ? '#e5e7eb' : '#25D366', border: 'none', borderRadius: '12px', cursor: otpLoading ? 'not-allowed' : 'pointer', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: '15px', color: otpLoading ? '#9ca3af' : '#fff', boxShadow: otpLoading ? 'none' : '0 4px 14px rgba(37,211,102,0.4)', width: '100%', justifyContent: 'center' }}
-                      >
-                        {otpLoading ? '⏳ Sending...' : '📲 Send OTP on WhatsApp'}
-                      </button>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <p style={{ fontSize: '14px', color: '#15803d', fontWeight: 600, margin: 0 }}>
-                          OTP sent to +91 {details.phone} via WhatsApp
-                        </p>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            maxLength={6}
-                            value={otpValue}
-                            onChange={e => { setOtpValue(e.target.value.replace(/\D/g, '')); setOtpError('') }}
-                            placeholder="Enter 6-digit OTP"
-                            style={{ ...FIELD_STYLE, flex: 1, letterSpacing: '4px', fontSize: '20px', textAlign: 'center' }}
-                          />
-                          <button
-                            type="button"
-                            onClick={verifyOtpCode}
-                            disabled={otpValue.length !== 6 || otpLoading}
-                            style={{ padding: '12px 20px', background: otpValue.length === 6 && !otpLoading ? '#FF6B00' : '#e5e7eb', border: 'none', borderRadius: '16px', cursor: otpValue.length === 6 && !otpLoading ? 'pointer' : 'not-allowed', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: '15px', color: otpValue.length === 6 && !otpLoading ? '#fff' : '#9ca3af', whiteSpace: 'nowrap' }}
-                          >
-                            {otpLoading ? '...' : 'Verify'}
-                          </button>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={sendOtp}
-                          disabled={resendTimer > 0 || otpLoading}
-                          style={{ background: 'none', border: 'none', cursor: resendTimer > 0 ? 'default' : 'pointer', color: resendTimer > 0 ? '#9ca3af' : '#FF6B00', fontSize: '13px', fontWeight: 700, padding: 0, textAlign: 'left' }}
-                        >
-                          {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
-                        </button>
-                      </div>
-                    )}
-                    {otpError && (
-                      <p style={{ color: '#ef4444', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>{otpError}</p>
-                    )}
-                  </div>
                 )}
               </div>
               <div>

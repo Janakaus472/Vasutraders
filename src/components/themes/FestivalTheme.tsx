@@ -3,9 +3,11 @@
 import Link from 'next/link'
 import { BUSINESS_NAME, WHATSAPP_NUMBER } from '@/lib/constants'
 import { useLanguage } from '@/context/LanguageContext'
+import { trackWaClick } from '@/lib/trackWaClick'
 import AnimatedLogo from '@/components/AnimatedLogo'
-import { StoreInfo } from '@/app/api/admin/store-info/route'
+import { StoreInfo } from '@/types/store-info'
 import { FestivalThemeConfig } from '@/types/theme'
+import { toSlug } from '@/lib/categorySlug'
 
 interface HomeCategoryLayout {
   name: string
@@ -50,11 +52,16 @@ export default function FestivalTheme({ festivalConfig, categories, totalProduct
   const secondary = festivalConfig.secondaryColor || '#FAC41A'
 
   const catsWithIcons = (() => {
+    const countMap = new Map(categories.map(c => [c.name, c.count]))
     if (layout && layout.length > 0) {
-      const countMap = new Map(categories.map(c => [c.name, c.count]))
-      return layout
+      const layoutMap = new Map(layout.map(l => [l.name, l]))
+      const fromLayout = layout
         .filter(l => l.visible && countMap.has(l.name))
         .map(l => ({ name: l.name, count: countMap.get(l.name) || 0, emoji: l.emoji, imageUrl: l.imageUrl }))
+      const newCats = categories
+        .filter(c => !layoutMap.has(c.name))
+        .map(c => ({ name: c.name, count: c.count, emoji: DEFAULT_EMOJIS[c.name] || '📦', imageUrl: undefined }))
+      return [...fromLayout, ...newCats]
     }
     return categories.map(c => ({ ...c, emoji: DEFAULT_EMOJIS[c.name] || '📦', imageUrl: undefined }))
   })()
@@ -208,7 +215,7 @@ export default function FestivalTheme({ festivalConfig, categories, totalProduct
               {t.homeCta}
               <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
             </Link>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.18)', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 700, fontSize: '15px', textDecoration: 'none', border: '2px solid rgba(255,255,255,0.5)' }}>
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackWaClick('Festival Theme')} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.18)', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 700, fontSize: '15px', textDecoration: 'none', border: '2px solid rgba(255,255,255,0.5)' }}>
               <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" /></svg>
               {t.whatsappUs}
             </a>
@@ -244,7 +251,7 @@ export default function FestivalTheme({ festivalConfig, categories, totalProduct
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 45%), 1fr))', gap: 'clamp(12px, 2vw, 20px)' }}>
             {catsWithIcons.map(cat => (
-              <Link key={cat.name} href={`/catalog?category=${encodeURIComponent(cat.name)}`} className="fest-cat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '12px', padding: 'clamp(24px, 4vw, 36px) 16px', textDecoration: 'none', border: '2px solid #f0f0f0', textAlign: 'center', minHeight: '200px' }}>
+              <Link key={cat.name} href={`/catalog/c/${toSlug(cat.name)}`} className="fest-cat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '12px', padding: 'clamp(24px, 4vw, 36px) 16px', textDecoration: 'none', border: '2px solid #f0f0f0', textAlign: 'center', minHeight: '200px' }}>
                 {cat.imageUrl
                   ? <img src={cat.imageUrl} alt={cat.name} style={{ width: '80px', height: '80px', borderRadius: '14px', objectFit: 'cover', marginBottom: '14px' }} />
                   : <div style={{ fontSize: '60px', lineHeight: 1, marginBottom: '14px' }}>{cat.emoji}</div>
@@ -337,7 +344,7 @@ export default function FestivalTheme({ festivalConfig, categories, totalProduct
             <Link href="/catalog" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#fff', color: primary, padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '1px' }}>
               {lang === 'hi' ? 'कैटलॉग देखें' : 'Browse Catalog'}
             </Link>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none' }}>
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackWaClick('Festival Theme')} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none' }}>
               {t.whatsappUs}
             </a>
           </div>
@@ -353,7 +360,7 @@ export default function FestivalTheme({ festivalConfig, categories, totalProduct
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {catsWithIcons.map(cat => (
-                <Link key={cat.name} href={`/catalog?category=${encodeURIComponent(cat.name)}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+                <Link key={cat.name} href={`/catalog/c/${toSlug(cat.name)}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
                   {catLabel(cat.name)}
                 </Link>
               ))}
@@ -374,7 +381,7 @@ export default function FestivalTheme({ festivalConfig, categories, totalProduct
               {lang === 'hi' ? 'संपर्क' : 'Get in Touch'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <a href={waUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackWaClick('Festival Theme')} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" /></svg>
                 WhatsApp
               </a>

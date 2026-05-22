@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const OWNER_EMAIL = 'janakaus472@gmail.com'
+const OWNER_EMAIL = 'vasutraders9809@gmail.com'
 
 export async function POST(req: NextRequest) {
   // Only allow calls from within the same origin (internal server-to-server)

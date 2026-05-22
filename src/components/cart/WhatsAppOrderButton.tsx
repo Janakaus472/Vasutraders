@@ -3,6 +3,7 @@
 import { CartItem } from '@/types/cart'
 import { Product } from '@/types/product'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
+import { trackWaClick } from '@/lib/trackWaClick'
 
 interface WhatsAppOrderButtonProps {
   cart: CartItem[]
@@ -11,6 +12,7 @@ interface WhatsAppOrderButtonProps {
 
 export default function WhatsAppOrderButton({ cart, products }: WhatsAppOrderButtonProps) {
   const handleOrder = () => {
+    trackWaClick('WhatsApp Order Button')
     const url = buildWhatsAppUrl(cart, products)
     window.open(url, '_blank')
   }
