@@ -61,8 +61,16 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
     document.body.style.width = '100%'
     document.body.style.overflowY = 'scroll'
 
+    // Android fallback: block touchmove on the document so the background page
+    // can't scroll even if the body lock doesn't fully catch it.
+    const blockTouch = (e: TouchEvent) => {
+      if (!(e.target as Element)?.closest('.modal-right-panel')) e.preventDefault()
+    }
+    document.addEventListener('touchmove', blockTouch, { passive: false })
+
     return () => {
       document.removeEventListener('keydown', onKey)
+      document.removeEventListener('touchmove', blockTouch)
       document.body.style.position = ''
       document.body.style.top = ''
       document.body.style.width = ''
@@ -131,7 +139,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           display: flex;
           flex-direction: column;
           gap: 16px;
-          justify-content: center;
+          justify-content: flex-start;
         }
         .modal-image-container {
           position: relative;
@@ -200,7 +208,6 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           .modal-right-panel {
             padding: 10px 16px calc(16px + env(safe-area-inset-bottom, 0px));
             gap: 10px;
-            justify-content: flex-start;
           }
           .modal-price-box {
             padding: 10px 14px !important;
@@ -419,7 +426,8 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
             </div>
           )}
 
-          {/* Cart controls */}
+          {/* Cart controls — action row is always mounted (visibility:hidden when qty=0)
+              so the panel height never jumps when the first item is added */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -430,7 +438,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
                   onSetQuantity={handleSetQty}
                   disabled={!product.inStock}
                 />
-                {activeQty > 0 && (
+                <div style={{ visibility: activeQty > 0 ? 'visible' : 'hidden' }}>
                   <button
                     onClick={() => handleSetQty(0)}
                     title="Remove from cart"
@@ -447,44 +455,46 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   </button>
-                )}
+                </div>
               </div>
-              {activeQty > 0 && (
-                <span style={{ color: '#B91C1C', fontWeight: 700, fontSize: '13px' }}>
-                  ✓ {activeQty} {selectedVariant ? `× ${selectedVariant.quantity} ${selectedVariant.unit}` : product.unit} {activeQty === 1 ? (lang === 'hi' ? 'जोड़ा' : 'item ready') : t.itemsAdded}
-                </span>
-              )}
+              <span style={{
+                visibility: activeQty > 0 ? 'visible' : 'hidden',
+                color: '#B91C1C', fontWeight: 700, fontSize: '13px',
+              }}>
+                ✓ {activeQty} {selectedVariant ? `× ${selectedVariant.quantity} ${selectedVariant.unit}` : product.unit} {activeQty === 1 ? (lang === 'hi' ? 'जोड़ा' : 'item ready') : t.itemsAdded}
+              </span>
             </div>
-            {activeQty > 0 && (
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                <button
-                  onClick={onClose}
-                  style={{
-                    flex: 1, padding: '10px 16px', borderRadius: '6px',
-                    border: '2px solid #e5e7eb', background: '#fff',
-                    fontWeight: 700, fontSize: '12px', cursor: 'pointer',
-                    color: '#374151', fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    transition: 'all 0.15s', whiteSpace: 'nowrap',
-                  }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#B91C1C'; (e.currentTarget as HTMLButtonElement).style.color = '#B91C1C' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e7eb'; (e.currentTarget as HTMLButtonElement).style.color = '#374151' }}
-                >
-                  ← {lang === 'hi' ? 'और देखें' : 'Continue Shopping'}
-                </button>
-                <a href="/cart" style={{
-                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                  background: '#B91C1C', color: '#fff',
-                  padding: '10px 16px', borderRadius: '6px',
-                  fontWeight: 700, fontSize: '12px', textDecoration: 'none', transition: 'all 0.15s',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif", whiteSpace: 'nowrap',
+            <div style={{
+              display: 'flex', gap: '8px', flexWrap: 'wrap',
+              visibility: activeQty > 0 ? 'visible' : 'hidden',
+            }}>
+              <button
+                onClick={onClose}
+                style={{
+                  flex: 1, padding: '10px 16px', borderRadius: '6px',
+                  border: '2px solid #e5e7eb', background: '#fff',
+                  fontWeight: 700, fontSize: '12px', cursor: 'pointer',
+                  color: '#374151', fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  transition: 'all 0.15s', whiteSpace: 'nowrap',
                 }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#991b1b' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#B91C1C' }}
-                >
-                  🛒 {t.viewOrder}
-                </a>
-              </div>
-            )}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#B91C1C'; (e.currentTarget as HTMLButtonElement).style.color = '#B91C1C' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e7eb'; (e.currentTarget as HTMLButtonElement).style.color = '#374151' }}
+              >
+                ← {lang === 'hi' ? 'और देखें' : 'Continue Shopping'}
+              </button>
+              <a href="/cart" style={{
+                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                background: '#B91C1C', color: '#fff',
+                padding: '10px 16px', borderRadius: '6px',
+                fontWeight: 700, fontSize: '12px', textDecoration: 'none', transition: 'all 0.15s',
+                fontFamily: "'Plus Jakarta Sans', sans-serif", whiteSpace: 'nowrap',
+              }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#991b1b' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#B91C1C' }}
+              >
+                🛒 {t.viewOrder}
+              </a>
+            </div>
           </div>
 
         </div>
