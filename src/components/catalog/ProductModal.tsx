@@ -46,16 +46,28 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
   const imgBg = CATEGORY_BG[product.category] || 'linear-gradient(135deg, #f8f7f4, #efefed)'
 
   useEffect(() => {
-    trackProductView({ id: product.id, name: product.name, category: product.category })
+    trackProductView({ id: product.id, slug: product.slug, name: product.name, category: product.category })
   }, [product.id, product.name, product.category])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
     document.addEventListener('keydown', onKey)
-    document.body.classList.add('modal-open')
+
+    // iOS-safe scroll lock: position:fixed is the only reliable way to prevent
+    // background scroll on iOS Safari (overflow:hidden on body doesn't work).
+    const scrollY = window.scrollY
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.width = '100%'
+    document.body.style.overflowY = 'scroll'
+
     return () => {
       document.removeEventListener('keydown', onKey)
-      document.body.classList.remove('modal-open')
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      document.body.style.overflowY = ''
+      window.scrollTo(0, scrollY)
     }
   }, [onClose])
 
@@ -107,10 +119,14 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           justify-content: center;
           padding: 20px;
           position: relative;
+          overflow: hidden;
         }
         .modal-right-panel {
           flex: 1;
+          min-height: 0;
           overflow-y: auto;
+          overscroll-behavior: contain;
+          -webkit-overflow-scrolling: touch;
           padding: 28px 32px 24px;
           display: flex;
           flex-direction: column;
@@ -157,9 +173,16 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
         .base-pill:hover { border-color: #B91C1C; background: #FEF2F2; }
         .base-pill.active { border-color: #B91C1C; background: #FEF2F2; color: #B91C1C; box-shadow: 0 0 0 3px rgba(185,28,28,0.12); }
         @media (max-width: 640px) {
+          @keyframes modalInMobile {
+            0%   { opacity: 0; transform: translateY(48px); }
+            100% { opacity: 1; transform: translateY(0); }
+          }
+          .animate-modalIn {
+            animation: modalInMobile 0.32s cubic-bezier(.16,1,.3,1) both;
+          }
           .modal-panel {
             flex-direction: column;
-            border-radius: 14px 14px 0 0;
+            border-radius: 18px 18px 0 0;
             max-height: 92dvh;
             margin: 0;
             margin-top: auto;
@@ -169,14 +192,24 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           }
           .modal-left-panel {
             width: 100%;
-            padding: 12px 16px 6px;
+            padding: 10px 16px 4px;
           }
           .modal-image-container {
-            height: 18vh;
+            height: 24vh;
           }
           .modal-right-panel {
-            padding: 8px 14px 16px;
-            gap: 8px;
+            padding: 10px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+            gap: 10px;
+            justify-content: flex-start;
+          }
+          .modal-price-box {
+            padding: 10px 14px !important;
+          }
+          .modal-price-value {
+            font-size: 1.35rem !important;
+          }
+          .modal-product-name {
+            font-size: 1.15rem !important;
           }
           .bulk-card {
             min-width: 72px;
@@ -232,7 +265,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
                 alt={selectedVariant ? `${product.name} – ${selectedVariant.quantity} ${selectedVariant.unit}` : product.name}
                 fill
                 style={{ objectFit: 'contain', padding: '8px', transition: 'opacity 0.2s' }}
-                sizes="400px"
+                sizes="(max-width: 640px) 90vw, 400px"
               />
             ) : (
               <CategoryIcon category={product.category} size="modal" />
@@ -257,7 +290,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
 
           {/* Name + description */}
           <div>
-            <h2 style={{
+            <h2 className="modal-product-name" style={{
               fontFamily: "'Bebas Neue', sans-serif",
               fontSize: 'clamp(1.3rem, 5vw, 2.4rem)',
               color: '#1a1a1a', lineHeight: 1.1, letterSpacing: '1px',
@@ -272,14 +305,14 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
           </div>
 
           {/* Price box — shown before bulk selector so base product is the clear default */}
-          <div style={{
+          <div className="modal-price-box" style={{
             background: '#FEF2F2', borderRadius: '8px', padding: '14px 18px',
             display: 'flex', alignItems: 'baseline', gap: '8px',
             border: '1px solid #FECACA',
           }}>
             {activePrice > 0 ? (
               <>
-                <span style={{
+                <span className="modal-price-value" style={{
                   fontFamily: "'Bebas Neue', sans-serif",
                   fontSize: 'clamp(1.6rem, 5vw, 2.4rem)', color: '#B91C1C',
                   lineHeight: 1, letterSpacing: '1px',
@@ -291,7 +324,7 @@ export default function ProductModal({ product, cartQuantity, onAdd, onRemove, o
                 </span>
               </>
             ) : (
-              <span style={{
+              <span className="modal-price-value" style={{
                 fontFamily: "'Bebas Neue', sans-serif",
                 fontSize: '1.6rem', color: '#B91C1C', letterSpacing: '1px',
               }}>{t.callForPrice}</span>

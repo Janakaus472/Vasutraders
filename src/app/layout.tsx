@@ -8,6 +8,8 @@ import BottomNav from "@/components/layout/BottomNav";
 import ChatWidget from "@/components/ChatWidget";
 import PageViewTracker from "@/components/PageViewTracker";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
+import { getSetting } from "@/lib/supabase/settings";
+import { StoreInfo, DEFAULT_STORE_INFO } from "@/types/store-info";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -88,11 +90,70 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const storeInfo = await getSetting<StoreInfo>('store_info', DEFAULT_STORE_INFO).catch(() => DEFAULT_STORE_INFO)
+  const info: StoreInfo = { ...DEFAULT_STORE_INFO, ...storeInfo }
+
+  const phone = info.phone || ''
+  const email = info.email || ''
+  const address = info.address || 'Indore, Madhya Pradesh, India'
+  const gst = info.gst_number || ''
+  const hours = info.hours || 'Mon – Sat: 10:00 AM – 7:00 PM'
+  const mapsUrl = info.maps_url || 'https://maps.google.com/?q=Indore,Madhya+Pradesh,India'
+
+  const businessSchema: Record<string, unknown> = {
+    '@type': ['LocalBusiness', 'Store'],
+    '@id': 'https://www.vasutraders.com/#business',
+    name: 'Vasu Traders',
+    description: 'Wholesale supplier of playing cards, poker chips, party balloons, rubber bands, sports goods and more in Indore, Madhya Pradesh. 20+ years of trusted wholesale trade.',
+    url: 'https://www.vasutraders.com',
+    logo: { '@type': 'ImageObject', url: 'https://www.vasutraders.com/logo.png', width: 512, height: 512 },
+    image: 'https://www.vasutraders.com/logo.png',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: address,
+      addressLocality: 'Indore',
+      addressRegion: 'Madhya Pradesh',
+      postalCode: '452001',
+      addressCountry: 'IN',
+    },
+    geo: { '@type': 'GeoCoordinates', latitude: '22.7196', longitude: '75.8577' },
+    areaServed: [
+      { '@type': 'City', name: 'Indore' },
+      { '@type': 'State', name: 'Madhya Pradesh' },
+      { '@type': 'Country', name: 'India' },
+    ],
+    priceRange: '$$',
+    currenciesAccepted: 'INR',
+    paymentAccepted: 'Cash, Bank Transfer, UPI',
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      availableLanguage: ['English', 'Hindi'],
+      ...(phone && { telephone: phone }),
+      ...(email && { email }),
+    },
+    hasMap: mapsUrl,
+    openingHoursSpecification: [{
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      opens: '10:00',
+      closes: '19:00',
+    }],
+    ...(phone && { telephone: phone }),
+    ...(email && { email }),
+    ...(gst && { taxID: gst }),
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Wholesale Products — Vasu Traders',
+      url: 'https://www.vasutraders.com/catalog',
+    },
+  }
+
   return (
     <html lang="en" style={{ colorScheme: 'light' }}>
       <head>
@@ -102,58 +163,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@graph': [
-                {
-                  '@type': ['LocalBusiness', 'Store'],
-                  '@id': 'https://www.vasutraders.com/#business',
-                  name: 'Vasu Traders',
-                  description: 'Wholesale supplier of playing cards, poker chips, party balloons, rubber bands, sports goods and more in Indore, Madhya Pradesh. 20+ years of trusted wholesale trade.',
-                  url: 'https://www.vasutraders.com',
-                  logo: {
-                    '@type': 'ImageObject',
-                    url: 'https://www.vasutraders.com/logo.png',
-                    width: 512,
-                    height: 512,
-                  },
-                  image: 'https://www.vasutraders.com/logo.png',
-                  address: {
-                    '@type': 'PostalAddress',
-                    addressLocality: 'Indore',
-                    addressRegion: 'Madhya Pradesh',
-                    postalCode: '452001',
-                    addressCountry: 'IN',
-                  },
-                  geo: {
-                    '@type': 'GeoCoordinates',
-                    latitude: '22.7196',
-                    longitude: '75.8577',
-                  },
-                  areaServed: [
-                    { '@type': 'City', name: 'Indore' },
-                    { '@type': 'State', name: 'Madhya Pradesh' },
-                    { '@type': 'Country', name: 'India' },
-                  ],
-                  priceRange: '$$',
-                  currenciesAccepted: 'INR',
-                  paymentAccepted: 'Cash, Bank Transfer, UPI',
-                  contactPoint: {
-                    '@type': 'ContactPoint',
-                    contactType: 'sales',
-                    availableLanguage: ['English', 'Hindi'],
-                  },
-                  hasMap: 'https://maps.google.com/?q=Indore,Madhya+Pradesh,India',
-                  openingHoursSpecification: [
-                    {
-                      '@type': 'OpeningHoursSpecification',
-                      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                      opens: '09:00',
-                      closes: '20:00',
-                    },
-                  ],
-                  founder: {
-                    '@type': 'Person',
-                    name: 'Vasu Traders Owner',
-                  },
-                },
+                businessSchema,
                 {
                   '@type': 'Organization',
                   '@id': 'https://www.vasutraders.com/#organization',
@@ -163,10 +173,14 @@ export default function RootLayout({
                   description: 'Trusted wholesale supplier in Indore, MP with 20+ years of experience.',
                   address: {
                     '@type': 'PostalAddress',
+                    streetAddress: address,
                     addressLocality: 'Indore',
                     addressRegion: 'Madhya Pradesh',
                     addressCountry: 'IN',
                   },
+                  ...(phone && { telephone: phone }),
+                  ...(email && { email }),
+                  ...(gst && { taxID: gst }),
                 },
                 {
                   '@type': 'WebSite',
@@ -174,15 +188,10 @@ export default function RootLayout({
                   url: 'https://www.vasutraders.com',
                   name: 'Vasu Traders',
                   description: 'Wholesale supplier in Indore — playing cards, poker chips, balloons, sports goods & more',
-                  publisher: {
-                    '@id': 'https://www.vasutraders.com/#organization',
-                  },
+                  publisher: { '@id': 'https://www.vasutraders.com/#organization' },
                   potentialAction: {
                     '@type': 'SearchAction',
-                    target: {
-                      '@type': 'EntryPoint',
-                      urlTemplate: 'https://www.vasutraders.com/catalog?search={search_term_string}',
-                    },
+                    target: { '@type': 'EntryPoint', urlTemplate: 'https://www.vasutraders.com/catalog?search={search_term_string}' },
                     'query-input': 'required name=search_term_string',
                   },
                 },
@@ -195,7 +204,7 @@ export default function RootLayout({
         <LanguageProvider>
           <CartProvider>
             <Header />
-            <main className="min-h-[calc(100vh-4rem)]" style={{ position: 'relative', zIndex: 1 }}>{children}</main>
+            <main className="min-h-[calc(100vh-4rem)]" style={{ position: 'relative' }}>{children}</main>
             <BottomNav />
             <footer style={{ background: '#1a1a1a', color: '#fff', fontFamily: "'Plus Jakarta Sans', sans-serif", position: 'relative', zIndex: 1 }}>
               <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px 32px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '36px' }}>
@@ -209,6 +218,11 @@ export default function RootLayout({
                   <div style={{ display: 'inline-block', background: '#DC2626', color: '#fff', fontSize: '11px', fontWeight: 800, padding: '4px 12px', borderRadius: '4px', letterSpacing: '2px', textTransform: 'uppercase' as const }}>
                     Wholesale Only
                   </div>
+                  {gst && (
+                    <div style={{ marginTop: '10px', fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>
+                      GST: {gst}
+                    </div>
+                  )}
                 </div>
                 {/* Quick Links */}
                 <div>
@@ -244,8 +258,18 @@ export default function RootLayout({
                 <div>
                   <div style={{ fontWeight: 800, fontSize: '12px', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textTransform: 'uppercase' as const, marginBottom: '14px' }}>Contact</div>
                   <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '10px', fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>
-                    <div>📍 Indore, Madhya Pradesh, India</div>
-                    <div>🕐 Mon – Sat: 10:00 AM – 7:00 PM</div>
+                    {phone && (
+                      <a href={`tel:${phone.replace(/\s/g, '')}`} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                        📞 {phone}
+                      </a>
+                    )}
+                    {email && (
+                      <a href={`mailto:${email}`} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                        ✉️ {email}
+                      </a>
+                    )}
+                    <div>📍 {address}</div>
+                    <div>🕐 {hours}</div>
                     <div style={{ marginTop: '4px' }}>
                       <a href="/contact" style={{ display: 'inline-block', background: '#25D366', color: '#fff', fontWeight: 700, fontSize: '13px', padding: '8px 16px', borderRadius: '8px', textDecoration: 'none' }}>
                         💬 WhatsApp / Call
@@ -256,7 +280,7 @@ export default function RootLayout({
               </div>
               <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' as const, gap: '8px', maxWidth: '1100px', margin: '0 auto' }}>
                 <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>© {new Date().getFullYear()} Vasu Traders · All Rights Reserved · Wholesale Supplier, Indore MP</span>
-                <a href="https://aussieai.shop" target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', textDecoration: 'none' }}>powered by AussieAI</a>
+                <a href="https://aussieai.shop" target="_blank" rel="noopener noreferrer nofollow" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', textDecoration: 'none' }}>powered by AussieAI</a>
               </div>
             </footer>
             <WhatsAppFloat />
