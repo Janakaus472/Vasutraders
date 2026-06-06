@@ -92,8 +92,8 @@ export default function CartPage() {
           locality: details.locality,
           items: cartProducts.map(({ quantity, product, variant }) => ({
             name: getDisplayName(product, variant),
-            quantity: variant?.quantity ? quantity * variant.quantity : quantity,
-            unit: variant ? variant.unit : product.unit,
+            quantity,
+            unit: variant ? 'Pack' : product.unit,
           })),
         }),
       })
