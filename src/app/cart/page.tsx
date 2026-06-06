@@ -358,7 +358,7 @@ export default function CartPage() {
   if (step === 'cart') {
     const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
     const getEffectivePrice = (i: typeof cartProducts[0]) =>
-      i.variant?.price !== null && i.variant?.price !== undefined ? i.variant.price : i.product.pricePerUnit
+      i.variant ? (i.variant.price ?? 0) : i.product.pricePerUnit
     const hasPrice = cartProducts.some(i => getEffectivePrice(i) > 0)
     const total = cartProducts.reduce((s, i) => s + getEffectivePrice(i) * i.quantity, 0)
 
@@ -404,9 +404,7 @@ export default function CartPage() {
 
               {cartProducts.map(({ productId, variantId, quantity, product, variant }, idx) => {
                 const displayImage = variant?.imageUrl || product.imageUrl || '/placeholder-product.png'
-                const displayPrice = variant?.price !== null && variant?.price !== undefined
-                  ? variant.price
-                  : product.pricePerUnit
+                const displayPrice = variant ? (variant.price ?? 0) : product.pricePerUnit
                 const displayUnit = variant ? variant.unit : product.unit
                 return (
                 <div key={`${productId}:${variantId || ''}`} className="cart-row" style={{ borderBottom: idx < cartProducts.length - 1 ? '1px solid #FFF0E0' : 'none' }}>
@@ -544,7 +542,7 @@ export default function CartPage() {
   if (step === 'details') {
     const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
     const getEffectivePrice = (i: typeof cartProducts[0]) =>
-      i.variant?.price !== null && i.variant?.price !== undefined ? i.variant.price : i.product.pricePerUnit
+      i.variant ? (i.variant.price ?? 0) : i.product.pricePerUnit
     const hasPrice = cartProducts.some(i => getEffectivePrice(i) > 0)
     const total = cartProducts.reduce((s, i) => s + getEffectivePrice(i) * i.quantity, 0)
 
