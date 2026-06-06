@@ -22,7 +22,7 @@ export interface Order extends OrderPayload {
 }
 
 export async function saveOrder(payload: OrderPayload): Promise<Order> {
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('orders')
     .insert(payload)
     .select()
