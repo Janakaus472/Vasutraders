@@ -1,18 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import nodemailer from 'nodemailer'
 
 const OWNER_EMAIL = 'vasutraders9809@gmail.com'
 
 export async function POST(req: NextRequest) {
-  // Only allow calls from within the same origin (internal server-to-server)
-  const origin = req.headers.get('origin')
-  const host = req.headers.get('host')
-  if (origin && host && !origin.includes(host)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
-
-  const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) return NextResponse.json({ error: 'No API key' }, { status: 500 })
-
   try {
     const { order_number, shop_name, contact_name, phone, email, locality, items } = await req.json()
 
@@ -44,26 +35,21 @@ export async function POST(req: NextRequest) {
         </div>
       </div>`
 
-    const orderLabel = shop_name || contact_name || phone
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
       },
-      body: JSON.stringify({
-        from: 'Vasu Traders <onboarding@resend.dev>',
-        to: OWNER_EMAIL,
-        subject: `New Order ${order_number} - ${orderLabel}`,
-        html,
-      }),
     })
 
-    if (!res.ok) {
-      const err = await res.text()
-      console.error('Resend error:', err)
-      return NextResponse.json({ error: 'Email failed' }, { status: 500 })
-    }
+    const orderLabel = shop_name || contact_name || phone
+    await transporter.sendMail({
+      from: `Vasu Traders <${process.env.GMAIL_USER}>`,
+      to: OWNER_EMAIL,
+      subject: `New Order ${order_number} - ${orderLabel}`,
+      html,
+    })
 
     return NextResponse.json({ ok: true })
   } catch (err) {
