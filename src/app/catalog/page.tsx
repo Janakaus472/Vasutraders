@@ -1,3 +1,4 @@
+import { Metadata } from 'next'
 import { getProducts } from '@/lib/supabase/products'
 import { getCategories } from '@/lib/supabase/categories'
 import { getSetting } from '@/lib/supabase/settings'
@@ -10,28 +11,53 @@ interface HomeCategoryItem {
   imageUrl?: string
 }
 
-export const revalidate = 3600
+interface PageProps {
+  searchParams: Promise<{ category?: string; subcategory?: string }>
+}
 
-export default async function CatalogPage() {
+export const metadata: Metadata = {
+  title: { absolute: 'Wholesale Product Catalog | Vasu Traders Indore' },
+  description: 'Browse the full wholesale product catalog of Vasu Traders, Indore. Playing cards, poker chips, party balloons, rubber bands, sports goods and more — bulk pricing for retailers across India.',
+  alternates: { canonical: 'https://www.vasutraders.com/catalog' },
+  openGraph: {
+    title: 'Wholesale Product Catalog | Vasu Traders Indore',
+    description: 'Browse the full wholesale product catalog of Vasu Traders, Indore. Playing cards, poker chips, party balloons, rubber bands, sports goods and more.',
+    url: 'https://www.vasutraders.com/catalog',
+    images: [{ url: '/logo.png', alt: 'Vasu Traders Wholesale Catalog — Indore' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Wholesale Product Catalog | Vasu Traders Indore',
+    description: 'Playing cards, poker chips, party balloons, rubber bands, sports goods and more — bulk pricing for retailers across India.',
+    images: ['/logo.png'],
+  },
+}
+
+export const dynamic = 'force-dynamic'
+
+export default async function CatalogPage({ searchParams }: PageProps) {
+  const { category: initialCategory, subcategory: initialSubcategory } = await searchParams
   const [products, cats, layout] = await Promise.all([
     getProducts(false).catch(() => []),
     getCategories().catch(() => []),
     getSetting<HomeCategoryItem[]>('home_layout', []),
   ])
 
-  let orderedCats: string[]
   const catEmojis: Record<string, string> = {}
   const catImages: Record<string, string> = {}
 
-  if (Array.isArray(layout) && layout.length > 0) {
-    orderedCats = layout.filter(l => l.visible).map(l => l.name)
-    layout.forEach(l => {
-      catEmojis[l.name] = l.emoji || '📦'
-      if (l.imageUrl) catImages[l.name] = l.imageUrl
-    })
-  } else {
-    orderedCats = cats.map(c => c.name)
-  }
+  // Merge saved layout with live DB categories so newly-added categories
+  // always appear even if admin hasn't re-saved the home layout yet.
+  const layoutMap = new Map((layout || []).map((l: HomeCategoryItem) => [l.name, l]))
+  const allDbCatNames = cats.map(c => c.name)
+  const savedVisible = (layout || []).filter((l: HomeCategoryItem) => l.visible).map((l: HomeCategoryItem) => l.name)
+  const newCatNames = allDbCatNames.filter(n => !layoutMap.has(n))
+  const orderedCats: string[] = [...savedVisible, ...newCatNames]
+
+  ;(layout || []).forEach((l: HomeCategoryItem) => {
+    catEmojis[l.name] = l.emoji || '📦'
+    if (l.imageUrl) catImages[l.name] = l.imageUrl
+  })
 
   const catSubMap: Record<string, string[]> = {}
   cats.forEach(c => {
@@ -45,6 +71,8 @@ export default async function CatalogPage() {
       initialCatEmojis={catEmojis}
       initialCatImages={catImages}
       initialCatSubMap={catSubMap}
+      initialCategory={initialCategory || 'All'}
+      initialSubcategory={initialSubcategory || null}
     />
   )
 }

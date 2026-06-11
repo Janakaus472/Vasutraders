@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export const revalidate = 3600
+export const revalidate = 0
 
 export default async function SubcategoryPage({ params }: Props) {
   const { slug, subSlug } = await params
@@ -54,7 +54,6 @@ export default async function SubcategoryPage({ params }: Props) {
   if (!sub) notFound()
 
   const products = allProducts.filter(p => p.category === category.name && p.subcategory === sub.name)
-  if (products.length === 0) notFound()
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -78,7 +77,7 @@ export default async function SubcategoryPage({ params }: Props) {
       item: {
         '@type': 'Product',
         name: p.name,
-        url: `https://www.vasutraders.com/catalog/${p.id}`,
+        url: `https://www.vasutraders.com/catalog/${p.slug || p.id}`,
         ...(p.imageUrl ? { image: p.imageUrl } : {}),
         ...(p.pricePerUnit > 0 ? {
           offers: {
@@ -159,9 +158,24 @@ export default async function SubcategoryPage({ params }: Props) {
         )}
 
         {/* Product grid */}
-        <div style={{ marginBottom: '48px' }}>
-          <CategoryProductGrid products={products} hideCategory={true} />
-        </div>
+        {products.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '80px 0 48px' }}>
+            <div style={{ fontSize: '4rem', marginBottom: '16px' }}>📦</div>
+            <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.8rem', color: '#5C2D0F', marginBottom: '8px' }}>
+              Coming Soon
+            </h2>
+            <p style={{ color: '#8B4513', fontSize: '15px', marginBottom: '24px' }}>
+              We&apos;re stocking up on {sub.name}. Check back soon or contact us for availability.
+            </p>
+            <Link href={`/catalog/c/${slug}`} style={{ background: 'linear-gradient(135deg, #FF6B00, #FF9A3C)', color: '#fff', fontWeight: 700, padding: '14px 32px', borderRadius: '12px', textDecoration: 'none', fontSize: '16px' }}>
+              Browse All {category.name}
+            </Link>
+          </div>
+        ) : (
+          <div style={{ marginBottom: '48px' }}>
+            <CategoryProductGrid products={products} hideCategory={true} />
+          </div>
+        )}
 
         <div style={{ paddingTop: '24px', borderTop: '1px solid #f0f0f0' }}>
           <Link href={`/catalog/c/${slug}`} style={{ color: '#B91C1C', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>

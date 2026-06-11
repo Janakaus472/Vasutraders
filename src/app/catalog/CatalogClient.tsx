@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useMemo, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useState, useMemo } from 'react'
 import { useCart } from '@/context/CartContext'
 import { useLanguage } from '@/context/LanguageContext'
 import { Product } from '@/types/product'
@@ -17,16 +16,17 @@ interface Props {
   initialCatEmojis: Record<string, string>
   initialCatImages: Record<string, string>
   initialCatSubMap: Record<string, string[]>
+  initialCategory?: string
+  initialSubcategory?: string | null
 }
 
-function CatalogContent({ initialProducts, initialOrderedCats, initialCatEmojis, initialCatImages, initialCatSubMap }: Props) {
+export default function CatalogClient({ initialProducts, initialOrderedCats, initialCatEmojis, initialCatImages, initialCatSubMap, initialCategory = 'All', initialSubcategory = null }: Props) {
   const { items, addItem, removeItem, updateQuantity } = useCart()
   const { t, catLabel, lang } = useLanguage()
-  const searchParams = useSearchParams()
   const [products] = useState<Product[]>(initialProducts)
   const isLoading = false
-  const [activeCategory, setActiveCategory] = useState(() => searchParams.get('category') || 'All')
-  const [activeSubcategory, setActiveSubcategory] = useState<string | null>(() => searchParams.get('subcategory') || null)
+  const [activeCategory, setActiveCategory] = useState(initialCategory)
+  const [activeSubcategory, setActiveSubcategory] = useState<string | null>(initialSubcategory)
   const [search, setSearch] = useState('')
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const orderedCats = initialOrderedCats
@@ -178,7 +178,7 @@ function CatalogContent({ initialProducts, initialOrderedCats, initialCatEmojis,
 
       {/* ── Sticky navigation bar — category + subcategory pills ── */}
       <div style={{
-        position: 'sticky', top: 0, zIndex: 20,
+        position: 'sticky', top: '50px', zIndex: 20,
         background: '#fff',
         borderBottom: '1px solid #e5e7eb',
         boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
@@ -468,13 +468,5 @@ function CatalogContent({ initialProducts, initialOrderedCats, initialCatEmojis,
         />
       )}
     </div>
-  )
-}
-
-export default function CatalogClient(props: Props) {
-  return (
-    <Suspense fallback={<div style={{ minHeight: '100vh' }} />}>
-      <CatalogContent {...props} />
-    </Suspense>
   )
 }
