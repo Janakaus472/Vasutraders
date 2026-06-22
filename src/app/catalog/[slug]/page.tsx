@@ -14,11 +14,12 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const product = await getProduct(slug)
-  if (!product) return { title: 'Product Not Found | Vasu Traders' }
+  if (!product) return { title: { absolute: 'Product Not Found | Vasu Traders' } }
 
   const seo = getProductSeo(product.description)
   const descEn = getDescription(product.description, 'en').replace(/\n/g, ' ').trim()
-  const title = seo.metaTitle || `${product.name} — Wholesale ${product.category} | Vasu Traders`
+  const titleText = seo.metaTitle || `${product.name} — Wholesale ${product.category} | Vasu Traders`
+  const title = { absolute: titleText } as const
   const description = seo.metaDescription || descEn ||
     `Buy ${product.name} wholesale from Vasu Traders, Indore. ${product.category} supplier with bulk order options. Minimum order: ${product.minOrderQty} ${product.unit}.`
   const canonicalSlug = product.slug
@@ -114,8 +115,8 @@ export default async function ProductPage({ params }: Props) {
           '@type': 'AggregateOffer',
           url: canonicalUrl,
           priceCurrency: 'INR',
-          lowPrice: lowestPrice > 0 ? lowestPrice : undefined,
-          highPrice: highPrice > 0 ? highPrice : undefined,
+          lowPrice: lowestPrice > 0 ? lowestPrice : 0,
+          highPrice: highPrice > 0 ? highPrice : lowestPrice > 0 ? lowestPrice : 0,
           offerCount: 1 + variantPrices.length,
           availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
           priceValidUntil,
@@ -126,7 +127,8 @@ export default async function ProductPage({ params }: Props) {
           '@type': 'Offer',
           url: canonicalUrl,
           priceCurrency: 'INR',
-          ...(lowestPrice > 0 ? { price: lowestPrice, priceValidUntil } : {}),
+          price: lowestPrice > 0 ? lowestPrice : 0,
+          priceValidUntil,
           availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
           itemCondition: 'https://schema.org/NewCondition',
           seller: { '@type': 'Organization', name: 'Vasu Traders' },
