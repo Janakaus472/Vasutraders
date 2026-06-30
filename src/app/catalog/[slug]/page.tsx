@@ -110,30 +110,32 @@ export default async function ProductPage({ params }: Props) {
     category: product.category,
     url: canonicalUrl,
     hasMerchantReturnPolicy: returnPolicy,
-    offers: variantPrices.length > 0
-      ? {
-          '@type': 'AggregateOffer',
-          url: canonicalUrl,
-          priceCurrency: 'INR',
-          lowPrice: lowestPrice > 0 ? lowestPrice : 0,
-          highPrice: highPrice > 0 ? highPrice : lowestPrice > 0 ? lowestPrice : 0,
-          offerCount: 1 + variantPrices.length,
-          availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-          priceValidUntil,
-          seller: { '@type': 'Organization', name: 'Vasu Traders' },
-          hasMerchantReturnPolicy: returnPolicy,
-        }
-      : {
-          '@type': 'Offer',
-          url: canonicalUrl,
-          priceCurrency: 'INR',
-          price: lowestPrice > 0 ? lowestPrice : 0,
-          priceValidUntil,
-          availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-          itemCondition: 'https://schema.org/NewCondition',
-          seller: { '@type': 'Organization', name: 'Vasu Traders' },
-          hasMerchantReturnPolicy: returnPolicy,
-        },
+    ...(lowestPrice > 0 ? {
+      offers: variantPrices.length > 0
+        ? {
+            '@type': 'AggregateOffer',
+            url: canonicalUrl,
+            priceCurrency: 'INR',
+            lowPrice: lowestPrice,
+            highPrice: highPrice > 0 ? highPrice : lowestPrice,
+            offerCount: 1 + variantPrices.length,
+            availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            priceValidUntil,
+            seller: { '@type': 'Organization', name: 'Vasu Traders' },
+            hasMerchantReturnPolicy: returnPolicy,
+          }
+        : {
+            '@type': 'Offer',
+            url: canonicalUrl,
+            priceCurrency: 'INR',
+            price: lowestPrice,
+            priceValidUntil,
+            availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            itemCondition: 'https://schema.org/NewCondition',
+            seller: { '@type': 'Organization', name: 'Vasu Traders' },
+            hasMerchantReturnPolicy: returnPolicy,
+          },
+    } : {}),
   }
 
   const breadcrumbSchema = {
