@@ -99,6 +99,30 @@ export default async function ProductPage({ params }: Props) {
     merchantReturnLink: 'https://www.vasutraders.com/refund-policy',
   }
 
+  const shippingDetails = {
+    '@type': 'OfferShippingDetails',
+    shippingDestination: {
+      '@type': 'DefinedRegion',
+      addressCountry: 'IN',
+    },
+    deliveryTime: {
+      '@type': 'ShippingDeliveryTime',
+      handlingTime: {
+        '@type': 'QuantitativeValue',
+        minValue: 1,
+        maxValue: 2,
+        unitCode: 'DAY',
+      },
+      transitTime: {
+        '@type': 'QuantitativeValue',
+        minValue: 1,
+        maxValue: 8,
+        unitCode: 'DAY',
+      },
+    },
+    doesNotShip: false,
+  }
+
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -123,6 +147,7 @@ export default async function ProductPage({ params }: Props) {
             priceValidUntil,
             seller: { '@type': 'Organization', name: 'Vasu Traders' },
             hasMerchantReturnPolicy: returnPolicy,
+            shippingDetails,
           }
         : {
             '@type': 'Offer',
@@ -134,6 +159,7 @@ export default async function ProductPage({ params }: Props) {
             itemCondition: 'https://schema.org/NewCondition',
             seller: { '@type': 'Organization', name: 'Vasu Traders' },
             hasMerchantReturnPolicy: returnPolicy,
+            shippingDetails,
           },
     } : {}),
   }
