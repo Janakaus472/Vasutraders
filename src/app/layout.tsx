@@ -16,23 +16,25 @@ const geist = Geist({ subsets: ["latin"] });
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.vasutraders.com'),
   title: {
-    default: 'Vasu Traders — Wholesale Supplier in Indore, MP',
+    default: 'Vasu Traders — Top Wholesale Supplier in India | Based in Indore',
     template: '%s | Vasu Traders',
   },
-  description: 'Vasu Traders is a trusted wholesale supplier in Indore, Madhya Pradesh. Browse playing cards, poker chips, party balloons, rubber bands, sports goods, and more at wholesale prices.',
+  description: 'Vasu Traders is one of India\'s top wholesale suppliers, based in Indore, Madhya Pradesh. Playing cards, poker chips, party balloons, rubber bands, sports goods, and more at wholesale prices. Pan-India delivery.',
   keywords: [
+    'top wholesale supplier India',
+    'wholesale supplier India',
     'wholesale supplier Indore',
     'थोक विक्रेता इंदौर',
-    'playing cards wholesale Indore',
-    'poker chips wholesale',
+    'playing cards wholesale India',
+    'poker chips wholesale India',
     'party balloons wholesale India',
-    'rubber bands wholesale Indore',
-    'sports goods wholesale Indore',
+    'rubber bands wholesale India',
+    'sports goods wholesale India',
     'toothbrush wholesale India',
     'kanche glass balls wholesale',
     'Vasu Traders Indore',
-    'wholesale goods Madhya Pradesh',
-    'bulk order supplier Indore',
+    'wholesale goods India',
+    'bulk order supplier India',
     'wholesale market Indore',
     'ताश थोक इंदौर',
     'गुब्बारे थोक',
@@ -57,8 +59,8 @@ export const metadata: Metadata = {
     locale: 'en_IN',
     url: 'https://www.vasutraders.com',
     siteName: 'Vasu Traders',
-    title: 'Vasu Traders — Wholesale Supplier in Indore, MP',
-    description: 'Trusted wholesale supplier in Indore, MP. Playing cards, poker chips, party balloons, rubber bands, sports goods and more at wholesale prices.',
+    title: 'Vasu Traders — Top Wholesale Supplier in India | Based in Indore',
+    description: 'One of India\'s top wholesale suppliers, based in Indore MP. Playing cards, poker chips, party balloons, rubber bands, sports goods and more. Pan-India delivery.',
     images: [
       {
         url: '/logo.png',
@@ -109,7 +111,7 @@ export default async function RootLayout({
     '@type': ['LocalBusiness', 'Store'],
     '@id': 'https://www.vasutraders.com/#business',
     name: 'Vasu Traders',
-    description: 'Wholesale supplier of playing cards, poker chips, party balloons, rubber bands, sports goods and more in Indore, Madhya Pradesh. 20+ years of trusted wholesale trade.',
+    description: 'One of India\'s top wholesale suppliers — playing cards, poker chips, party balloons, rubber bands, sports goods and more. Based in Indore, Madhya Pradesh. Pan-India delivery. 20+ years of trusted wholesale trade.',
     url: 'https://www.vasutraders.com',
     logo: { '@type': 'ImageObject', url: 'https://www.vasutraders.com/logo.png', width: 512, height: 512 },
     image: 'https://www.vasutraders.com/logo.png',
@@ -170,7 +172,7 @@ export default async function RootLayout({
                   name: 'Vasu Traders',
                   url: 'https://www.vasutraders.com',
                   logo: 'https://www.vasutraders.com/logo.png',
-                  description: 'Trusted wholesale supplier in Indore, MP with 20+ years of experience.',
+                  description: 'One of India\'s top wholesale suppliers, based in Indore MP. 20+ years of experience. Pan-India delivery.',
                   address: {
                     '@type': 'PostalAddress',
                     streetAddress: address,
@@ -212,8 +214,8 @@ export default async function RootLayout({
                 <div>
                   <div style={{ fontWeight: 800, fontSize: '18px', color: '#fff', marginBottom: '8px', letterSpacing: '0.5px' }}>Vasu Traders</div>
                   <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: '16px' }}>
-                    Wholesale supplier of playing cards, poker chips, party balloons, rubber bands, sports goods &amp; more.
-                    Based in Indore, MP.
+                    One of India's top wholesale suppliers — playing cards, poker chips, party balloons, rubber bands, sports goods &amp; more.
+                    Based in Indore, MP. Pan-India delivery.
                   </div>
                   <div style={{ display: 'inline-block', background: '#DC2626', color: '#fff', fontSize: '11px', fontWeight: 800, padding: '4px 12px', borderRadius: '4px', letterSpacing: '2px', textTransform: 'uppercase' as const }}>
                     Wholesale Only
