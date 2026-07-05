@@ -580,7 +580,7 @@ export default function ProductForm({ product }: Props) {
               value={metaDesc}
               onChange={e => setMetaDesc(e.target.value)}
               maxLength={160}
-              placeholder={`Buy ${name || 'product'} wholesale from Vasu Traders, Indore. Best prices on bulk orders. Call or WhatsApp for rates.`}
+              placeholder={`Buy ${name || 'product'} wholesale from Vasu Traders. Best prices on bulk orders across India. Call or WhatsApp for rates.`}
               rows={3}
               className="w-full border border-gray-200 rounded-xl px-3 py-2 outline-none focus:border-green-400 text-sm resize-none"
               style={{ fontSize: '15px' }}

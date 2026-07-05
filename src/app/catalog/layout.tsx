@@ -2,21 +2,21 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Wholesale Product Catalog — Playing Cards, Balloons, Sports Goods',
-  description: 'Browse Vasu Traders wholesale catalog. Playing cards, poker chips, party balloons, rubber bands, sports goods, toothbrushes and more. Bulk orders welcome from Indore, MP.',
+  description: 'Browse Vasu Traders wholesale catalog. Playing cards, poker chips, party balloons, rubber bands, sports goods, toothbrushes and more. Pan-India bulk orders welcome.',
   keywords: [
-    'wholesale catalog Indore',
+    'wholesale catalog India',
     'playing cards bulk order',
     'party balloons wholesale India',
     'poker chips bulk',
     'rubber bands wholesale',
-    'sports goods Indore',
-    'wholesale products Madhya Pradesh',
+    'sports goods wholesale India',
+    'wholesale products India',
   ],
   alternates: {
     canonical: 'https://www.vasutraders.com/catalog',
   },
   openGraph: {
-    title: 'Wholesale Product Catalog | Vasu Traders Indore',
+    title: 'Wholesale Product Catalog | Vasu Traders India',
     description: 'Browse our wholesale catalog. Playing cards, poker chips, party balloons, rubber bands, sports goods and more. Bulk orders welcome.',
     url: 'https://www.vasutraders.com/catalog',
     images: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Wholesale Product Catalog | Vasu Traders Indore',
+    title: 'Wholesale Product Catalog | Vasu Traders India',
     description: 'Browse playing cards, poker chips, balloons, sports goods & more. Bulk orders welcome.',
     images: ['/logo.png'],
   },

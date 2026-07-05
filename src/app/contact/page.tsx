@@ -7,7 +7,7 @@ import WhatsAppTrackLink from '@/components/WhatsAppTrackLink'
 
 export const metadata: Metadata = {
   title: { absolute: 'Contact Us | Vasu Traders' },
-  description: 'Contact Vasu Traders for wholesale inquiries. Call, WhatsApp, or email us. Based in Indore, Madhya Pradesh — serving retailers across India.',
+  description: 'Contact Vasu Traders for wholesale inquiries. Call, WhatsApp, or email us. Top wholesale supplier serving retailers across India.',
   alternates: { canonical: 'https://www.vasutraders.com/contact' },
   robots: { index: true, follow: true },
 }

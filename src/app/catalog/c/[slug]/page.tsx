@@ -13,44 +13,44 @@ interface Props {
 
 const CATEGORY_SEO: Record<string, { description: string; keywords: string[] }> = {
   'Playing Cards': {
-    description: 'Buy playing cards in bulk at wholesale prices from Vasu Traders, Indore. We supply standard card decks, jumbo-index cards, and specialty playing cards to retailers and distributors across India. Minimum order available with competitive bulk pricing.',
-    keywords: ['playing cards wholesale', 'ताश थोक', 'card decks bulk Indore', 'wholesale playing cards supplier India', 'playing cards bulk order'],
+    description: 'Buy playing cards in bulk at wholesale prices from Vasu Traders. We supply standard card decks, jumbo-index cards, and specialty playing cards to retailers and distributors across India. Minimum order available with competitive bulk pricing.',
+    keywords: ['playing cards wholesale India', 'ताश थोक', 'card decks bulk India', 'wholesale playing cards supplier India', 'playing cards bulk order'],
   },
   'Poker Chips': {
-    description: 'Wholesale poker chips from Vasu Traders, Indore. Casino-style clay and plastic poker chips available in bulk for retailers, game shops, and event organizers. Best wholesale prices with pan India delivery.',
-    keywords: ['poker chips wholesale India', 'casino chips bulk', 'poker chip set wholesale', 'poker chips supplier Indore', 'पोकर चिप्स थोक'],
+    description: 'Wholesale poker chips from Vasu Traders. Casino-style clay and plastic poker chips available in bulk for retailers, game shops, and event organizers. Best wholesale prices with pan-India delivery.',
+    keywords: ['poker chips wholesale India', 'casino chips bulk', 'poker chip set wholesale', 'poker chips supplier India', 'पोकर चिप्स थोक'],
   },
   'Party Balloons': {
-    description: 'Wholesale party balloons from Vasu Traders, Indore. Latex balloons, metallic foil balloons, and assorted color balloon packs available in bulk for event planners, balloon decorators, and retailers across India.',
-    keywords: ['party balloons wholesale India', 'गुब्बारे थोक', 'latex balloons bulk', 'wholesale balloons Indore', 'foil balloons supplier'],
+    description: 'Wholesale party balloons from Vasu Traders. Latex balloons, metallic foil balloons, and assorted color balloon packs available in bulk for event planners, balloon decorators, and retailers across India.',
+    keywords: ['party balloons wholesale India', 'गुब्बारे थोक', 'latex balloons bulk', 'wholesale balloons India', 'foil balloons supplier'],
   },
   'Rubber Bands': {
-    description: 'Bulk rubber bands at wholesale prices from Vasu Traders, Indore. Assorted sizes and colors available. Trusted supplier for offices, stationery shops, and retailers with pan India delivery.',
-    keywords: ['rubber bands wholesale India', 'रबर बैंड थोक', 'rubber bands bulk Indore', 'wholesale rubber bands supplier', 'rubber bands bulk order'],
+    description: 'Bulk rubber bands at wholesale prices from Vasu Traders. Assorted sizes and colors available. Trusted supplier for offices, stationery shops, and retailers with pan-India delivery.',
+    keywords: ['rubber bands wholesale India', 'रबर बैंड थोक', 'rubber bands bulk India', 'wholesale rubber bands supplier', 'rubber bands bulk order'],
   },
   'Sports & Games': {
-    description: 'Wholesale sports and games supplies from Vasu Traders, Indore. Cricket equipment, indoor games, and sports accessories at bulk prices for retailers, sports shops, and distributors across India.',
-    keywords: ['sports goods wholesale Indore', 'games wholesale India', 'sports equipment bulk supplier', 'खेल सामग्री थोक'],
+    description: 'Wholesale sports and games supplies from Vasu Traders. Cricket equipment, indoor games, and sports accessories at bulk prices for retailers, sports shops, and distributors across India.',
+    keywords: ['sports goods wholesale India', 'games wholesale India', 'sports equipment bulk supplier India', 'खेल सामग्री थोक'],
   },
   'Toothbrushes': {
-    description: 'Wholesale toothbrushes in bulk from Vasu Traders, Indore. Quality toothbrushes for medical stores, hotels, and retailers at competitive wholesale prices with pan India supply.',
-    keywords: ['toothbrush wholesale India', 'टूथब्रश थोक', 'bulk toothbrushes supplier', 'wholesale toothbrush Indore', 'toothbrush bulk order'],
+    description: 'Wholesale toothbrushes in bulk from Vasu Traders. Quality toothbrushes for medical stores, hotels, and retailers at competitive wholesale prices with pan-India supply.',
+    keywords: ['toothbrush wholesale India', 'टूथब्रश थोक', 'bulk toothbrushes supplier India', 'wholesale toothbrush India', 'toothbrush bulk order'],
   },
   'Tapes': {
-    description: 'Wholesale adhesive tapes, cello tape, and packing tapes from Vasu Traders, Indore. All types of tapes available in bulk for stationery shops, packaging businesses, and retailers.',
-    keywords: ['adhesive tape wholesale Indore', 'cello tape bulk supplier', 'packing tape wholesale India', 'tape supplier Indore bulk'],
+    description: 'Wholesale adhesive tapes, cello tape, and packing tapes from Vasu Traders. All types of tapes available in bulk for stationery shops, packaging businesses, and retailers across India.',
+    keywords: ['adhesive tape wholesale India', 'cello tape bulk supplier', 'packing tape wholesale India', 'tape supplier India bulk'],
   },
   'Kanche & Glass Balls': {
-    description: 'Wholesale kanche (glass marbles) and glass balls from Vasu Traders, Indore. Traditional toy marbles and glass balls in all sizes, available in bulk for toy retailers and general stores.',
-    keywords: ['kanche wholesale India', 'कंचे थोक', 'glass balls bulk', 'marble toys wholesale Indore', 'kanche supplier India'],
+    description: 'Wholesale kanche (glass marbles) and glass balls from Vasu Traders. Traditional toy marbles and glass balls in all sizes, available in bulk for toy retailers and general stores across India.',
+    keywords: ['kanche wholesale India', 'कंचे थोक', 'glass balls bulk India', 'marble toys wholesale India', 'kanche supplier India'],
   },
   'Boric Acid': {
-    description: 'Wholesale boric acid powder from Vasu Traders, Indore. Quality boric acid in bulk for pest control, industrial, and household use. Competitive wholesale rates with pan India delivery.',
-    keywords: ['boric acid wholesale India', 'boric powder bulk', 'boric acid supplier Indore', 'बोरिक एसिड थोक'],
+    description: 'Wholesale boric acid powder from Vasu Traders. Quality boric acid in bulk for pest control, industrial, and household use. Competitive wholesale rates with pan-India delivery.',
+    keywords: ['boric acid wholesale India', 'boric powder bulk', 'boric acid supplier India', 'बोरिक एसिड थोक'],
   },
   'General Goods': {
-    description: 'Wholesale general goods and everyday items from Vasu Traders, Indore. Wide variety of products available in bulk at competitive wholesale prices for retailers and general stores.',
-    keywords: ['general goods wholesale Indore', 'wholesale general store items', 'bulk goods supplier India', 'सामान्य सामान थोक'],
+    description: 'Wholesale general goods and everyday items from Vasu Traders. Wide variety of products available in bulk at competitive wholesale prices for retailers and general stores across India.',
+    keywords: ['general goods wholesale India', 'wholesale general store items', 'bulk goods supplier India', 'सामान्य सामान थोक'],
   },
 }
 
@@ -67,9 +67,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!categoryName) return { title: 'Not Found' }
 
   const seo = CATEGORY_SEO[categoryName]
-  const title = `${categoryName} Wholesale Supplier in Indore | Vasu Traders`
+  const title = `${categoryName} — Top Wholesale Supplier in India | Vasu Traders`
   const description = seo?.description ||
-    `Buy ${categoryName} wholesale from Vasu Traders, Indore. Quality products at bulk prices for retailers across India.`
+    `Buy ${categoryName} wholesale from Vasu Traders. Quality products at bulk prices for retailers across India. Pan-India delivery.`
 
   return {
     title,
@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       url: `https://www.vasutraders.com/catalog/c/${slug}`,
-      images: [{ url: '/logo.png', alt: `${categoryName} Wholesale — Vasu Traders Indore` }],
+      images: [{ url: '/logo.png', alt: `${categoryName} Wholesale — Vasu Traders India` }],
     },
     twitter: {
       card: 'summary_large_image',
@@ -173,14 +173,14 @@ export default async function CategoryPage({ params }: Props) {
           </h1>
           <p style={{ fontSize: '15px', color: '#4b5563', lineHeight: 1.7, maxWidth: '750px', margin: '0 0 16px' }}>
             {seo?.description ||
-              `Buy ${categoryName} wholesale from Vasu Traders, Indore. Quality products at bulk prices for retailers across India.`}
+              `Buy ${categoryName} wholesale from Vasu Traders. Quality products at bulk prices for retailers across India.`}
           </p>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
             <span style={{ background: '#FEF2F2', color: '#B91C1C', fontSize: '13px', fontWeight: 700, padding: '6px 14px', borderRadius: '20px', border: '1px solid #FECACA' }}>
               {products.length} Products
             </span>
             <span style={{ background: '#f9f9f9', color: '#6b7280', fontSize: '13px', padding: '6px 14px', borderRadius: '20px', border: '1px solid #f0f0f0' }}>
-              Indore, Madhya Pradesh
+              Top Wholesale Supplier
             </span>
             <span style={{ background: '#f9f9f9', color: '#6b7280', fontSize: '13px', padding: '6px 14px', borderRadius: '20px', border: '1px solid #f0f0f0' }}>
               Pan India Supply

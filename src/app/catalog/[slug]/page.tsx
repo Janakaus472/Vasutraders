@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const titleText = seo.metaTitle || `${product.name} — Wholesale ${product.category} | Vasu Traders`
   const title = { absolute: titleText } as const
   const description = seo.metaDescription || descEn ||
-    `Buy ${product.name} wholesale from Vasu Traders, Indore. ${product.category} supplier with bulk order options. Minimum order: ${product.minOrderQty} ${product.unit}.`
+    `Buy ${product.name} wholesale from Vasu Traders. Top ${product.category} supplier in India with bulk order options. Minimum order: ${product.minOrderQty} ${product.unit}.`
   const canonicalSlug = product.slug
   const canonicalUrl = `https://www.vasutraders.com/catalog/${canonicalSlug}`
 
@@ -137,7 +137,7 @@ export default async function ProductPage({ params }: Props) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    description: descEn || `${product.name} — wholesale supplier Indore`,
+    description: descEn || `${product.name} — top wholesale supplier India`,
     image: allImages.length > 0 ? allImages : ['https://www.vasutraders.com/logo.png'],
     sku: product.id,
     brand: { '@type': 'Brand', name: 'Vasu Traders' },

@@ -21,7 +21,7 @@ export async function GET() {
       const descRaw = getDescription(p.description, 'en')
       const desc = descRaw
         ? descRaw.replace(/\n/g, ' ').trim().slice(0, 5000)
-        : `${p.name} — wholesale supplier, Indore, Madhya Pradesh`
+        : `${p.name} — top wholesale supplier India`
 
       const url = `https://www.vasutraders.com/catalog/${p.slug}`
 
@@ -60,7 +60,7 @@ ${productType ? `      <g:product_type>${esc(productType)}</g:product_type>\n` :
   <channel>
     <title>Vasu Traders</title>
     <link>https://www.vasutraders.com</link>
-    <description>Wholesale supplier of playing cards, poker chips, party supplies, rubber bands, sports goods and more — Indore, Madhya Pradesh, India.</description>
+    <description>Top wholesale supplier in India — playing cards, poker chips, party supplies, rubber bands, sports goods and more. Pan-India delivery.</description>
 ${items}
   </channel>
 </rss>`
