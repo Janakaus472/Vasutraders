@@ -101,6 +101,11 @@ export default async function ProductPage({ params }: Props) {
 
   const shippingDetails = {
     '@type': 'OfferShippingDetails',
+    shippingRate: {
+      '@type': 'MonetaryAmount',
+      value: 0,
+      currency: 'INR',
+    },
     shippingDestination: {
       '@type': 'DefinedRegion',
       addressCountry: 'IN',
@@ -120,7 +125,12 @@ export default async function ProductPage({ params }: Props) {
         unitCode: 'DAY',
       },
     },
-    doesNotShip: false,
+  }
+
+  const storeLocation = {
+    '@type': 'LocalBusiness',
+    '@id': 'https://www.vasutraders.com/#business',
+    name: 'Vasu Traders',
   }
 
   const productSchema = {
@@ -146,6 +156,7 @@ export default async function ProductPage({ params }: Props) {
             availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             priceValidUntil,
             seller: { '@type': 'Organization', name: 'Vasu Traders' },
+            availableAtOrFrom: storeLocation,
             hasMerchantReturnPolicy: returnPolicy,
             shippingDetails,
           }
@@ -158,6 +169,7 @@ export default async function ProductPage({ params }: Props) {
             availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             itemCondition: 'https://schema.org/NewCondition',
             seller: { '@type': 'Organization', name: 'Vasu Traders' },
+            availableAtOrFrom: storeLocation,
             hasMerchantReturnPolicy: returnPolicy,
             shippingDetails,
           },
