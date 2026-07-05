@@ -16,7 +16,7 @@ const geist = Geist({ subsets: ["latin"] });
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.vasutraders.com'),
   title: {
-    default: 'Vasu Traders — Top Wholesale Supplier in India | Based in Indore',
+    default: 'Vasu Traders — Top Wholesale Supplier in India',
     template: '%s | Vasu Traders',
   },
   description: 'Vasu Traders is one of India\'s top wholesale suppliers, based in Indore, Madhya Pradesh. Playing cards, poker chips, party balloons, rubber bands, sports goods, and more at wholesale prices. Pan-India delivery.',
@@ -59,8 +59,8 @@ export const metadata: Metadata = {
     locale: 'en_IN',
     url: 'https://www.vasutraders.com',
     siteName: 'Vasu Traders',
-    title: 'Vasu Traders — Top Wholesale Supplier in India | Based in Indore',
-    description: 'One of India\'s top wholesale suppliers, based in Indore MP. Playing cards, poker chips, party balloons, rubber bands, sports goods and more. Pan-India delivery.',
+    title: 'Vasu Traders — Top Wholesale Supplier in India',
+    description: 'One of India\'s top wholesale suppliers. Playing cards, poker chips, party balloons, rubber bands, sports goods and more. Pan-India delivery.',
     images: [
       {
         url: '/logo.png',
@@ -172,7 +172,7 @@ export default async function RootLayout({
                   name: 'Vasu Traders',
                   url: 'https://www.vasutraders.com',
                   logo: 'https://www.vasutraders.com/logo.png',
-                  description: 'One of India\'s top wholesale suppliers, based in Indore MP. 20+ years of experience. Pan-India delivery.',
+                  description: 'One of India\'s top wholesale suppliers. 20+ years of experience. Pan-India delivery.',
                   address: {
                     '@type': 'PostalAddress',
                     streetAddress: address,
