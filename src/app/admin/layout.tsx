@@ -16,12 +16,14 @@ const navItems = [
   { href: '/admin/theme-management', label: 'Themes', icon: '✨' },
   { href: '/admin/home-layout', label: 'Home Layout', icon: '🎨' },
   { href: '/admin/store-info', label: 'Store Info', icon: 'ℹ️' },
+  { href: '/admin/policies', label: 'Policies', icon: '📄' },
   { href: '/admin/orders', label: 'Orders', icon: '🛒' },
   { href: '/admin/customers', label: 'Customers', icon: '👥' },
   { href: '/admin/analysis', label: 'Analysis', icon: '📈' },
   { href: '/admin/tracking', label: 'Tracking', icon: '📊' },
   { href: '/admin/visitors', label: 'Visitors', icon: '🌍' },
   { href: '/admin/security', label: 'Security', icon: '🔐' },
+  { href: '/admin/google-merchant', label: 'Google Merchant', icon: '🛒' },
 ]
 
 const inputStyle: React.CSSProperties = {
