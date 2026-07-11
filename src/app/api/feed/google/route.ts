@@ -52,8 +52,7 @@ ${extraImages ? extraImages + '\n' : ''}      <g:availability>in_stock</g:availa
       <g:brand>Vasu Traders</g:brand>
       <g:condition>new</g:condition>
       <g:identifier_exists>no</g:identifier_exists>
-${productType ? `      <g:product_type>${esc(productType)}</g:product_type>\n` : ''}      <g:return_policy_label>returnpolicy</g:return_policy_label>
-    </item>`
+${productType ? `      <g:product_type>${esc(productType)}</g:product_type>\n` : ''}    </item>`
     })
     .join('\n')
 
