@@ -19,7 +19,7 @@ export async function GET() {
       return `${storeCode},${p.id},${availability}`
     })
 
-  const csv = ['store_code,item_id,availability', ...rows].join('\n')
+  const csv = ['store_code,id,availability', ...rows].join('\n')
 
   return new NextResponse(csv, {
     headers: {
