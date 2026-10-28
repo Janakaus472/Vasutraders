@@ -7,6 +7,7 @@ import { useCart } from '@/context/CartContext'
 import { useProducts } from '@/hooks/useProducts'
 import { useLanguage } from '@/context/LanguageContext'
 import { trackWaClick } from '@/lib/trackWaClick'
+import { BULK_ORDER_PHONE } from '@/lib/constants'
 
 type Step = 'cart' | 'details' | 'review' | 'success'
 
@@ -392,6 +393,10 @@ export default function CartPage() {
                 {lang === 'hi' ? 'सब हटाएं' : 'Clear all'}
               </button>
             </div>
+
+            <a href={`tel:${BULK_ORDER_PHONE}`} style={{ display: 'block', background: '#FEF3C7', color: '#7f1d1d', border: '1.5px solid #FAC41A', borderRadius: '12px', padding: '10px 14px', marginBottom: '16px', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>
+              📞 {lang === 'hi' ? 'बड़ा ऑर्डर है? कॉल करें: +91 94250 73114' : 'Ordering in bulk? Call us: +91 94250 73114'}
+            </a>
 
             <div style={{ background: '#fff', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(92,45,15,0.10)', marginBottom: '24px' }}>
               <div className="cart-table-header" style={{ gridTemplateColumns: 'minmax(0,1fr) auto auto auto auto', gap: '12px', padding: '14px 24px', background: '#5C2D0F', color: '#FFD4A0', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>

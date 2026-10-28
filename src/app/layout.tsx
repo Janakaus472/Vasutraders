@@ -8,6 +8,8 @@ import BottomNav from "@/components/layout/BottomNav";
 import ChatWidget from "@/components/ChatWidget";
 import PageViewTracker from "@/components/PageViewTracker";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
+import WholesaleBanner from "@/components/WholesaleBanner";
+import CallFloat from "@/components/CallFloat";
 import { getSetting } from "@/lib/supabase/settings";
 import { StoreInfo, DEFAULT_STORE_INFO } from "@/types/store-info";
 
@@ -205,6 +207,7 @@ export default async function RootLayout({
       <body className={`${geist.className} min-h-screen`}>
         <LanguageProvider>
           <CartProvider>
+            <WholesaleBanner />
             <Header />
             <main className="min-h-[calc(100vh-4rem)]" style={{ position: 'relative' }}>{children}</main>
             <BottomNav />
@@ -285,6 +288,7 @@ export default async function RootLayout({
                 <a href="https://aussieai.shop" target="_blank" rel="noopener noreferrer nofollow" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', textDecoration: 'none' }}>powered by AussieAI</a>
               </div>
             </footer>
+            <CallFloat />
             <WhatsAppFloat />
             <ChatWidget />
             <PageViewTracker />
