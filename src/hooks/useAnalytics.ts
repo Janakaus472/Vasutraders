@@ -29,13 +29,13 @@ export function usePageView() {
 }
 
 // Track a product view (call when user clicks to view a product)
-export function trackProductView(product: { id: string; name: string; category?: string }) {
+export function trackProductView(product: { id: string; slug?: string; name: string; category?: string }) {
   fetch('/api/analytics', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       event_type: 'product_view',
-      page: `/catalog/product/${product.id}`,
+      page: `/catalog/${product.slug || product.id}`,
       product_id: product.id,
       product_name: product.name,
       category: product.category || '',

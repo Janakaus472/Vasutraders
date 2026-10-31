@@ -48,12 +48,12 @@ export default function CartPage() {
   const { products } = useProducts()
   const { lang } = useLanguage()
   const [step, setStep] = useState<Step>('cart')
-  const [details, setDetails] = useState<CustomerDetails>({
-    shopName: '',
-    contactName: '',
-    phone: '',
-    locality: '',
-    email: '',
+  const [details, setDetails] = useState<CustomerDetails>(() => {
+    try {
+      const saved = localStorage.getItem('vt_customer')
+      if (saved) return JSON.parse(saved)
+    } catch {}
+    return { shopName: '', contactName: '', phone: '', locality: '', email: '' }
   })
   const [hasSavedDetails, setHasSavedDetails] = useState(false)
   const [orderNumber, setOrderNumber] = useState('')

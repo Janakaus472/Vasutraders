@@ -9,6 +9,7 @@ import { BUSINESS_NAME } from '@/lib/constants'
 import { usePathname } from 'next/navigation'
 import { getProducts } from '@/lib/supabase/products'
 import type { Product } from '@/types/product'
+import { toSlug } from '@/lib/categorySlug'
 
 const CAT_EMOJIS: Record<string, string> = {
   'Playing Cards': '🃏',
@@ -320,7 +321,7 @@ export default function Header() {
                           {categoryMap[cat].map(product => (
                             <Link
                               key={product.id}
-                              href={`/catalog?category=${encodeURIComponent(cat)}`}
+                              href={`/catalog/c/${toSlug(cat)}`}
                               onClick={closeMenu}
                               style={{
                                 padding: '10px 14px',
@@ -353,7 +354,7 @@ export default function Header() {
                           ))}
                           {/* View category link */}
                           <Link
-                            href={`/catalog?category=${encodeURIComponent(cat)}`}
+                            href={`/catalog/c/${toSlug(cat)}`}
                             onClick={closeMenu}
                             style={{
                               padding: '8px 14px',

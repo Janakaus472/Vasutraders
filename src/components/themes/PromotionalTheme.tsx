@@ -87,6 +87,12 @@ export default function PromotionalTheme({ promoConfig, categories, totalProduct
         .promo-feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
         .promo-arrow-btn { transition: background 0.15s, transform 0.15s; }
         .promo-arrow-btn:hover { background: rgba(255,255,255,0.35) !important; transform: scale(1.1); }
+        .promo-slide-item { flex: 0 0 100%; min-width: 100%; min-height: clamp(280px, 50vw, 520px); }
+        .promo-slide-img { width: 100%; height: 100%; object-fit: cover; display: block; min-height: clamp(280px, 50vw, 520px); }
+        @media (max-width: 768px) {
+          .promo-slide-item { min-height: unset; }
+          .promo-slide-img { height: auto; min-height: unset; object-fit: initial; }
+        }
       `}</style>
 
       {/* ── PROMOTIONAL SLIDER ── */}
@@ -104,12 +110,12 @@ export default function PromotionalTheme({ promoConfig, categories, totalProduct
               transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
             }}>
               {slides.map((slide, i) => (
-                <div key={slide.id} style={{ flex: '0 0 100%', minWidth: '100%', position: 'relative', minHeight: 'clamp(280px, 50vw, 520px)' }}>
+                <div key={slide.id} className="promo-slide-item" style={{ position: 'relative' }}>
                   {slide.imageUrl ? (
                     <img
                       src={slide.imageUrl}
                       alt={slide.title || `Slide ${i + 1}`}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', minHeight: 'clamp(280px, 50vw, 520px)' }}
+                      className="promo-slide-img"
                     />
                   ) : (
                     <div style={{ width: '100%', minHeight: 'clamp(280px, 50vw, 520px)', background: 'linear-gradient(135deg, #7f1d1d, #B91C1C)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
