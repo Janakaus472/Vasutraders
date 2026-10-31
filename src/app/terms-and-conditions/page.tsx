@@ -2,9 +2,11 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { getSetting } from '@/lib/supabase/settings'
 import { StoreInfo, DEFAULT_STORE_INFO } from '@/types/store-info'
+import PolicyRenderer from '@/components/PolicyRenderer'
+import type { PolicySection } from '@/components/PolicyRenderer'
 
 export const metadata: Metadata = {
-  title: 'Terms & Conditions | Vasu Traders',
+  title: { absolute: 'Terms & Conditions | Vasu Traders' },
   description: 'Terms and conditions for wholesale purchases from Vasu Traders. Understand our wholesale ordering process, pricing, and conditions of sale.',
   alternates: { canonical: 'https://www.vasutraders.com/terms-and-conditions' },
   robots: { index: true, follow: true },
@@ -13,8 +15,15 @@ export const metadata: Metadata = {
 export const revalidate = 0
 
 export default async function TermsPage() {
-  const storeInfo = await getSetting<StoreInfo>('store_info', DEFAULT_STORE_INFO).catch(() => DEFAULT_STORE_INFO)
+  const [storeInfo, dbPolicy] = await Promise.all([
+    getSetting<StoreInfo>('store_info', DEFAULT_STORE_INFO).catch(() => DEFAULT_STORE_INFO),
+    getSetting<PolicySection[] | null>('policy_terms', null).catch(() => null),
+  ])
   const info: StoreInfo = { ...DEFAULT_STORE_INFO, ...storeInfo }
+
+  if (dbPolicy) {
+    return <PolicyRenderer title="Terms & Conditions" breadcrumbLabel="Terms & Conditions" sections={dbPolicy} phone={info.phone} email={info.email} address={info.address} gstNumber={info.gst_number} />
+  }
 
   const phone = info.phone || ''
   const email = info.email || ''

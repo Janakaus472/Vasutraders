@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { getCategories, addCategory, renameCategory, deleteCategory, reorderCategories } from '@/lib/supabase/categories'
 
 function isAdmin(req: NextRequest) {
@@ -25,6 +26,7 @@ export async function POST(req: NextRequest) {
   try {
     const { name, parent_id } = await req.json()
     const cat = await addCategory(name, parent_id ?? null)
+    revalidatePath('/', 'layout')
     return NextResponse.json(cat)
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
@@ -37,6 +39,7 @@ export async function PATCH(req: NextRequest) {
   try {
     const { id, name } = await req.json()
     await renameCategory(id, name)
+    revalidatePath('/', 'layout')
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
@@ -49,6 +52,7 @@ export async function PUT(req: NextRequest) {
   try {
     const updates = await req.json()
     await reorderCategories(updates)
+    revalidatePath('/', 'layout')
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
@@ -62,6 +66,7 @@ export async function DELETE(req: NextRequest) {
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
   try {
     await deleteCategory(id)
+    revalidatePath('/', 'layout')
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { getCategories } from '@/lib/supabase/categories'
 import { getSetting, setSetting } from '@/lib/supabase/settings'
 import { adminSupabase } from '@/lib/supabase/client'
@@ -76,6 +77,8 @@ export async function PUT(req: NextRequest) {
   try {
     const items: HomeCategoryItem[] = await req.json()
     await setSetting('home_layout', items)
+    revalidatePath('/', 'layout')
+    revalidatePath('/catalog', 'page')
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })

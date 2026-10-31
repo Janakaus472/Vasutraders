@@ -2,9 +2,11 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { getSetting } from '@/lib/supabase/settings'
 import { StoreInfo, DEFAULT_STORE_INFO } from '@/types/store-info'
+import PolicyRenderer from '@/components/PolicyRenderer'
+import type { PolicySection } from '@/components/PolicyRenderer'
 
 export const metadata: Metadata = {
-  title: 'Cancellation Policy | Vasu Traders',
+  title: { absolute: 'Cancellation Policy | Vasu Traders' },
   description: 'Order cancellation policy for Vasu Traders wholesale orders. Learn when and how orders can be cancelled before dispatch.',
   alternates: { canonical: 'https://www.vasutraders.com/cancellation-policy' },
   robots: { index: true, follow: true },
@@ -13,8 +15,15 @@ export const metadata: Metadata = {
 export const revalidate = 0
 
 export default async function CancellationPolicyPage() {
-  const storeInfo = await getSetting<StoreInfo>('store_info', DEFAULT_STORE_INFO).catch(() => DEFAULT_STORE_INFO)
+  const [storeInfo, dbPolicy] = await Promise.all([
+    getSetting<StoreInfo>('store_info', DEFAULT_STORE_INFO).catch(() => DEFAULT_STORE_INFO),
+    getSetting<PolicySection[] | null>('policy_cancellation', null).catch(() => null),
+  ])
   const info: StoreInfo = { ...DEFAULT_STORE_INFO, ...storeInfo }
+
+  if (dbPolicy) {
+    return <PolicyRenderer title="Cancellation Policy" breadcrumbLabel="Cancellation Policy" sections={dbPolicy} phone={info.phone} email={info.email} address={info.address} gstNumber={info.gst_number} />
+  }
 
   const phone = info.phone || ''
   const email = info.email || ''

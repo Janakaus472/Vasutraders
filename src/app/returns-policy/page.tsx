@@ -2,9 +2,11 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { getSetting } from '@/lib/supabase/settings'
 import { StoreInfo, DEFAULT_STORE_INFO } from '@/types/store-info'
+import PolicyRenderer from '@/components/PolicyRenderer'
+import type { PolicySection } from '@/components/PolicyRenderer'
 
 export const metadata: Metadata = {
-  title: 'Return & Refund Policy | Vasu Traders',
+  title: { absolute: 'Return & Refund Policy | Vasu Traders' },
   description: 'Vasu Traders return and refund policy for wholesale orders. Products are generally non-returnable. Exceptions apply for wrong or damaged goods.',
   alternates: { canonical: 'https://www.vasutraders.com/returns-policy' },
   robots: { index: true, follow: true },
@@ -13,8 +15,15 @@ export const metadata: Metadata = {
 export const revalidate = 0
 
 export default async function ReturnsPolicyPage() {
-  const storeInfo = await getSetting<StoreInfo>('store_info', DEFAULT_STORE_INFO).catch(() => DEFAULT_STORE_INFO)
+  const [storeInfo, dbPolicy] = await Promise.all([
+    getSetting<StoreInfo>('store_info', DEFAULT_STORE_INFO).catch(() => DEFAULT_STORE_INFO),
+    getSetting<PolicySection[] | null>('policy_returns', null).catch(() => null),
+  ])
   const info: StoreInfo = { ...DEFAULT_STORE_INFO, ...storeInfo }
+
+  if (dbPolicy) {
+    return <PolicyRenderer title="Return & Refund Policy" breadcrumbLabel="Return & Refund Policy" sections={dbPolicy} phone={info.phone} email={info.email} address={info.address} gstNumber={info.gst_number} />
+  }
 
   const phone = info.phone || ''
   const email = info.email || ''
@@ -86,19 +95,19 @@ export default async function ReturnsPolicyPage() {
             <ExceptionCard
               number="1"
               title="Wrong Product Supplied"
-              desc="If we have dispatched a different product than what was ordered and agreed upon, we will arrange a replacement or credit note. Please contact us within 48 hours of receiving the goods with proof (photos/invoice)."
+              desc="If we have dispatched a different product than what was ordered and agreed upon, we will arrange a replacement or credit note. Please contact us within 30 days of receiving the goods with proof (photos/invoice)."
             />
             <ExceptionCard
               number="2"
               title="Goods Damaged During Transit"
-              desc="If goods arrive in a damaged condition due to transit mishandling, please report it to us within 48 hours of delivery with clear photos of the damaged goods and packaging. We will assess the situation and resolve it appropriately."
+              desc="If goods arrive in a damaged condition due to transit mishandling, please report it to us within 30 days of delivery with clear photos of the damaged goods and packaging. We will assess the situation and resolve it appropriately."
             />
           </div>
         </PolicySection>
 
         <PolicySection title="How to Report an Issue">
           <ul style={listStyle}>
-            <li style={listItem}>Contact us by phone or WhatsApp within <strong>48 hours</strong> of receiving the goods</li>
+            <li style={listItem}>Contact us by phone or WhatsApp within <strong>30 days</strong> of receiving the goods</li>
             <li style={listItem}>Provide your order details (invoice number, product names, quantities)</li>
             <li style={listItem}>Share clear photos of the issue (wrong product or damaged packaging/goods)</li>
             <li style={listItem}>Our team will review the issue and respond within 1–2 business days</li>

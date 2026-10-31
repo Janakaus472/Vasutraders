@@ -2,9 +2,11 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { getSetting } from '@/lib/supabase/settings'
 import { StoreInfo, DEFAULT_STORE_INFO } from '@/types/store-info'
+import PolicyRenderer from '@/components/PolicyRenderer'
+import type { PolicySection } from '@/components/PolicyRenderer'
 
 export const metadata: Metadata = {
-  title: 'Order & Delivery Policy | Vasu Traders',
+  title: { absolute: 'Order & Delivery Policy | Vasu Traders' },
   description: 'Vasu Traders order and delivery policy. All sales are final. Once payment is received, goods are dispatched via your requested transport mode. Delivery charges may apply.',
   alternates: { canonical: 'https://www.vasutraders.com/refund-policy' },
   robots: { index: true, follow: true },
@@ -13,8 +15,15 @@ export const metadata: Metadata = {
 export const revalidate = 0
 
 export default async function RefundPolicyPage() {
-  const storeInfo = await getSetting<StoreInfo>('store_info', DEFAULT_STORE_INFO).catch(() => DEFAULT_STORE_INFO)
+  const [storeInfo, dbPolicy] = await Promise.all([
+    getSetting<StoreInfo>('store_info', DEFAULT_STORE_INFO).catch(() => DEFAULT_STORE_INFO),
+    getSetting<PolicySection[] | null>('policy_refund', null).catch(() => null),
+  ])
   const info: StoreInfo = { ...DEFAULT_STORE_INFO, ...storeInfo }
+
+  if (dbPolicy) {
+    return <PolicyRenderer title="Order & Delivery Policy" breadcrumbLabel="Order & Delivery Policy" sections={dbPolicy} phone={info.phone} email={info.email} address={info.address} gstNumber={info.gst_number} />
+  }
 
   const phone = info.phone || '+91-XXXXXXXXXX'
   const email = info.email || 'vasutraders@gmail.com'

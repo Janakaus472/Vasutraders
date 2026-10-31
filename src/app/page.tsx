@@ -2,12 +2,12 @@ import { getProducts } from '@/lib/supabase/products'
 import { getCategories, CategoryWithSubs } from '@/lib/supabase/categories'
 import { getSetting } from '@/lib/supabase/settings'
 import HomePageClient from './HomePageClient'
-import { StoreInfo, DEFAULT_STORE_INFO } from './api/admin/store-info/route'
+import { StoreInfo, DEFAULT_STORE_INFO } from '@/types/store-info'
 import { ThemeConfig, DEFAULT_THEME_CONFIG } from '@/types/theme'
 import FestivalTheme from '@/components/themes/FestivalTheme'
 import PromotionalTheme from '@/components/themes/PromotionalTheme'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
   const [products, dbCats, layout, storeInfo, rawTheme] = await Promise.all([

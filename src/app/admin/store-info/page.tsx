@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { StoreInfo, TeamMember, DEFAULT_STORE_INFO } from '@/app/api/admin/store-info/route'
+import { StoreInfo, TeamMember, DEFAULT_STORE_INFO } from '@/types/store-info'
 
 let memberIdCounter = 1
 

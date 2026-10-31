@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
-import { StoreInfo } from '@/app/api/admin/store-info/route'
+import { StoreInfo } from '@/types/store-info'
 
 export default function AboutClient({ storeInfo }: { storeInfo: StoreInfo }) {
   const { lang } = useLanguage()

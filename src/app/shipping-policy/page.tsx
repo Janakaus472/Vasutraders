@@ -2,9 +2,11 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { getSetting } from '@/lib/supabase/settings'
 import { StoreInfo, DEFAULT_STORE_INFO } from '@/types/store-info'
+import PolicyRenderer from '@/components/PolicyRenderer'
+import type { PolicySection } from '@/components/PolicyRenderer'
 
 export const metadata: Metadata = {
-  title: 'Shipping Policy | Vasu Traders',
+  title: { absolute: 'Shipping Policy | Vasu Traders' },
   description: 'Vasu Traders shipping and delivery policy for wholesale orders. Shipping timelines, charges, and transport modes explained.',
   alternates: { canonical: 'https://www.vasutraders.com/shipping-policy' },
   robots: { index: true, follow: true },
@@ -13,8 +15,15 @@ export const metadata: Metadata = {
 export const revalidate = 0
 
 export default async function ShippingPolicyPage() {
-  const storeInfo = await getSetting<StoreInfo>('store_info', DEFAULT_STORE_INFO).catch(() => DEFAULT_STORE_INFO)
+  const [storeInfo, dbPolicy] = await Promise.all([
+    getSetting<StoreInfo>('store_info', DEFAULT_STORE_INFO).catch(() => DEFAULT_STORE_INFO),
+    getSetting<PolicySection[] | null>('policy_shipping', null).catch(() => null),
+  ])
   const info: StoreInfo = { ...DEFAULT_STORE_INFO, ...storeInfo }
+
+  if (dbPolicy) {
+    return <PolicyRenderer title="Shipping Policy" breadcrumbLabel="Shipping Policy" sections={dbPolicy} phone={info.phone} email={info.email} address={info.address} gstNumber={info.gst_number} />
+  }
 
   const phone = info.phone || ''
   const email = info.email || ''

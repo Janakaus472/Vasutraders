@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { getAdminSupabase } from '@/lib/supabase/client'
 
 function isAdmin(req: NextRequest) {
@@ -46,6 +47,7 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error
 
+    revalidatePath('/', 'layout')
     return NextResponse.json({
       ok: true,
       inserted: data?.length || 0,

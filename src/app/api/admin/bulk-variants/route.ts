@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { getBulkVariants, addBulkVariant, updateBulkVariant, deleteBulkVariant, reorderBulkVariants } from '@/lib/supabase/bulk_variants'
 
 function isAdmin(req: NextRequest) {
@@ -31,10 +32,12 @@ export async function POST(req: NextRequest) {
     if (action === 'reorder') {
       const updates = await req.json()
       await reorderBulkVariants(updates)
+      revalidatePath('/', 'layout')
       return NextResponse.json({ ok: true })
     }
     const body = await req.json()
     const variant = await addBulkVariant(body)
+    revalidatePath('/', 'layout')
     return NextResponse.json(variant)
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
@@ -48,6 +51,7 @@ export async function PATCH(req: NextRequest) {
     const { id, ...fields } = await req.json()
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
     await updateBulkVariant(id, fields)
+    revalidatePath('/', 'layout')
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
@@ -61,6 +65,7 @@ export async function DELETE(req: NextRequest) {
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
   try {
     await deleteBulkVariant(id)
+    revalidatePath('/', 'layout')
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
