@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from 'react'
 
-interface LocationStat { label: string; count: number }
+interface LocationStat { label: string; sub?: string; count: number }
+interface RecentVisit { time: string; page: string; city: string; state: string; country: string; device: string; source: string }
 interface LocationData {
   countries: LocationStat[]
   states: LocationStat[]
   cities: LocationStat[]
+  recent: RecentVisit[]
   total: number
   setupRequired?: boolean
 }
@@ -27,7 +29,7 @@ export default function VisitorsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [days, setDays] = useState(30)
-  const [tab, setTab] = useState<'countries' | 'states' | 'cities'>('countries')
+  const [tab, setTab] = useState<'countries' | 'states' | 'cities' | 'recent'>('cities')
 
   useEffect(() => {
     setLoading(true)
@@ -41,7 +43,7 @@ export default function VisitorsPage() {
       .catch(e => { setError(e.message === 'auth' ? 'Session expired — please refresh the page.' : 'Failed to load data. Please try again.'); setLoading(false) })
   }, [days])
 
-  const activeData = data ? data[tab] : []
+  const activeData: LocationStat[] = data && tab !== 'recent' ? data[tab] : []
   const total = data?.total || 0
   const indiaCount = data?.countries.find(c => c.label === 'India')?.count || 0
 
@@ -149,7 +151,7 @@ CREATE INDEX IF NOT EXISTS idx_analytics_country_code ON public.analytics(countr
 
       {/* Tabs */}
       <div className="visitors-tabs">
-        {(['countries', 'states', 'cities'] as const).map(t => (
+        {(['cities', 'states', 'countries', 'recent'] as const).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -159,13 +161,38 @@ CREATE INDEX IF NOT EXISTS idx_analytics_country_code ON public.analytics(countr
               color: tab === t ? '#fff' : '#374151',
             }}
           >
-            {t === 'countries' ? '🌐 Countries' : t === 'states' ? '🗺️ States' : '🏙️ Cities'}
+            {t === 'countries' ? '🌐 Countries' : t === 'states' ? '🗺️ States' : t === 'cities' ? '🏙️ Cities' : '🕒 Recent visits'}
           </button>
         ))}
       </div>
 
+      {/* Recent visits */}
+      {tab === 'recent' && (
+        <div style={{ background: '#fff', borderRadius: '16px', border: '1.5px solid #e5e7eb', overflow: 'hidden' }}>
+          {loading ? (
+            <div style={{ padding: '48px 20px', textAlign: 'center', color: '#9ca3af' }}>Loading…</div>
+          ) : !data?.recent?.length ? (
+            <div style={{ padding: '48px 20px', textAlign: 'center', color: '#6b7280', fontWeight: 600 }}>No visits recorded yet</div>
+          ) : data.recent.map((v, i) => (
+            <div key={i} style={{ padding: '12px 16px', borderBottom: i < data.recent.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
+                <span style={{ fontWeight: 700, fontSize: '14px', color: '#1a1a1a' }}>
+                  📍 {[v.city, v.state, v.country].filter(Boolean).join(', ')}
+                </span>
+                <span style={{ fontSize: '12px', color: '#9ca3af' }}>
+                  {new Date(v.time).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+              <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+                {v.page} · {v.device} · from {v.source}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Table */}
-      <div style={{ background: '#fff', borderRadius: '16px', border: '1.5px solid #e5e7eb', overflow: 'hidden' }}>
+      <div hidden={tab === 'recent'} style={{ background: '#fff', borderRadius: '16px', border: '1.5px solid #e5e7eb', overflow: 'hidden' }}>
         {loading ? (
           <div style={{ padding: '48px 20px', textAlign: 'center', color: '#9ca3af', fontSize: '15px' }}>
             <div style={{ fontSize: '2rem', marginBottom: '10px' }}>⏳</div>
@@ -196,7 +223,7 @@ CREATE INDEX IF NOT EXISTS idx_analytics_country_code ON public.analytics(countr
               const flag = tab === 'countries' ? (COUNTRY_FLAGS[item.label] || '🌐') : ''
               return (
                 <div
-                  key={item.label}
+                  key={`${item.label}|${item.sub || ''}`}
                   className="visitors-row"
                   style={{ borderBottom: i < activeData.length - 1 ? '1px solid #f3f4f6' : 'none' }}
                 >
@@ -204,6 +231,7 @@ CREATE INDEX IF NOT EXISTS idx_analytics_country_code ON public.analytics(countr
                   <span style={{ fontWeight: 600, fontSize: '14px', color: '#1a1a1a', position: 'relative', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {flag && <span style={{ marginRight: '6px' }}>{flag}</span>}
                     {item.label}
+                    {item.sub && <span style={{ marginLeft: '6px', fontWeight: 500, fontSize: '12px', color: '#9ca3af' }}>{item.sub}</span>}
                   </span>
                   <span style={{ textAlign: 'right', fontWeight: 700, fontSize: '14px', color: '#374151', position: 'relative', minWidth: '48px' }}>
                     {item.count.toLocaleString()}

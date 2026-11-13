@@ -18,6 +18,7 @@ export interface AnalyticsEvent {
 
 export interface LocationStat {
   label: string
+  sub?: string
   code?: string
   count: number
 }
@@ -77,10 +78,21 @@ export async function recordEvent(event: AnalyticsEvent) {
   }
 }
 
+export interface RecentVisit {
+  time: string
+  page: string
+  city: string
+  state: string
+  country: string
+  device: string
+  source: string
+}
+
 export async function getLocationStats(days = 30): Promise<{
   countries: LocationStat[]
   states: LocationStat[]
   cities: LocationStat[]
+  recent: RecentVisit[]
   total: number
   setupRequired?: boolean
 }> {
@@ -88,51 +100,98 @@ export async function getLocationStats(days = 30): Promise<{
   const since = new Date()
   since.setDate(since.getDate() - days)
 
-  const { data, count, error } = await db
-    .from('analytics')
-    .select('country, country_code, region, city', { count: 'exact' })
-    .eq('event_type', 'page_view')
-    .gte('created_at', since.toISOString())
-    .not('country_code', 'is', null)
+  type Row = { country: string; country_code: string; region: string; city: string; created_at: string; page: string; referrer: string; user_agent: string }
+  const rows: Row[] = []
+  const PAGE = 1000
 
-  // Location columns don't exist — user needs to run the SQL migration
-  if (error && error.code === '42703') {
-    return { countries: [], states: [], cities: [], total: 0, setupRequired: true }
+  // Supabase caps a single response at 1000 rows, so page through everything
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await db
+      .from('analytics')
+      .select('country, country_code, region, city, created_at, page, referrer, user_agent')
+      .eq('event_type', 'page_view')
+      .gte('created_at', since.toISOString())
+      .not('country_code', 'is', null)
+      .order('created_at', { ascending: false })
+      .range(from, from + PAGE - 1)
+
+    // Location columns don't exist — user needs to run the SQL migration
+    if (error && error.code === '42703') {
+      return { countries: [], states: [], cities: [], recent: [], total: 0, setupRequired: true }
+    }
+    if (error || !data) break
+    rows.push(...(data as Row[]))
+    if (data.length < PAGE) break
   }
-
-  const rows = (data || []) as { country: string; country_code: string; region: string; city: string }[]
 
   const countryMap: Record<string, number> = {}
   const stateMap: Record<string, number> = {}
-  const cityMap: Record<string, number> = {}
+  const cityMap: Record<string, { label: string; sub: string; count: number }> = {}
+
+  const stateName = (r: Row) => r.region ? (r.country_code === 'IN' ? INDIA_STATES[r.region] || r.region : r.region) : ''
 
   for (const r of rows) {
-    if (r.country_code) {
-      const label = r.country || r.country_code
-      countryMap[label] = (countryMap[label] || 0) + 1
+    const countryLabel = r.country || r.country_code
+    countryMap[countryLabel] = (countryMap[countryLabel] || 0) + 1
+
+    const state = stateName(r)
+    if (state) {
+      const key = r.country_code === 'IN' ? state : `${state}, ${countryLabel}`
+      stateMap[key] = (stateMap[key] || 0) + 1
     }
-    if (r.country_code === 'IN' && r.region) {
-      const label = INDIA_STATES[r.region] || r.region
-      stateMap[label] = (stateMap[label] || 0) + 1
-    }
+
     if (r.city) {
-      const decoded = decodeCity(r.city)
-      const key = r.region && r.country_code === 'IN'
-        ? `${decoded}, ${INDIA_STATES[r.region] || r.region}`
-        : decoded
-      cityMap[key] = (cityMap[key] || 0) + 1
+      const city = decodeCity(r.city)
+      const sub = [state, countryLabel].filter(Boolean).join(', ')
+      const key = `${city}|${sub}`
+      if (!cityMap[key]) cityMap[key] = { label: city, sub, count: 0 }
+      cityMap[key].count++
     }
   }
 
   const toStats = (map: Record<string, number>): LocationStat[] =>
     Object.entries(map).map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count)
 
+  const recent: RecentVisit[] = rows.slice(0, 50).map(r => ({
+    time: r.created_at,
+    page: r.page,
+    city: r.city ? decodeCity(r.city) : 'Unknown city',
+    state: stateName(r),
+    country: r.country || r.country_code,
+    device: deviceFromUA(r.user_agent),
+    source: sourceFromReferrer(r.referrer),
+  }))
+
   return {
-    countries: toStats(countryMap).slice(0, 20),
-    states: toStats(stateMap).slice(0, 20),
-    cities: toStats(cityMap).slice(0, 20),
-    total: count || rows.length,
+    countries: toStats(countryMap).slice(0, 100),
+    states: toStats(stateMap).slice(0, 100),
+    cities: Object.values(cityMap).sort((a, b) => b.count - a.count).slice(0, 100),
+    recent,
+    total: rows.length,
   }
+}
+
+function deviceFromUA(ua: string | null): string {
+  if (!ua) return 'Unknown'
+  if (/iphone|ipad|ios/i.test(ua)) return 'iPhone/iPad'
+  if (/android/i.test(ua)) return 'Android'
+  if (/windows/i.test(ua)) return 'Windows'
+  if (/mac os/i.test(ua)) return 'Mac'
+  if (/linux/i.test(ua)) return 'Linux'
+  return 'Other'
+}
+
+function sourceFromReferrer(ref: string | null): string {
+  if (!ref) return 'Direct'
+  try {
+    const host = new URL(ref).hostname.replace(/^www\./, '')
+    if (/vasutraders|vercel\.app/.test(host)) return 'Direct'
+    if (/google\./.test(host)) return 'Google'
+    if (/facebook|fb\.com/.test(host)) return 'Facebook'
+    if (/instagram/.test(host)) return 'Instagram'
+    if (/whatsapp|wa\.me/.test(host)) return 'WhatsApp'
+    return host
+  } catch { return 'Direct' }
 }
 
 function decodeCity(city: string): string {
