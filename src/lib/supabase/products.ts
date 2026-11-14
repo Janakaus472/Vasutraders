@@ -7,6 +7,17 @@ function nameToSlug(name: string): string {
 }
 
 
+// Two products with the same name would share one URL (the second becomes
+// unreachable and both claim the same canonical), so suffix repeats: -2, -3...
+function dedupeSlugs(products: Product[]): Product[] {
+  const seen = new Map<string, number>()
+  return products.map(p => {
+    const n = (seen.get(p.slug) ?? 0) + 1
+    seen.set(p.slug, n)
+    return n === 1 ? p : { ...p, slug: `${p.slug}-${n}` }
+  })
+}
+
 function rowToProduct(row: any): Product {
   return {
     id: row.id,
@@ -39,7 +50,7 @@ export async function getProducts(adminMode = false): Promise<Product[]> {
 
   const { data, error } = await query
   if (error) throw error
-  const products = (data || []).map(rowToProduct)
+  const products = dedupeSlugs((data || []).map(rowToProduct))
 
   // Attach bulk variants in one batch query
   const variantsMap = await getBulkVariantsForProducts(products.map(p => p.id))

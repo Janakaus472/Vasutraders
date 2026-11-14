@@ -130,7 +130,7 @@ export default async function CategoryPage({ params }: Props) {
     '@type': 'ItemList',
     name: `${categoryName} Wholesale Products — Vasu Traders`,
     numberOfItems: products.length,
-    itemListElement: products.slice(0, 20).map((p, i) => ({
+    itemListElement: products.map((p, i) => ({
       '@type': 'ListItem',
       position: i + 1,
       item: {

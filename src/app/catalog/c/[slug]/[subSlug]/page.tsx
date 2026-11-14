@@ -71,7 +71,7 @@ export default async function SubcategoryPage({ params }: Props) {
     '@type': 'ItemList',
     name: `${sub.name} (${category.name}) — Vasu Traders`,
     numberOfItems: products.length,
-    itemListElement: products.slice(0, 20).map((p, i) => ({
+    itemListElement: products.map((p, i) => ({
       '@type': 'ListItem',
       position: i + 1,
       item: {

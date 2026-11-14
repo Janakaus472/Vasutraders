@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Product } from '@/types/product'
 import { useLanguage } from '@/context/LanguageContext'
@@ -302,7 +303,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
 
         {/* ── Content ── */}
         <div className="product-card-body">
-          <div onClick={goToProduct} style={{ cursor: 'pointer', minWidth: 0 }}>
+          <Link href={`/catalog/${product.slug || product.id}`} style={{ display: 'block', cursor: 'pointer', minWidth: 0, color: 'inherit', textDecoration: 'none' }}>
             <p className="product-card-name">{product.name}</p>
             {getDescription(product.description, lang) && (
               <p style={{
@@ -313,7 +314,7 @@ export default function ProductCard({ product, cartQuantity, onAdd, onRemove, on
                 {getDescription(product.description, lang)}
               </p>
             )}
-          </div>
+          </Link>
 
           <div className="product-card-actions">
             <div style={{ flexShrink: 0, minWidth: 0 }}>
