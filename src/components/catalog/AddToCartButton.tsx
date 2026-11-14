@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { WHATSAPP_NUMBER } from '@/lib/constants'
-import { trackWaClick } from '@/lib/trackWaClick'
+import WhatsAppLeadLink from '@/components/WhatsAppLeadLink'
 
 const MAX_QTY = 1000
 
@@ -173,11 +173,10 @@ export default function AddToCartButton({ quantity, onAdd, onRemove, onSetQuanti
         </button>
       </div>
       {showLimit && (
-        <a
+        <WhatsAppLeadLink
           href={waUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => trackWaClick('Bulk Qty Limit', 'Max qty exceeded')}
+          source="Bulk Qty Limit"
+          context="Max qty exceeded"
           style={{
             display: 'flex', alignItems: 'center', gap: '4px',
             fontSize: '10px', fontWeight: 700,
@@ -188,7 +187,7 @@ export default function AddToCartButton({ quantity, onAdd, onRemove, onSetQuanti
           }}
         >
           Max 1000 — <span style={{ color: '#25D366', textDecoration: 'underline' }}>WhatsApp us</span> for bulk
-        </a>
+        </WhatsAppLeadLink>
       )}
     </div>
   )

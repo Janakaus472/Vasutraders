@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { trackWaClick } from '@/lib/trackWaClick'
+import WhatsAppLeadLink from '@/components/WhatsAppLeadLink'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -142,11 +142,9 @@ export default function ChatWidget() {
               <div style={{ color: '#fff', fontWeight: 700, fontSize: '14px', lineHeight: 1.2 }}>Vasu Traders</div>
               <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px' }}>Usually replies in seconds</div>
             </div>
-            <a
+            <WhatsAppLeadLink
               href={`https://wa.me/${WHATSAPP_NUMBER}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackWaClick('Chat Widget')}
+              source="Chat Widget"
               style={{
                 marginLeft: 'auto',
                 background: 'rgba(255,255,255,0.15)',
@@ -166,7 +164,7 @@ export default function ChatWidget() {
                 <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.556 4.116 1.527 5.845L.057 23.18a.75.75 0 00.914.914l5.335-1.47A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.986 0-3.842-.549-5.424-1.504l-.388-.232-4.028 1.11 1.11-4.028-.232-.388A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
               </svg>
               WhatsApp
-            </a>
+            </WhatsAppLeadLink>
           </div>
 
           {/* Messages */}

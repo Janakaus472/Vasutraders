@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { getSetting } from '@/lib/supabase/settings'
 import { StoreInfo, DEFAULT_STORE_INFO } from '@/types/store-info'
 import { WHATSAPP_NUMBER } from '@/lib/constants'
-import WhatsAppTrackLink from '@/components/WhatsAppTrackLink'
+import WhatsAppLeadLink from '@/components/WhatsAppLeadLink'
 
 export const metadata: Metadata = {
   title: { absolute: 'Contact Us | Vasu Traders' },
@@ -83,9 +83,9 @@ export default async function ContactPage() {
           if (item.href) {
             if (item.label === 'WhatsApp') {
               return (
-                <WhatsAppTrackLink key={item.label} href={item.href} source="Contact Page" style={{ textDecoration: 'none', display: 'block' }}>
+                <WhatsAppLeadLink key={item.label} href={item.href} source="Contact Page" style={{ textDecoration: 'none', display: 'block' }}>
                   {inner}
-                </WhatsAppTrackLink>
+                </WhatsAppLeadLink>
               )
             }
             return (
@@ -133,9 +133,9 @@ export default async function ContactPage() {
           </a>
         )}
         {waUrl && (
-          <WhatsAppTrackLink href={waUrl} source="Contact Page CTA" style={{ background: '#25D366', color: '#fff', fontWeight: 700, padding: '14px 28px', borderRadius: '12px', fontSize: '15px', textDecoration: 'none' }}>
+          <WhatsAppLeadLink href={waUrl} source="Contact Page CTA" style={{ background: '#25D366', color: '#fff', fontWeight: 700, padding: '14px 28px', borderRadius: '12px', fontSize: '15px', textDecoration: 'none' }}>
             💬 WhatsApp
-          </WhatsAppTrackLink>
+          </WhatsAppLeadLink>
         )}
       </div>
 

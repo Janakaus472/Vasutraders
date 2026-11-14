@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import nodemailer from 'nodemailer'
 
 const NOTIFY_EMAIL = 'vasutraders9809@gmail.com'
 
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) return NextResponse.json({ ok: true })
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) return NextResponse.json({ ok: true })
 
   try {
     const body = await req.json().catch(() => ({}))
@@ -27,15 +27,15 @@ export async function POST(req: NextRequest) {
         </div>
       </div>`
 
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: 'Vasu Traders <onboarding@resend.dev>',
-        to: NOTIFY_EMAIL,
-        subject: `WhatsApp Click — ${source || 'Website'}`,
-        html,
-      }),
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD },
+    })
+    await transporter.sendMail({
+      from: `Vasu Traders <${process.env.GMAIL_USER}>`,
+      to: NOTIFY_EMAIL,
+      subject: `WhatsApp Click — ${source || 'Website'}`,
+      html,
     })
   } catch {}
 

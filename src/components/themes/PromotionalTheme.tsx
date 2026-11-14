@@ -4,10 +4,10 @@ import Link from 'next/link'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { BUSINESS_NAME, WHATSAPP_NUMBER } from '@/lib/constants'
 import { useLanguage } from '@/context/LanguageContext'
-import { trackWaClick } from '@/lib/trackWaClick'
 import { StoreInfo } from '@/types/store-info'
 import { PromoThemeConfig } from '@/types/theme'
 import { toSlug } from '@/lib/categorySlug'
+import WhatsAppLeadLink from '@/components/WhatsAppLeadLink'
 
 interface HomeCategoryLayout {
   name: string
@@ -322,9 +322,9 @@ export default function PromotionalTheme({ promoConfig, categories, totalProduct
             <Link href="/catalog" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#FAC41A', color: '#7f1d1d', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '1px' }}>
               {lang === 'hi' ? 'कैटलॉग देखें' : 'Browse Catalog'}
             </Link>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackWaClick('Promo Theme')} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none' }}>
+            <WhatsAppLeadLink href={waUrl} source="Promo Theme" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '14px 32px', borderRadius: '6px', fontWeight: 800, fontSize: '15px', textDecoration: 'none' }}>
               {t.whatsappUs}
-            </a>
+            </WhatsAppLeadLink>
           </div>
         </div>
       </section>
@@ -359,7 +359,7 @@ export default function PromotionalTheme({ promoConfig, categories, totalProduct
               {lang === 'hi' ? 'संपर्क' : 'Get in Touch'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <a href={waUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackWaClick('Promo Theme')} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>WhatsApp</a>
+              <WhatsAppLeadLink href={waUrl} source="Promo Theme" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>WhatsApp</WhatsAppLeadLink>
               {storeInfo?.email && <a href={`mailto:${storeInfo.email}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>✉️ {storeInfo.email}</a>}
               {storeInfo?.phone && <a href={`tel:${storeInfo.phone.replace(/\s/g, '')}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>📞 {storeInfo.phone}</a>}
               <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>{storeInfo?.address || 'Indore, Madhya Pradesh'}</span>
