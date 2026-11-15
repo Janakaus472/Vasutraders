@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { trackWaClick } from '@/lib/trackWaClick'
 
 const STORAGE_KEY = 'vt_lead'
 
@@ -16,18 +15,19 @@ interface Props {
   children: React.ReactNode
 }
 
-function readSaved(): { name: string; phone: string } {
+function readSaved(): { name: string; phone: string; location: string } {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return { name: '', phone: '', ...JSON.parse(raw) }
+    if (raw) return { name: '', phone: '', location: '', ...JSON.parse(raw) }
   } catch {}
-  return { name: '', phone: '' }
+  return { name: '', phone: '', location: '' }
 }
 
 export default function WhatsAppLeadLink({ href, source, context, style, className, ariaLabel, children }: Props) {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [location, setLocation] = useState('')
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -35,6 +35,7 @@ export default function WhatsAppLeadLink({ href, source, context, style, classNa
     const saved = readSaved()
     setName(saved.name)
     setPhone(saved.phone)
+    setLocation(saved.location)
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = prev }
@@ -47,24 +48,21 @@ export default function WhatsAppLeadLink({ href, source, context, style, classNa
 
   function submit(e: React.FormEvent) {
     e.preventDefault()
+    if (!name.trim()) { setError('Please enter your name'); return }
     const digits = phone.replace(/\D/g, '')
     if (digits.length < 10 || digits.length > 13) {
       setError('Please enter a valid 10-digit mobile number')
       return
     }
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ name, phone })) } catch {}
+    if (!location.trim()) { setError('Please enter your city / area'); return }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ name, phone, location })) } catch {}
     // keepalive lets the request finish even though we open WhatsApp right away
     fetch('/api/whatsapp-lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, phone, source, context, page: window.location.href }),
+      body: JSON.stringify({ name, phone, location, source, context, page: window.location.href }),
       keepalive: true,
     }).catch(() => {})
-    openWhatsApp()
-  }
-
-  function skip() {
-    trackWaClick(source, context)
     openWhatsApp()
   }
 
@@ -99,33 +97,31 @@ export default function WhatsAppLeadLink({ href, source, context, style, classNa
           >
             <h3 style={{ margin: '0 0 4px', fontSize: '18px', fontWeight: 800, color: '#1a1a1a' }}>Enquire on WhatsApp</h3>
             <p style={{ margin: '0 0 16px', fontSize: '13px', color: '#6b7280' }}>
-              Share your number so our team can call or message you back{context ? ` about ${context}` : ''}.
+              Just 3 quick details and we'll reply on WhatsApp{context ? ` about ${context}` : ''}.
             </p>
 
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>Your name (optional)</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" maxLength={80} style={{ ...input, marginBottom: '12px' }} />
-
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>Mobile number</label>
             <input
-              value={phone}
-              onChange={(e) => { setPhone(e.target.value); setError('') }}
-              type="tel" inputMode="tel" autoComplete="tel" placeholder="98765 43210" autoFocus
-              style={{ ...input, borderColor: error ? '#dc2626' : '#d1d5db' }}
+              value={name} onChange={(e) => { setName(e.target.value); setError('') }}
+              placeholder="Your name" aria-label="Your name" autoComplete="name" maxLength={80} autoFocus
+              style={{ ...input, marginBottom: '10px' }}
             />
-            {error && <p style={{ margin: '6px 0 0', fontSize: '12px', color: '#dc2626' }}>{error}</p>}
+            <input
+              value={phone} onChange={(e) => { setPhone(e.target.value); setError('') }}
+              type="tel" inputMode="tel" autoComplete="tel" placeholder="Mobile number" aria-label="Mobile number"
+              style={{ ...input, marginBottom: '10px' }}
+            />
+            <input
+              value={location} onChange={(e) => { setLocation(e.target.value); setError('') }}
+              placeholder="City / area" aria-label="City or area" autoComplete="address-level2" maxLength={80}
+              style={input}
+            />
+            {error && <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#dc2626' }}>{error}</p>}
 
             <button
               type="submit"
               style={{ marginTop: '16px', width: '100%', background: '#25D366', color: '#fff', fontWeight: 800, fontSize: '15px', padding: '13px', border: 'none', borderRadius: '10px', cursor: 'pointer' }}
             >
               Continue to WhatsApp
-            </button>
-            <button
-              type="button"
-              onClick={skip}
-              style={{ marginTop: '8px', width: '100%', background: 'none', border: 'none', color: '#6b7280', fontSize: '13px', padding: '8px', cursor: 'pointer', textDecoration: 'underline' }}
-            >
-              Skip and open WhatsApp
             </button>
           </form>
         </div>,

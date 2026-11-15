@@ -12,8 +12,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json().catch(() => ({}))
-    const { name, phone, source, context, page } = body as {
-      name?: string; phone?: string; source?: string; context?: string; page?: string
+    const { name, phone, location, source, context, page } = body as {
+      name?: string; phone?: string; location?: string; source?: string; context?: string; page?: string
     }
 
     const digits = (phone ?? '').replace(/\D/g, '')
@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
     const waDigits = digits.length === 10 ? `91${digits}` : digits
 
     const cleanName = esc((name ?? '').slice(0, 80))
+    const cleanLocation = esc((location ?? '').slice(0, 80))
     const cleanSource = esc((source ?? 'Website').slice(0, 80))
     const cleanContext = esc((context ?? '').slice(0, 200))
     const cleanPage = esc((page ?? '').slice(0, 300))
@@ -40,6 +41,7 @@ export async function POST(req: NextRequest) {
         <div style="background:#f0fdf4;padding:24px;border:2px solid #86efac;border-top:none;border-radius:0 0 16px 16px">
           <table style="font-size:15px;width:100%">
             ${cleanName ? row('Name', cleanName) : ''}
+            ${cleanLocation ? row('Location', cleanLocation) : ''}
             ${row('Phone', `<a href="tel:+${waDigits}" style="color:#166534;text-decoration:none">+${waDigits}</a>`)}
             ${cleanContext ? row('Product', cleanContext) : ''}
             ${row('Source', cleanSource)}
